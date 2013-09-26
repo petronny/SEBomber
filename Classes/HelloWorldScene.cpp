@@ -34,12 +34,10 @@ bool HelloWorld::init()
 	//	you may modify it.
 
 	// add a "close" icon to exit the progress. it's an autorelease object
-	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-										"CloseNormal.png",
-										"CloseSelected.png",
-										this,
-										menu_selector(HelloWorld::menuCloseCallback) );
-	pCloseItem->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width - 20, 20) );
+	CCSize size = CCDirector::sharedDirector()->getWinSize();
+
+	CCMenuItemImage *pCloseItem = CCMenuItemImage::create("c2.png","c9.png",this,menu_selector(HelloWorld::menuCloseCallback));
+	pCloseItem->setPosition( ccp(size.width/2,80) );
 
 	// create menu, it's an autorelease object
 	CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
@@ -51,10 +49,9 @@ bool HelloWorld::init()
 
 	// add a label shows "Hello World"
 	// create and initialize a label
-	CCLabelTTF* pLabel = CCLabelTTF::create("SE泡泡堂", "fonts/FZZYHandelGotD.ttf", 34);
+	CCLabelTTF* pLabel = CCLabelTTF::create("SE泡泡堂", "fonts/FZZYHandelGotD.ttf", 44);
 
 	// ask director the window size
-	CCSize size = CCDirector::sharedDirector()->getWinSize();
 
 	// position the label on the center of the screen
 	pLabel->setPosition( ccp(size.width / 2, size.height - 20) );
@@ -71,22 +68,22 @@ bool HelloWorld::init()
 	// add the sprite as a child to this layer
 	this->addChild(pSprite, 0);
 	
-	text1 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入用户名", "fonts/FZZYHandelGotD.ttf", 20);
-	text1->setPosition(ccp(size.width / 2, size.height / 2 - 40));
+	text1 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入用户名", "fonts/FZZYHandelGotD.ttf", 30);
+	text1->setPosition(ccp(size.width / 2, size.height / 2 + 20));
 	this->addChild(text1);
 	text1->setDelegate(this);
 
-	CCMenuItem* tapItem1 = CCMenuItemFont::create("       ",this,menu_selector(HelloWorld::textFieldPressed1));
-	tapItem1->setPosition(ccp(size.width / 2, size.height / 2 - 40));
+	CCMenuItem* tapItem1 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed1));
+	tapItem1->setPosition(ccp(size.width / 2, size.height / 2 +20));
 	pMenu->addChild(tapItem1, 1);
 
-	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 20);
-	text2->setPosition(ccp(size.width / 2, size.height / 2 ));
+	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 30);
+	text2->setPosition(ccp(size.width / 2, size.height / 2 -60));
 	this->addChild(text2);
 	text2->setDelegate(this);
 	
-	CCMenuItem* tapItem2 = CCMenuItemFont::create("        ",this,menu_selector(HelloWorld::textFieldPressed2));
-	tapItem2->setPosition(ccp(size.width / 2, size.height / 2));
+	CCMenuItem* tapItem2 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed2));
+	tapItem2->setPosition(ccp(size.width / 2, size.height / 2-60));
 	pMenu->addChild(tapItem2, 1);
 	return true;
 }
@@ -100,22 +97,23 @@ void HelloWorld::textFieldPressed2(cocos2d::CCObject *sender)
 }
 bool HelloWorld::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender)
 {
-	this->setPosition(ccp(0, 100));
+//	this->setPosition(ccp(0, 100));
 	return false;
 }
 bool HelloWorld::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender)
 {
-	this->setPosition(ccp(0, 0));
+//	this->setPosition(ccp(0, 0));
 	return false;
 }
 
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {
 	CCScene *pScene = HelloWorld2::scene();
-	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(2, pScene));
-//	CCDirector::sharedDirector()->end();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(1, pScene));
+	
+/*	CCDirector::sharedDirector()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-//	exit(0);
+	exit(0);
 #endif
-}
+*/}
