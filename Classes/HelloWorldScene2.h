@@ -17,7 +17,7 @@ public:
     void moveActionEnd(CCNode* sender);
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld2);
-    cocos2d::CCSprite* bazzi;
+    cocos2d::CCSprite* gbird;
 };
 
 #endif // __HELLOWORLD_SCENE2_H__

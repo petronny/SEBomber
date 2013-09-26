@@ -73,9 +73,9 @@ bool HelloWorld2::init()
     this->addChild(pSprite, 0);
     
     
-	bazzi = CCSprite::create("unit_bazzi.png", CCRectMake(383,68,44,56));
-	bazzi->setPosition(ccp(40,visibleSize.height/2));
-	this->addChild(bazzi, 2);
+	gbird = CCSprite::create("green_bird.png", CCRectMake(0,0,49,30));
+	gbird->setPosition(ccp(40,visibleSize.height/2));
+	this->addChild(gbird, 2);
      return true;
 }
 
@@ -84,9 +84,10 @@ void HelloWorld2::menuCloseCallback(CCObject* pSender)
 {
 	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
 	CCMoveTo* move = CCMoveTo::create(4, ccp(size.width-40, size.height/2));
+	CCMoveTo* moveback = CCMoveTo::create(4, ccp(40, size.height/2));
 	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(HelloWorld2::moveActionEnd));
-	CCAction* action = CCSequence::create(move, end, NULL);
-	bazzi->runAction(action);
+	CCAction* action = CCSequence::create(move, moveback,end, NULL);
+	gbird->runAction(action);
 }
 
 void HelloWorld2::moveActionEnd(CCNode* sender)
