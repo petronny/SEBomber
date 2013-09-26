@@ -34,12 +34,10 @@ bool HelloWorld::init()
 	//	you may modify it.
 
 	// add a "close" icon to exit the progress. it's an autorelease object
-	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-										"CloseNormal.png",
-										"CloseSelected.png",
-										this,
-										menu_selector(HelloWorld::menuCloseCallback) );
-	pCloseItem->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width - 20, 20) );
+	CCSize size = CCDirector::sharedDirector()->getWinSize();
+
+	CCMenuItemImage *pCloseItem = CCMenuItemImage::create("c2.png","c9.png",this,menu_selector(HelloWorld::menuCloseCallback));
+	pCloseItem->setPosition( ccp(size.width/2,80) );
 
 	// create menu, it's an autorelease object
 	CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
@@ -54,7 +52,6 @@ bool HelloWorld::init()
 	CCLabelTTF* pLabel = CCLabelTTF::create("SE泡泡堂", "fonts/FZZYHandelGotD.ttf", 34);
 
 	// ask director the window size
-	CCSize size = CCDirector::sharedDirector()->getWinSize();
 
 	// position the label on the center of the screen
 	pLabel->setPosition( ccp(size.width / 2, size.height - 20) );
@@ -112,10 +109,11 @@ bool HelloWorld::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender)
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {
 	CCScene *pScene = HelloWorld2::scene();
-	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY transitionWithDuration(2, pScene));
-//	CCDirector::sharedDirector()->end();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(1, pScene));
+	this->end();
+/*	CCDirector::sharedDirector()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-//	exit(0);
+	exit(0);
 #endif
-}
+*/}

@@ -72,15 +72,27 @@ bool HelloWorld2::init()
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
     
-    return true;
+    
+	bazzi = CCSprite::create("unit_bazzi.png", CCRectMake(383,68,44,56));
+	bazzi->setPosition(ccp(40,visibleSize.height/2));
+	this->addChild(bazzi, 2);
+     return true;
 }
 
 
 void HelloWorld2::menuCloseCallback(CCObject* pSender)
 {
-    CCDirector::sharedDirector()->end();
+	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
+	CCMoveTo* move = CCMoveTo::create(4, ccp(size.width-40, size.height/2));
+	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(HelloWorld2::moveActionEnd));
+	CCAction* action = CCSequence::create(move, end, NULL);
+	bazzi->runAction(action);
+}
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
-#endif
+void HelloWorld2::moveActionEnd(CCNode* sender)
+{
+	CCDirector::sharedDirector()->end();
+	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	    exit(0);
+	#endif
 }

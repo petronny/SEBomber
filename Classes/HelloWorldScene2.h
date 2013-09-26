@@ -14,9 +14,10 @@ public:
     
     // a selector callback
     void menuCloseCallback(CCObject* pSender);
-    
+    void moveActionEnd(CCNode* sender);
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld2);
+    cocos2d::CCSprite* bazzi;
 };
 
 #endif // __HELLOWORLD_SCENE2_H__
