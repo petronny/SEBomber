@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-
+#include "HelloWorldScene2.h"
 using namespace cocos2d;
 using namespace CocosDenshion;
 
@@ -81,12 +81,12 @@ bool HelloWorld::init()
 	pMenu->addChild(tapItem1, 1);
 
 	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 20);
-	text2->setPosition(ccp(size.width / 2, size.height / 2 -60));
+	text2->setPosition(ccp(size.width / 2, size.height / 2 ));
 	this->addChild(text2);
 	text2->setDelegate(this);
 	
 	CCMenuItem* tapItem2 = CCMenuItemFont::create("        ",this,menu_selector(HelloWorld::textFieldPressed2));
-	tapItem2->setPosition(ccp(size.width / 2, size.height / 2 -60));
+	tapItem2->setPosition(ccp(size.width / 2, size.height / 2));
 	pMenu->addChild(tapItem2, 1);
 	return true;
 }
@@ -111,9 +111,11 @@ bool HelloWorld::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender)
 
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {
-	CCDirector::sharedDirector()->end();
+	CCScene *pScene = HelloWorld2::scene();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY transitionWithDuration(2, pScene));
+//	CCDirector::sharedDirector()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	exit(0);
+//	exit(0);
 #endif
 }

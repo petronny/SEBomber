@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-
+#include "HelloWorldScene2.h"
 using namespace cocos2d;
 using namespace CocosDenshion;
 
@@ -111,9 +111,11 @@ bool HelloWorld::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender)
 
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {
-	CCDirector::sharedDirector()->end();
+	CCScene *pScene = HelloWorld2::scene();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(2, pScene));
+//	CCDirector::sharedDirector()->end();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	exit(0);
+//	exit(0);
 #endif
 }

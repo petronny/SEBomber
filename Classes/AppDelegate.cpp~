@@ -2,7 +2,7 @@
 
 #include "cocos2d.h"
 #include "HelloWorldScene.h"
-#include "HelloWorldScene2.h"
+
 USING_NS_CC;
 
 AppDelegate::AppDelegate()
