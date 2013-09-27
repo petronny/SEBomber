@@ -96,10 +96,7 @@ void HelloWorld::textFieldPressed2(cocos2d::CCObject *sender)
 {
 	text2->attachWithIME();
 	text2->setVisible(false);
-//	tapItem2->autorelease();
 	tapItem2->setString("******************");
-//	tapItem2->setPosition(ccp(size.width / 2, size.height / 2-60));
-//	tapItem2->setColor(ccBLACK);
 }
 bool HelloWorld::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender)
 {

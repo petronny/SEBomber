@@ -62,22 +62,17 @@ bool HelloWorld2::init()
 
     // add the label as a child to this layer
     this->addChild(pLabel, 1);
+    CCTMXTiledMap *map=CCTMXTiledMap::create("map/map_fact.tmx");
+    map->setScaleX(visibleSize.width/(map->getMapSize().width*map->getTileSize().width));
+    map->setScaleY(visibleSize.height/(map->getMapSize().height*map->getTileSize().height));
+    this->addChild(map,0);
 
-    // add "HelloWorld2" splash screen"
-    CCSprite* pSprite = CCSprite::create("HelloWorld.png");
-
-    // position the sprite on the center of the screen
-    pSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    // add the sprite as a child to this layer
-    this->addChild(pSprite, 0);
-    
-    
 	gbird = CCSprite::create("green_bird.png", CCRectMake(0,0,49,30));
 	gbird->setPosition(ccp(40,visibleSize.height/2));
 	this->addChild(gbird, 2);
      return true;
 }
+
 
 
 void HelloWorld2::menuCloseCallback(CCObject* pSender)
