@@ -19,8 +19,10 @@ public:
     
     void textFieldPressed1(CCObject *sender);   
     void textFieldPressed2(CCObject *sender);   
+    void textFieldPressed3(CCObject *sender);
     cocos2d::CCTextFieldTTF *text1;
     cocos2d::CCTextFieldTTF *text2;
+    cocos2d::CCTextFieldTTF *text3;
     cocos2d::CCMenuItemFont* tapItem2;
     bool onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender);
     bool onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender);

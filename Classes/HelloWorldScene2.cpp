@@ -78,8 +78,8 @@ bool HelloWorld2::init()
 void HelloWorld2::menuCloseCallback(CCObject* pSender)
 {
 	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
-	CCMoveTo* move = CCMoveTo::create(4, ccp(size.width-40, size.height/2));
-	CCMoveTo* moveback = CCMoveTo::create(4, ccp(40, size.height/2));
+	CCMoveTo* move = CCMoveTo::create(2, ccp(size.width-40, size.height/2));
+	CCMoveTo* moveback = CCMoveTo::create(2, ccp(40, size.height/2));
 	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
 	float w = texture->getContentSize().width / 2;
 	float h = texture->getContentSize().height;
