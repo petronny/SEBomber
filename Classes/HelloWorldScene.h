@@ -21,6 +21,7 @@ public:
     void textFieldPressed2(CCObject *sender);   
     cocos2d::CCTextFieldTTF *text1;
     cocos2d::CCTextFieldTTF *text2;
+    cocos2d::CCMenuItemFont* tapItem2;
     bool onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender);
     bool onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender);
     

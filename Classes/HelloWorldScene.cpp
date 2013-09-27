@@ -1,7 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include "HelloWorldScene2.h"
-#include "lib/CCTextFieldTTF_EXT.h"
 using namespace cocos2d;
 using namespace CocosDenshion;
 
@@ -83,7 +82,7 @@ bool HelloWorld::init()
 	this->addChild(text2);
 	text2->setDelegate(this);
 	
-	CCMenuItem* tapItem2 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed2));
+	tapItem2 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed2));
 	tapItem2->setPosition(ccp(size.width / 2, size.height / 2-60));
 	pMenu->addChild(tapItem2, 1);
 	tapItem2->setColor(ccBLACK);
@@ -96,6 +95,11 @@ void HelloWorld::textFieldPressed1(cocos2d::CCObject *sender)
 void HelloWorld::textFieldPressed2(cocos2d::CCObject *sender)
 {
 	text2->attachWithIME();
+	text2->setVisible(false);
+//	tapItem2->autorelease();
+	tapItem2->setString("******************");
+//	tapItem2->setPosition(ccp(size.width / 2, size.height / 2-60));
+//	tapItem2->setColor(ccBLACK);
 }
 bool HelloWorld::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender)
 {
