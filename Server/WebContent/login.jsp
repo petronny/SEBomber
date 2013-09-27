@@ -10,9 +10,9 @@ String userName="root";
 //密码 
 String userPasswd="root"; 
 //数据库名 
-String dbName="test"; 
+String dbName="seboomer"; 
 //表名 
-String tableName="userinfo"; 
+String tableName="users"; 
 //联结字符串 
 String input=request.getParameter("username");
 String input2=request.getParameter("password");
