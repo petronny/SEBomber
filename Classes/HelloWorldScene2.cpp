@@ -85,6 +85,15 @@ void HelloWorld2::menuCloseCallback(CCObject* pSender)
 	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
 	CCMoveTo* move = CCMoveTo::create(4, ccp(size.width-40, size.height/2));
 	CCMoveTo* moveback = CCMoveTo::create(4, ccp(40, size.height/2));
+	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
+	float w = texture->getContentSize().width / 2;
+	float h = texture->getContentSize().height;
+	CCAnimation* animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.1f);
+	for(int i = 0; i <2; i ++)
+		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
+	CCAnimate* animate = CCAnimate::create(animation);
+	gbird->runAction(CCRepeatForever::create(animate));
 	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(HelloWorld2::moveActionEnd));
 	CCAction* action = CCSequence::create(move, moveback,end, NULL);
 	gbird->runAction(action);
