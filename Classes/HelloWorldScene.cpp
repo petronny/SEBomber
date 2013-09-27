@@ -74,6 +74,8 @@ bool HelloWorld::init()
 	pMenu->addChild(tapItem1, 1);
 	tapItem1->setColor(ccBLACK);
 	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 30);
+	text1->setColor(ccWHITE);
+	text2->setColor(ccWHITE);
 	text2->setPosition(ccp(size.width / 2, size.height / 2 -60));
 	this->addChild(text2);
 	text2->setDelegate(this);
