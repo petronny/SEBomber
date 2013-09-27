@@ -65,25 +65,31 @@ bool HelloWorld::init()
 	this->addChild(pSprite, 0);
 	
 	text1 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入用户名", "fonts/FZZYHandelGotD.ttf", 30);
+	CCLabelTTF * underline1=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 30);
 	text1->setPosition(ccp(size.width / 2, size.height / 2 + 20));
-	this->addChild(text1);
+	underline1->setPosition(ccp(size.width / 2, size.height / 2 + 20));
+	text1->setColor(ccWHITE);
+	underline1->setColor(ccBLACK);
+	this->addChild(text1,2);
+	this->addChild(underline1);
 	text1->setDelegate(this);
-
-	CCMenuItem* tapItem1 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed1));
+	CCMenuItem* tapItem1 = CCMenuItemFont::create("              ",this,menu_selector(HelloWorld::textFieldPressed1));
 	tapItem1->setPosition(ccp(size.width / 2, size.height / 2 +20));
 	pMenu->addChild(tapItem1, 1);
-	tapItem1->setColor(ccBLACK);
+
 	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 30);
-	text1->setColor(ccWHITE);
-	text2->setColor(ccWHITE);
+	CCLabelTTF * underline2=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 30);
 	text2->setPosition(ccp(size.width / 2, size.height / 2 -60));
-	this->addChild(text2);
+	underline2->setPosition(ccp(size.width / 2, size.height / 2 - 60));
+	text2->setColor(ccWHITE);
+	underline2->setColor(ccBLACK);
+	this->addChild(text2,2);
+	this->addChild(underline2);
 	text2->setDelegate(this);
-	
-	tapItem2 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed2));
+	tapItem2 = CCMenuItemFont::create("              ",this,menu_selector(HelloWorld::textFieldPressed2));
 	tapItem2->setPosition(ccp(size.width / 2, size.height / 2-60));
 	pMenu->addChild(tapItem2, 1);
-	tapItem2->setColor(ccBLACK);
+
 	return true;
 }
 void HelloWorld::textFieldPressed1(cocos2d::CCObject *sender)
@@ -94,7 +100,7 @@ void HelloWorld::textFieldPressed2(cocos2d::CCObject *sender)
 {
 	text2->attachWithIME();
 	text2->setVisible(false);
-	tapItem2->setString("******************");
+	tapItem2->setString("********");
 }
 bool HelloWorld::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender)
 {
