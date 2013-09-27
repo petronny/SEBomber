@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 #include "HelloWorldScene2.h"
+#include "lib/CCTextFieldTTF_EXT.h"
 using namespace cocos2d;
 using namespace CocosDenshion;
 
@@ -50,7 +51,7 @@ bool HelloWorld::init()
 	// add a label shows "Hello World"
 	// create and initialize a label
 	CCLabelTTF* pLabel = CCLabelTTF::create("SE泡泡堂", "fonts/FZZYHandelGotD.ttf", 44);
-
+	pLabel->setColor(ccBLACK);
 	// ask director the window size
 
 	// position the label on the center of the screen
@@ -76,7 +77,7 @@ bool HelloWorld::init()
 	CCMenuItem* tapItem1 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed1));
 	tapItem1->setPosition(ccp(size.width / 2, size.height / 2 +20));
 	pMenu->addChild(tapItem1, 1);
-
+	tapItem1->setColor(ccBLACK);
 	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 30);
 	text2->setPosition(ccp(size.width / 2, size.height / 2 -60));
 	this->addChild(text2);
@@ -85,6 +86,7 @@ bool HelloWorld::init()
 	CCMenuItem* tapItem2 = CCMenuItemFont::create("__________________",this,menu_selector(HelloWorld::textFieldPressed2));
 	tapItem2->setPosition(ccp(size.width / 2, size.height / 2-60));
 	pMenu->addChild(tapItem2, 1);
+	tapItem2->setColor(ccBLACK);
 	return true;
 }
 void HelloWorld::textFieldPressed1(cocos2d::CCObject *sender)

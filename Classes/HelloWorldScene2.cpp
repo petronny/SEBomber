@@ -94,8 +94,10 @@ void HelloWorld2::menuCloseCallback(CCObject* pSender)
 		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
 	CCAnimate* animate = CCAnimate::create(animation);
 	gbird->runAction(CCRepeatForever::create(animate));
+
+	CCFiniteTimeAction* flipXAction = CCFlipX::create(true);
 	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(HelloWorld2::moveActionEnd));
-	CCAction* action = CCSequence::create(move, moveback,end, NULL);
+	CCAction* action = CCSequence::create(flipXAction,move, flipXAction->reverse(),moveback,end, NULL);
 	gbird->runAction(action);
 }
 
