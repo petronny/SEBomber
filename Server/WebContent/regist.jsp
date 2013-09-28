@@ -20,29 +20,11 @@ String url="jdbc:mysql://localhost/"+dbName+"?user="+userName+"&password="+userP
 Class.forName("com.mysql.jdbc.Driver").newInstance(); 
 Connection connection=DriverManager.getConnection(url); 
 Statement statement = connection.createStatement(); 
-String sql="SELECT * FROM "+tableName +" where username='"+input+"'";
-
-ResultSet rs = statement.executeQuery(sql); 
-//获得数据结果集合 
-ResultSetMetaData rmeta = rs.getMetaData(); 
-//确定数据集的列数，亦字段数 
-int numColumns=rmeta.getColumnCount(); 
-// 输出每一个数据值 
-if(rs.next()) {
-	if(rs.getString("password").compareTo(input2)==0){
-		out.print(rs.getString("id"));
-	System.out.println(rs.getString("id"));
-	}
-	else{ 
-		out.print(-1);
-		System.out.println(-1);
-	}
-} 
-else{ 
-	out.print(-1);
-	System.out.println(-1);
-}
-rs.close(); 
-statement.close(); 
-connection.close(); 
+String sql = "insert into "+tableName+"(username,password) values('"+input+"','"+input2+"')";
+System.out.println(sql);
+PreparedStatement ps = null;
+	Statement stmt = connection.createStatement();  
+	ps = connection.prepareStatement(sql);
+	int a = ps.executeUpdate();
+stmt.close();  
 %> 

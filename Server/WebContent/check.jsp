@@ -29,18 +29,10 @@ ResultSetMetaData rmeta = rs.getMetaData();
 int numColumns=rmeta.getColumnCount(); 
 // 输出每一个数据值 
 if(rs.next()) {
-	if(rs.getString("password").compareTo(input2)==0){
-		out.print(rs.getString("id"));
-	System.out.println(rs.getString("id"));
-	}
-	else{ 
-		out.print(-1);
-		System.out.println(-1);
-	}
+	out.print(rs.getString("id"));
 } 
 else{ 
 	out.print(-1);
-	System.out.println(-1);
 }
 rs.close(); 
 statement.close(); 

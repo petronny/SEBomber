@@ -29,6 +29,9 @@ public:
     void textFieldPressed1(CCObject *sender);   
     void textFieldPressed2(CCObject *sender);   
     void textFieldPressed3(CCObject *sender);
+    void checkNameExist();
+    void login();
+    void regist();
     CCTextFieldTTF *text1;
     CCTextFieldTTF *text2;
     CCTextFieldTTF *text3;
@@ -36,9 +39,10 @@ public:
     CCLabelTTF * message;
     bool onTextFieldAttachWithIME(CCTextFieldTTF *sender);
     bool onTextFieldDetachWithIME(CCTextFieldTTF *sender);
-    static int userid;
+    static int httpAns;
+    void menuCloseCallback(CCObject* pSender);
 };
-
+int LoginScene::httpAns;
 
 CCScene* LoginScene::scene()
 {
@@ -65,6 +69,14 @@ bool LoginScene::init()
 		return false;
 	}
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
+    CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
+                                        "CloseNormal.png",
+                                        "CloseSelected.png",
+                                        this,
+                                        menu_selector(LoginScene::menuCloseCallback));
+
+	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
+
 
 	CCMenuItemImage *loginButton = CCMenuItemImage::create("c8.png","c3.png",this,menu_selector(LoginScene::loginButtonClicked));
 	loginButton->setScale(size.width/6/loginButton->boundingBox().size.width);
@@ -81,7 +93,7 @@ bool LoginScene::init()
 	registLabel->setColor(ccYELLOW);
 	this->addChild(registLabel,2);
 	// create menu, it's an autorelease object
-	CCMenu* pMenu = CCMenu::create(loginButton,registButton, NULL);
+	CCMenu* pMenu = CCMenu::create(pCloseItem,loginButton,registButton, NULL);
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu, 1);
 
@@ -129,7 +141,8 @@ bool LoginScene::init()
 	tapItem2->setPosition(ccp(size.width / 2, size.height/3));
 	pMenu->addChild(tapItem2, 1);
 
-	text3 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入IP地址", "fonts/FZZYHandelGotD.ttf", 25);
+	text3 = CCTextFieldTTF::textFieldWithPlaceHolder("59.66.132.177", "fonts/FZZYHandelGotD.ttf", 25);
+	text3->setString("59.66.132.177");
 	CCLabelTTF * underline3=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 25);
 	text3->setPosition(ccp(size.width / 2, size.height/3*2));
 	underline3->setPosition(ccp(size.width / 2, size.height /3*2));
@@ -173,16 +186,41 @@ bool LoginScene::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
 //	this->setPosition(ccp(0, 0));
 	return false;
 }
-
-void LoginScene::loginButtonClicked(CCObject* pSender)
-{
+void LoginScene::checkNameExist(){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
 	curl = curl_easy_init();
-	char postField[80],writeData[80];
+	char postField[80],writeData[80],url[80];
 	if (curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://59.66.132.177:8080/Server/login.jsp");
+		sprintf(url,"http://%s:8080/Server/check.jsp",text3->getString());
+		CCLog("%s!",url);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		sprintf(postField,"username=%s",text1->getString());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
+       curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+       curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
+		res = curl_easy_perform(curl);
+	}
+	if(res!=0){
+		message->setString("连接失败");
+//		httpAns=-404;
+	}
+	else
+	    ShareClass::userid=httpAns;
+    curl_easy_cleanup(curl);
+}
+void LoginScene::regist(){
+	CURL *curl;
+	CURLcode res;
+	char buffer[10];
+	curl = curl_easy_init();
+	char postField[80],writeData[80],url[80];
+	if (curl){
+		sprintf(url,"http://%s:8080/Server/regist.jsp",text3->getString());
+		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
 		sprintf(postField,"username=%s&password=%s",text1->getString(),text2->getString());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
@@ -192,28 +230,69 @@ void LoginScene::loginButtonClicked(CCObject* pSender)
 		res = curl_easy_perform(curl);
 	}
     curl_easy_cleanup(curl);
-	if(ShareClass::userid!=-1)
-		strcpy(ShareClass::username,text2->getString());
-	else
-		strcpy(ShareClass::username,"未登录");
-    CCScene *pScene = GameScene::scene();
-    CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
+}
+void LoginScene::login(){
+	CURL *curl;
+	CURLcode res;
+	char buffer[10];
+	curl = curl_easy_init();
+	char postField[80],writeData[80],url[80];
+	if (curl){
+		sprintf(url,"http://%s:8080/Server/login.jsp",text3->getString());
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		sprintf(postField,"username=%s&password=%s",text1->getString(),text2->getString());
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
+       curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+       curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
+		res = curl_easy_perform(curl);
+	}
+    curl_easy_cleanup(curl);
+    if(httpAns==-1){
+    	message->setString("密码错误");
+    }
+    else{
+    	strcpy(ShareClass::username,text1->getString());
+    	ShareClass::userid=httpAns;
+    	CCScene *pScene = GameScene::scene();
+    	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
+    }
+}
+void LoginScene::loginButtonClicked(CCObject* pSender)
+{
+	checkNameExist();
+	if(httpAns!=-404){
+		if(ShareClass::userid==-1)
+			message->setString("用户名不存在");
+		else
+			login();
+	}
 }
 void LoginScene::registButtonClicked(CCObject* pSender)
 {
-    CCLog("regist test\n");
+	checkNameExist();
+	if(httpAns!=-404){
+		if(ShareClass::userid!=-1)
+			message->setString("该用户名已存在");
+		else{
+			regist();
+			login();
+		}
+	}
 }
 size_t LoginScene::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream){
 	char ans[4];
-	ans[0]=*(ptr+12);
-	ans[1]=*(ptr+13);
-	ans[2]=*(ptr+14);
-	ans[3]=*(ptr+15);
-	CCLog("%x %x %x %x",ans[0],ans[1],ans[2],ans[3]);
-	int temp;
-	temp=atoi(ans);
-	CCLog("%s",ans,temp);
-	ShareClass::userid=temp;
+	ans[0]=*(ptr+12);	ans[1]=*(ptr+13);	ans[2]=*(ptr+14);	ans[3]=*(ptr+15);
+	httpAns=atoi(ans);
 	return size*number;
+}
+
+void LoginScene::menuCloseCallback(CCObject* pSender)
+{
+	CCDirector::sharedDirector()->end();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    exit(0);
+#endif
 }
 #endif // __LoginScene_SCENE_H__
