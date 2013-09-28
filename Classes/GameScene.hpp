@@ -54,7 +54,7 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_2.ogg");
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
-    CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
     /////////////////////////////
@@ -68,7 +68,7 @@ bool GameScene::init()
                                         this,
                                         menu_selector(GameScene::menuCloseCallback));
     
-	pCloseItem->setPosition(ccp(origin.x + visibleSize.width - pCloseItem->getContentSize().width/2 ,
+	pCloseItem->setPosition(ccp(origin.x + size.width - pCloseItem->getContentSize().width/2 ,
                                 origin.y + pCloseItem->getContentSize().height/2));
 
     // create menu, it's an autorelease object
@@ -85,18 +85,18 @@ bool GameScene::init()
     CCLabelTTF* pLabel = CCLabelTTF::create(ShareClass::username, "fonts/FZZYHandelGotD.ttf", 30);
     
     // position the label on the center of the screen
-    pLabel->setPosition(ccp(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - pLabel->getContentSize().height));
+    pLabel->setPosition(ccp(origin.x + size.width/2,
+                            origin.y + size.height - pLabel->getContentSize().height));
 
     // add the label as a child to this layer
     this->addChild(pLabel, 1);
     CCTMXTiledMap *map=CCTMXTiledMap::create("map/map_fact.tmx");
-    map->setScaleX(visibleSize.width/(map->getMapSize().width*map->getTileSize().width));
-    map->setScaleY(visibleSize.height/(map->getMapSize().height*map->getTileSize().height));
+    map->setScaleX(size.width/(map->getMapSize().width*map->getTileSize().width));
+    map->setScaleY(size.height/(map->getMapSize().height*map->getTileSize().height));
     this->addChild(map,0);
 
 	gbird = CCSprite::create("green_bird.png", CCRectMake(0,0,49,30));
-	gbird->setPosition(ccp(40,visibleSize.height/2));
+	gbird->setPosition(ccp(40,size.height/2));
 	this->addChild(gbird, 2);
      return true;
 }
@@ -106,7 +106,7 @@ bool GameScene::init()
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
+	CCSize size = CCDirector::sharedDirector()->getWinSize();
 	CCMoveTo* move = CCMoveTo::create(2, ccp(size.width-40, size.height/2));
 	CCMoveTo* moveback = CCMoveTo::create(2, ccp(40, size.height/2));
 	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
