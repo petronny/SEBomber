@@ -1,47 +1,49 @@
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __LOGIN_SCENE_H__
+#define __LOGIN_SCENE_H__
 
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-#include "HelloWorldScene2.hpp"
+#include "GameScene.hpp"
 using namespace cocos2d;
 using namespace CocosDenshion;
 
-class HelloWorld : public cocos2d::CCLayer ,public cocos2d::CCTextFieldDelegate
+class LoginScene : public CCLayer ,public CCTextFieldDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
 
     // there's no 'id' in cpp, so we recommand to return the exactly class pointer
-    static cocos2d::CCScene* scene();
+    static CCScene* scene();
     
     // a selector callback
-    void menuCloseCallback(CCObject* pSender);
+    void loginButtonClicked(CCObject* pSender);
+    void registButtonClicked(CCObject* pSender);
 
     // implement the "static node()" method manually
-    CREATE_FUNC(HelloWorld);
+    CREATE_FUNC(LoginScene);
     
     void textFieldPressed1(CCObject *sender);   
     void textFieldPressed2(CCObject *sender);   
     void textFieldPressed3(CCObject *sender);
-    cocos2d::CCTextFieldTTF *text1;
-    cocos2d::CCTextFieldTTF *text2;
-    cocos2d::CCTextFieldTTF *text3;
-    cocos2d::CCMenuItemFont* tapItem2;
-    bool onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender);
-    bool onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender);
+    CCTextFieldTTF *text1;
+    CCTextFieldTTF *text2;
+    CCTextFieldTTF *text3;
+    CCMenuItemFont* tapItem2;
+    CCLabelTTF * message;
+    bool onTextFieldAttachWithIME(CCTextFieldTTF *sender);
+    bool onTextFieldDetachWithIME(CCTextFieldTTF *sender);
     
 };
 
 
-CCScene* HelloWorld::scene()
+CCScene* LoginScene::scene()
 {
 	// 'scene' is an autorelease object
 	CCScene *scene = CCScene::create();
 	
 	// 'layer' is an autorelease object
-	HelloWorld *layer = HelloWorld::create();
+	LoginScene *layer = LoginScene::create();
 
 	// add layer as a child to scene
 	scene->addChild(layer);
@@ -51,7 +53,7 @@ CCScene* HelloWorld::scene()
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool LoginScene::init()
 {
 	//////////////////////////////
 	// 1. super init first
@@ -59,42 +61,44 @@ bool HelloWorld::init()
 	{
 		return false;
 	}
-
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//	you may modify it.
-
-	// add a "close" icon to exit the progress. it's an autorelease object
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
 
-	CCMenuItemImage *pCloseItem = CCMenuItemImage::create("c2.png","c9.png",this,menu_selector(HelloWorld::menuCloseCallback));
-	pCloseItem->setScale(size.height/5/pCloseItem->boundingBox().size.height);
-	pCloseItem->setPosition( ccp(size.width/2,pCloseItem->boundingBox().size.height/2));
-
+	CCMenuItemImage *loginButton = CCMenuItemImage::create("c8.png","c3.png",this,menu_selector(LoginScene::loginButtonClicked));
+	loginButton->setScale(size.width/6/loginButton->boundingBox().size.width);
+	loginButton->setPosition( ccp(size.width/3,size.height/6));
+	CCLabelTTF *loginLabel=CCLabelTTF::create("登录","fonts/FZZYHandelGotD.ttf",30);
+	loginLabel->setPosition( ccp(size.width/3,size.height/6));
+	loginLabel->setColor(ccYELLOW);
+	this->addChild(loginLabel,2);
+	CCMenuItemImage *registButton = CCMenuItemImage::create("c8.png","c3.png",this,menu_selector(LoginScene::registButtonClicked));
+	registButton->setScale(size.width/6/registButton->boundingBox().size.width);
+	registButton->setPosition( ccp(size.width/3*2,size.height/6));
+	CCLabelTTF *registLabel=CCLabelTTF::create("注册","fonts/FZZYHandelGotD.ttf",30);
+	registLabel->setPosition( ccp(size.width/3*2,size.height/6));
+	registLabel->setColor(ccYELLOW);
+	this->addChild(registLabel,2);
 	// create menu, it's an autorelease object
-	CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
+	CCMenu* pMenu = CCMenu::create(loginButton,registButton, NULL);
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu, 1);
 
 	/////////////////////////////
 	// 3. add your codes below...
 
-	// add a label shows "Hello World"
-	// create and initialize a label
 	CCSprite* title=CCSprite::create("003c.png");
 	title->setScale(size.width/2/title->boundingBox().size.width);
 	title->setPosition(ccp(size.width / 2, size.height - title->boundingBox().size.height/2) );
 	// add the label as a child to this layer
 	this->addChild(title, 1);
 
-	// add "HelloWorld" splash screen"
-	CCSprite* pSprite = CCSprite::create("bg.jpg");
+	// add "LoginScene" splash screen"
+	CCSprite* background = CCSprite::create("bg.jpg");
 	// position the sprite on the center of the screen
-	pSprite->setPosition( ccp(size.width/2, size.height/2) );
-	pSprite->setScaleX(size.width/pSprite->boundingBox().size.width);
-	pSprite->setScaleY(size.height/pSprite->boundingBox().size.height);
+	background->setPosition( ccp(size.width/2, size.height/2) );
+	background->setScaleX(size.width/background->boundingBox().size.width);
+	background->setScaleY(size.height/background->boundingBox().size.height);
 	// add the sprite as a child to this layer
-	this->addChild(pSprite, 0);
+	this->addChild(background, 0);
 	
 	text1 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入用户名", "fonts/FZZYHandelGotD.ttf", 30);
 	CCLabelTTF * underline1=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 30);
@@ -105,7 +109,7 @@ bool HelloWorld::init()
 	this->addChild(text1,2);
 	this->addChild(underline1);
 	text1->setDelegate(this);
-	CCMenuItem* tapItem1 = CCMenuItemFont::create("              ",this,menu_selector(HelloWorld::textFieldPressed1));
+	CCMenuItem* tapItem1 = CCMenuItemFont::create("              ",this,menu_selector(LoginScene::textFieldPressed1));
 	tapItem1->setPosition(ccp(size.width / 2, size.height/2));
 	pMenu->addChild(tapItem1, 1);
 
@@ -118,7 +122,7 @@ bool HelloWorld::init()
 	this->addChild(text2,2);
 	this->addChild(underline2);
 	text2->setDelegate(this);
-	tapItem2 = CCMenuItemFont::create("              ",this,menu_selector(HelloWorld::textFieldPressed2));
+	tapItem2 = CCMenuItemFont::create("              ",this,menu_selector(LoginScene::textFieldPressed2));
 	tapItem2->setPosition(ccp(size.width / 2, size.height/3));
 	pMenu->addChild(tapItem2, 1);
 
@@ -131,40 +135,45 @@ bool HelloWorld::init()
 	this->addChild(text3,2);
 	this->addChild(underline3);
 	text3->setDelegate(this);
-	CCMenuItem* tapItem3 = CCMenuItemFont::create("              ",this,menu_selector(HelloWorld::textFieldPressed3));
+	CCMenuItem* tapItem3 = CCMenuItemFont::create("              ",this,menu_selector(LoginScene::textFieldPressed3));
 	tapItem3->setPosition(ccp(size.width / 2, size.height/3*2));
 	pMenu->addChild(tapItem3, 1);
 
+    message = CCLabelTTF::create("请登录或注册", "fonts/FZZYHandelGotD.ttf", 30);
+    message->setPosition(ccp(size.width / 2, size.height /4*3));
+    message->setColor(ccYELLOW);
+    this->addChild(message, 1);
+
 	return true;
 }
-void HelloWorld::textFieldPressed1(cocos2d::CCObject *sender)
+void LoginScene::textFieldPressed1(CCObject *sender)
 {
 	text1->attachWithIME();
 }
-void HelloWorld::textFieldPressed3(cocos2d::CCObject *sender)
+void LoginScene::textFieldPressed3(CCObject *sender)
 {
 	text3->attachWithIME();
 }
-void HelloWorld::textFieldPressed2(cocos2d::CCObject *sender)
+void LoginScene::textFieldPressed2(CCObject *sender)
 {
 	text2->attachWithIME();
 	text2->setVisible(false);
 	tapItem2->setString("********");
 }
-bool HelloWorld::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender)
+bool LoginScene::onTextFieldAttachWithIME(CCTextFieldTTF *sender)
 {
 //	this->setPosition(ccp(0, 100));
 	return false;
 }
-bool HelloWorld::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender)
+bool LoginScene::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
 {
 //	this->setPosition(ccp(0, 0));
 	return false;
 }
 
-void HelloWorld::menuCloseCallback(CCObject* pSender)
+void LoginScene::loginButtonClicked(CCObject* pSender)
 {
-	CCScene *pScene = HelloWorld2::scene();
+	CCScene *pScene = GameScene::scene();
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 	
 /*	CCDirector::sharedDirector()->end();
@@ -173,5 +182,8 @@ void HelloWorld::menuCloseCallback(CCObject* pSender)
 	exit(0);
 #endif
 */}
+void LoginScene::registButtonClicked(CCObject* pSender)
+{
+}
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // __LoginScene_SCENE_H__

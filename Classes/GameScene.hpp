@@ -1,10 +1,10 @@
-#ifndef __HELLOWORLD_SCENE2_H__
-#define __HELLOWORLD_SCENE2_H__
+#ifndef __GAME_SCENE_H__
+#define __GAME_SCENE_H__
 
 #include "cocos2d.h"
 USING_NS_CC;
 
-class HelloWorld2 : public cocos2d::CCLayer
+class GameScene : public cocos2d::CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -17,17 +17,17 @@ public:
     void menuCloseCallback(CCObject* pSender);
     void moveActionEnd(CCNode* sender);
     // implement the "static node()" method manually
-    CREATE_FUNC(HelloWorld2);
+    CREATE_FUNC(GameScene);
     cocos2d::CCSprite* gbird;
 };
 
-CCScene* HelloWorld2::scene()
+CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
     // 'layer' is an autorelease object
-    HelloWorld2 *layer = HelloWorld2::create();
+    GameScene *layer = GameScene::create();
 
     // add layer as a child to scene
     scene->addChild(layer);
@@ -37,7 +37,7 @@ CCScene* HelloWorld2::scene()
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld2::init()
+bool GameScene::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -58,7 +58,7 @@ bool HelloWorld2::init()
                                         "CloseNormal.png",
                                         "CloseSelected.png",
                                         this,
-                                        menu_selector(HelloWorld2::menuCloseCallback));
+                                        menu_selector(GameScene::menuCloseCallback));
     
 	pCloseItem->setPosition(ccp(origin.x + visibleSize.width - pCloseItem->getContentSize().width/2 ,
                                 origin.y + pCloseItem->getContentSize().height/2));
@@ -95,7 +95,7 @@ bool HelloWorld2::init()
 
 
 
-void HelloWorld2::menuCloseCallback(CCObject* pSender)
+void GameScene::menuCloseCallback(CCObject* pSender)
 {
 	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
 	CCMoveTo* move = CCMoveTo::create(2, ccp(size.width-40, size.height/2));
@@ -111,12 +111,12 @@ void HelloWorld2::menuCloseCallback(CCObject* pSender)
 	gbird->runAction(CCRepeatForever::create(animate));
 
 	CCFiniteTimeAction* flipXAction = CCFlipX::create(true);
-	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(HelloWorld2::moveActionEnd));
+	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(GameScene::moveActionEnd));
 	CCAction* action = CCSequence::create(flipXAction,move, flipXAction->reverse(),moveback,end, NULL);
 	gbird->runAction(action);
 }
 
-void HelloWorld2::moveActionEnd(CCNode* sender)
+void GameScene::moveActionEnd(CCNode* sender)
 {
 	CCDirector::sharedDirector()->end();
 	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
