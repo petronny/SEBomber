@@ -1,8 +1,39 @@
-#include "HelloWorldScene.h"
+#ifndef __HELLOWORLD_SCENE_H__
+#define __HELLOWORLD_SCENE_H__
+
+#include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-#include "HelloWorldScene2.h"
+#include "HelloWorldScene2.hpp"
 using namespace cocos2d;
 using namespace CocosDenshion;
+
+class HelloWorld : public cocos2d::CCLayer ,public cocos2d::CCTextFieldDelegate
+{
+public:
+    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
+    virtual bool init();  
+
+    // there's no 'id' in cpp, so we recommand to return the exactly class pointer
+    static cocos2d::CCScene* scene();
+    
+    // a selector callback
+    void menuCloseCallback(CCObject* pSender);
+
+    // implement the "static node()" method manually
+    CREATE_FUNC(HelloWorld);
+    
+    void textFieldPressed1(CCObject *sender);   
+    void textFieldPressed2(CCObject *sender);   
+    void textFieldPressed3(CCObject *sender);
+    cocos2d::CCTextFieldTTF *text1;
+    cocos2d::CCTextFieldTTF *text2;
+    cocos2d::CCTextFieldTTF *text3;
+    cocos2d::CCMenuItemFont* tapItem2;
+    bool onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *sender);
+    bool onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *sender);
+    
+};
+
 
 CCScene* HelloWorld::scene()
 {
@@ -142,3 +173,5 @@ void HelloWorld::menuCloseCallback(CCObject* pSender)
 	exit(0);
 #endif
 */}
+
+#endif // __HELLOWORLD_SCENE_H__

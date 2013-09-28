@@ -1,8 +1,7 @@
 #include "AppDelegate.h"
 
 #include "cocos2d.h"
-#include "HelloWorldScene.h"
-#include "HelloWorldScene2.h"
+#include "HelloWorldScene.hpp"
 USING_NS_CC;
 
 AppDelegate::AppDelegate()
