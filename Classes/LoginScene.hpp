@@ -9,7 +9,7 @@
 #include "stdlib.h"
 #include "ShareClass.hpp"
 using namespace cocos2d;
-
+using namespace CocosDenshion;
 class LoginScene : public CCLayer ,public CCTextFieldDelegate
 {
 public:
@@ -62,12 +62,14 @@ CCScene* LoginScene::scene()
 // on "init" you need to initialize your instance
 bool LoginScene::init()
 {
-    CCLog("LoginScene init test\n");
-	// 1. super init first
 	if ( !CCLayer::init() )
 	{
 		return false;
 	}
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_0.ogg");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_0.ogg",true);
+	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(1.0f);
+	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
     CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
                                         "CloseNormal.png",
@@ -178,12 +180,12 @@ void LoginScene::textFieldPressed2(CCObject *sender)
 }
 bool LoginScene::onTextFieldAttachWithIME(CCTextFieldTTF *sender)
 {
-//	this->setPosition(ccp(0, 100));
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	return false;
 }
 bool LoginScene::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
 {
-//	this->setPosition(ccp(0, 0));
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	return false;
 }
 void LoginScene::checkNameExist(){
@@ -249,7 +251,7 @@ void LoginScene::login(){
 		res = curl_easy_perform(curl);
 	}
     curl_easy_cleanup(curl);
-    if(httpAns==-1){
+    if(httpAns==-1 or httpAns==-404){
     	message->setString("密码错误");
     }
     else{
@@ -261,6 +263,7 @@ void LoginScene::login(){
 }
 void LoginScene::loginButtonClicked(CCObject* pSender)
 {
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
 	if(httpAns!=-404){
 		if(ShareClass::userid==-1)
@@ -271,6 +274,7 @@ void LoginScene::loginButtonClicked(CCObject* pSender)
 }
 void LoginScene::registButtonClicked(CCObject* pSender)
 {
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
 	if(httpAns!=-404){
 		if(ShareClass::userid!=-1)
@@ -290,6 +294,7 @@ size_t LoginScene::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream
 
 void LoginScene::menuCloseCallback(CCObject* pSender)
 {
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	CCDirector::sharedDirector()->end();
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);

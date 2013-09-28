@@ -3,8 +3,9 @@
 
 #include "cocos2d.h"
 #include "ShareClass.hpp"
+#include "SimpleAudioEngine.h"
 USING_NS_CC;
-
+using namespace CocosDenshion;
 class GameScene : public cocos2d::CCLayer
 {
 public:
@@ -46,7 +47,13 @@ bool GameScene::init()
     {
         return false;
     }
-    
+    SimpleAudioEngine::sharedEngine()->stopBackgroundMusic(true);
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_1.ogg");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_1.ogg",true);
+	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(1.0f);
+	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
+	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_2.ogg");
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
@@ -98,6 +105,7 @@ bool GameScene::init()
 
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
 	CCMoveTo* move = CCMoveTo::create(2, ccp(size.width-40, size.height/2));
 	CCMoveTo* moveback = CCMoveTo::create(2, ccp(40, size.height/2));
