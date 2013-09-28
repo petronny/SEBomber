@@ -2,6 +2,7 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
+#include "ShareClass.hpp"
 USING_NS_CC;
 
 class GameScene : public cocos2d::CCLayer
@@ -74,7 +75,7 @@ bool GameScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 20);
+    CCLabelTTF* pLabel = CCLabelTTF::create(ShareClass::username, "fonts/FZZYHandelGotD.ttf", 30);
     
     // position the label on the center of the screen
     pLabel->setPosition(ccp(origin.x + visibleSize.width/2,

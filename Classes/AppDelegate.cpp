@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include "LoginScene.hpp"
+
 USING_NS_CC;
 
 AppDelegate::AppDelegate()
