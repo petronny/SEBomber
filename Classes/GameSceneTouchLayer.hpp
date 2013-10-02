@@ -2,7 +2,7 @@
 #define __GAME_SCENE_TOUCH_LAYER__
 #include "cocos2d.h"
 USING_NS_CC;
-class GameSceneTouchLayer : public CCLayer,public CCTouchDelegate
+class GameSceneTouchLayer : public CCLayer
  {
 public:
   bool init();

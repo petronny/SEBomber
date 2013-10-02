@@ -2,9 +2,9 @@
 #include "SimpleAudioEngine.h"
 #include "cocos2d.h"
 #include "LoginScene.hpp"
-
+#include "GameScene.hpp"
 USING_NS_CC;
-
+using namespace CocosDenshion;
 AppDelegate::AppDelegate()
 {
 

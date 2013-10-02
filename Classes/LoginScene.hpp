@@ -1,6 +1,6 @@
 #ifndef __LOGIN_SCENE_H__
 #define __LOGIN_SCENE_H__
-
+typedef unsigned int size_t;
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "GameScene.hpp"
@@ -80,14 +80,14 @@ bool LoginScene::init()
 	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
 
 
-	CCMenuItemImage *loginButton = CCMenuItemImage::create("c8.png","c3.png",this,menu_selector(LoginScene::loginButtonClicked));
+	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginScene::loginButtonClicked));
 	loginButton->setScale(size.width/6/loginButton->boundingBox().size.width);
 	loginButton->setPosition( ccp(size.width/3,size.height/6));
 	CCLabelTTF *loginLabel=CCLabelTTF::create("登录","fonts/FZZYHandelGotD.ttf",25);
 	loginLabel->setPosition( ccp(size.width/3,size.height/6));
 	loginLabel->setColor(ccYELLOW);
 	this->addChild(loginLabel,2);
-	CCMenuItemImage *registButton = CCMenuItemImage::create("c8.png","c3.png",this,menu_selector(LoginScene::registButtonClicked));
+	CCMenuItemImage *registButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginScene::registButtonClicked));
 	registButton->setScale(size.width/6/registButton->boundingBox().size.width);
 	registButton->setPosition( ccp(size.width/3*2,size.height/6));
 	CCLabelTTF *registLabel=CCLabelTTF::create("注册","fonts/FZZYHandelGotD.ttf",25);
@@ -102,14 +102,14 @@ bool LoginScene::init()
 	/////////////////////////////
 	// 3. add your codes below...
 
-	CCSprite* title=CCSprite::create("003c.png");
+	CCSprite* title=CCSprite::create("image/003c.png");
 	title->setScale(size.width/2/title->boundingBox().size.width);
 	title->setPosition(ccp(size.width / 2, size.height - title->boundingBox().size.height/2) );
 	// add the label as a child to this layer
 	this->addChild(title, 1);
 
 	// add "LoginScene" splash screen"
-	CCSprite* background = CCSprite::create("bg.jpg");
+	CCSprite* background = CCSprite::create("image/bg.jpg");
 	// position the sprite on the center of the screen
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->boundingBox().size.width);
@@ -143,8 +143,8 @@ bool LoginScene::init()
 	tapItem2->setPosition(ccp(size.width / 2, size.height/3));
 	pMenu->addChild(tapItem2, 1);
 
-	text3 = CCTextFieldTTF::textFieldWithPlaceHolder("59.66.132.177", "fonts/FZZYHandelGotD.ttf", 25);
-	text3->setString("59.66.132.177");
+	text3 = CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZZYHandelGotD.ttf", 25);
+	text3->setString("192.168.1.122");
 	CCLabelTTF * underline3=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 25);
 	text3->setPosition(ccp(size.width / 2, size.height/3*2));
 	underline3->setPosition(ccp(size.width / 2, size.height /3*2));
@@ -208,7 +208,7 @@ void LoginScene::checkNameExist(){
 	}
 	if(res!=0){
 		message->setString("连接失败");
-//		httpAns=-404;
+		httpAns=-404;
 	}
 	else
 	    ShareClass::userid=httpAns;

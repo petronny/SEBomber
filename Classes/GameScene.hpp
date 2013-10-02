@@ -4,13 +4,14 @@
 #include "cocos2d.h"
 #include "ShareClass.hpp"
 #include "SimpleAudioEngine.h"
+
 USING_NS_CC;
 using namespace CocosDenshion;
 class GameScene : public cocos2d::CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
+    virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::CCScene* scene();
@@ -21,6 +22,12 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
     cocos2d::CCSprite* gbird;
+    virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
+    virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
+    virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
+    virtual void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
+    virtual void registerWithTouchDispatcher();
+
 };
 
 CCScene* GameScene::scene()
@@ -47,6 +54,7 @@ bool GameScene::init()
     {
         return false;
     }
+    this->setTouchEnabled(true);
     SimpleAudioEngine::sharedEngine()->stopBackgroundMusic(true);
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_1.ogg");
 	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_1.ogg",true);
@@ -132,5 +140,31 @@ void GameScene::moveActionEnd(CCNode* sender)
 	    exit(0);
 	#endif
 }
-
+bool GameScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
+	gbird->stopAllActions();
+	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
+	float w = texture->getContentSize().width / 2;
+	float h = texture->getContentSize().height;
+	CCAnimation* animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.1f);
+	for(int i = 0; i <2; i ++)
+		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
+	CCAnimate* animate = CCAnimate::create(animation);
+	gbird->runAction(CCRepeatForever::create(animate));
+	CCPoint ptNode = convertTouchToNodeSpace(pTouch);
+	CCMoveTo* move = CCMoveTo::create(ccpDistance(gbird->getPosition(),ptNode)/200, ptNode);
+	gbird->runAction(move);
+	return true;
+}
+void GameScene::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent){
+}
+void GameScene::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent){
+}
+void GameScene::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent){
+}
+void GameScene::registerWithTouchDispatcher()
+{
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
+    CCLayer::registerWithTouchDispatcher();
+}
 #endif // __HELLOWORLD_SCENE2_H__
