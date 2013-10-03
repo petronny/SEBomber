@@ -71,14 +71,12 @@ bool LoginScene::init()
 	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(1.0f);
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
-    CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-                                        "CloseNormal.png",
+    CCMenuItemImage *pCloseItem = CCMenuItemImage::create("CloseNormal.png",
                                         "CloseSelected.png",
                                         this,
                                         menu_selector(LoginScene::menuCloseCallback));
 
 	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
-
 
 	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginScene::loginButtonClicked));
 	loginButton->setScale(size.width/6/loginButton->boundingBox().size.width);
@@ -103,6 +101,14 @@ bool LoginScene::init()
 	// 3. add your codes below...
 
 	CCSprite* title=CCSprite::create("image/003c.png");
+	CCAnimation *animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.25f);
+	animation->addSpriteFrameWithFileName("image/003c-r.png");
+	animation->addSpriteFrameWithFileName("image/003c-g.png");
+	animation->addSpriteFrameWithFileName("image/003c-b.png");
+	animation->addSpriteFrameWithFileName("image/003c.png");
+	CCAnimate *animate = CCAnimate::create(animation);
+	title->runAction(CCRepeatForever::create(animate));
 	title->setScale(size.width/2/title->boundingBox().size.width);
 	title->setPosition(ccp(size.width / 2, size.height - title->boundingBox().size.height/2) );
 	// add the label as a child to this layer

@@ -1,8 +1,7 @@
 #include "AppDelegate.h"
 #include "SimpleAudioEngine.h"
 #include "cocos2d.h"
-#include "LoginScene.hpp"
-#include "GameScene.hpp"
+#include "TitleScene.hpp"
 USING_NS_CC;
 using namespace CocosDenshion;
 AppDelegate::AppDelegate()
@@ -27,7 +26,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     pDirector->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    CCScene *pScene = GameScene::scene();
+    CCScene *pScene = TitleScene::scene();
 
     // run
     pDirector->runWithScene(pScene);
