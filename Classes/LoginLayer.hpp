@@ -10,7 +10,6 @@ typedef unsigned int size_t;
 #include "string.h"
 #include "ShareClass.hpp"
 USING_NS_CC;
-using namespace CocosDenshion;
 class LoginLayer : public CCLayer ,public CCTextFieldDelegate
 {
 public:
@@ -23,117 +22,116 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(LoginLayer);
     static size_t writehtml(uint8_t* ptr,size_t size,size_t number,void *stream);
-    void textFieldPressed1(CCObject *sender);   
-    void textFieldPressed2(CCObject *sender);   
-    void textFieldPressed3(CCObject *sender);
+    void usernameFieldPressed(CCObject *sender);
+    void passwdFieldPressed(CCObject *sender);
+    void serverFieldPressed(CCObject *sender);
     void checkNameExist();
     void login();
     void regist();
-    CCTextFieldTTF *text1;
-    CCTextFieldTTF *text2;
-    CCTextFieldTTF *text3;
-    CCMenuItemFont* tapItem2;
+    CCTextFieldTTF *usernameField,*passwdField,*serverField;
+    CCMenuItemFont* passwdTapItem;
     CCLabelTTF * message;
+	CCSize size;
     bool onTextFieldAttachWithIME(CCTextFieldTTF *sender);
     bool onTextFieldDetachWithIME(CCTextFieldTTF *sender);
     static int httpAns;
     void menuCloseCallback(CCObject* pSender);
 };
 int LoginLayer::httpAns;
-// on "init" you need to initialize your instance
+// onserverField "init" you need to initialize your instance
 bool LoginLayer::init()
 {
 	if (!CCLayer::init())
 	{
 		return false;
 	}
+	size = CCDirector::sharedDirector()->getWinSize();
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
-	CCSize size = CCDirector::sharedDirector()->getWinSize();
-    CCMenuItemImage *pCloseItem = CCMenuItemImage::create("CloseNormal.png","CloseSelected.png",this,menu_selector(LoginLayer::menuCloseCallback));
-
+	CCMenuItemImage *pCloseItem = CCMenuItemImage::create("CloseNormal.png","CloseSelected.png",this,menu_selector(LoginLayer::menuCloseCallback));
     pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
+	CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
+	pMenu->setPosition( CCPointZero );
+	this->addChild(pMenu,1);
+
+	CCSprite* menuBackground=CCSprite::create("image/mainmenu.png");
+	menuBackground->setScale(size.height/24*14/menuBackground->getContentSize().height);
+	menuBackground->setPosition(ccp(size.width/2,menuBackground->boundingBox().size.height/2+size.height/64*7));
+	this->addChild(menuBackground,0);
+
+	CCLabelTTF *serverLabel=CCLabelTTF::create("请输入服务器地址","fonts/FZKaTong-M19T.ttf",25);
+	serverLabel->setPosition(ccp(size.width/2,menuBackground->boundingBox().size.height/32*27+size.height/64*7));
+	this->addChild(serverLabel,1);
+	serverField = CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZKaTong-M19T.ttf", 25);
+	serverField->setString("192.168.1.122");
+	serverField->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/8*6+size.height/64*7));
+	serverField->setDelegate(this);
+	this->addChild(serverField,1);
+	CCMenuItem* serverTapItem = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::serverFieldPressed));
+	serverTapItem->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/8*6+size.height/64*7));
+	pMenu->addChild(serverTapItem, 1);
+
+	CCLabelTTF* usernameLabel=CCLabelTTF::create("请输入用户名","fonts/FZKaTong-M19T.ttf",25);
+	usernameLabel->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/16*9+size.height/64*7));
+	this->addChild(usernameLabel,1);
+	usernameField=CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZKaTong-M19T.ttf", 25);
+	usernameField->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/16*7+size.height/64*7));
+	usernameField->setDelegate(this);
+	this->addChild(usernameField,1);
+	CCMenuItem* usernameTapItem = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::usernameFieldPressed));
+	usernameTapItem->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/16*7+size.height/64*7));
+	pMenu->addChild(usernameTapItem, 1);
+
+	CCLabelTTF *passwdLabel=CCLabelTTF::create("请输入密码","fonts/FZKaTong-M19T.ttf",25);
+	passwdLabel->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/8*2+size.height/64*7));
+	this->addChild(passwdLabel,1);
+	passwdField=CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZKaTong-M19T.ttf", 25);
+	passwdField->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/32*5+size.height/64*7));
+	passwdField->setDelegate(this);
+	this->addChild(passwdField,1);
+	passwdTapItem = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::passwdFieldPressed));
+	passwdTapItem->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/32*5+size.height/64*7));
+	pMenu->addChild(passwdTapItem, 1);
 
 	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginLayer::loginButtonClicked));
-	loginButton->setScale(size.width/6/loginButton->boundingBox().size.width);
-	loginButton->setPosition( ccp(size.width/3,size.height/6));
-	CCLabelTTF *loginLabel=CCLabelTTF::create("登录","fonts/FZZYHandelGotD.ttf",25);
-	loginLabel->setPosition( ccp(size.width/3,size.height/6));
+	loginButton->setScaleY(size.height/64*7/loginButton->getContentSize().height);
+	loginButton->setScaleX(menuBackground->boundingBox().size.width/2/loginButton->getContentSize().width);
+	loginButton->setPosition( ccp(size.width/2-menuBackground->boundingBox().size.width/4,loginButton->boundingBox().size.height/2));
+	pMenu->addChild(loginButton,2);
+	CCLabelTTF *loginLabel=CCLabelTTF::create("登录","fonts/FZKaTong-M19T.ttf",25);
+	loginLabel->setPosition( ccp(size.width/2-menuBackground->boundingBox().size.width/4,loginButton->boundingBox().size.height/2));
 	loginLabel->setColor(ccYELLOW);
-	this->addChild(loginLabel,2);
+	this->addChild(loginLabel,3);
+
 	CCMenuItemImage *registButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginLayer::registButtonClicked));
-	registButton->setScale(size.width/6/registButton->boundingBox().size.width);
-	registButton->setPosition( ccp(size.width/3*2,size.height/6));
-	CCLabelTTF *registLabel=CCLabelTTF::create("注册","fonts/FZZYHandelGotD.ttf",25);
-	registLabel->setPosition( ccp(size.width/3*2,size.height/6));
+	registButton->setScaleY(size.height/64*7/registButton->getContentSize().height);
+	registButton->setScaleX(menuBackground->boundingBox().size.width/2/registButton->getContentSize().width);
+	registButton->setPosition( ccp(size.width/2+menuBackground->boundingBox().size.width/4,registButton->boundingBox().size.height/2));
+	pMenu->addChild(registButton,2);
+	CCLabelTTF *registLabel=CCLabelTTF::create("注册","fonts/FZKaTong-M19T.ttf",25);
+	registLabel->setPosition( ccp(size.width/2+menuBackground->boundingBox().size.width/4,registButton->boundingBox().size.height/2));
 	registLabel->setColor(ccYELLOW);
-	this->addChild(registLabel,2);
-	// create menu, it's an autorelease object
-	CCMenu* pMenu = CCMenu::create(pCloseItem,loginButton,registButton, NULL);
-	pMenu->setPosition( CCPointZero );
-	this->addChild(pMenu, 1);
+	this->addChild(registLabel,3);
 
-	/////////////////////////////
-	// 3. add your codes below...
-	text1 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入用户名", "fonts/FZZYHandelGotD.ttf", 25);
-	CCLabelTTF * underline1=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 25);
-	text1->setPosition(ccp(size.width / 2, size.height/2));
-	underline1->setPosition(ccp(size.width / 2, size.height/2));
-	text1->setColor(ccWHITE);
-	underline1->setColor(ccBLACK);
-	this->addChild(text1,2);
-	this->addChild(underline1);
-	text1->setDelegate(this);
-	CCMenuItem* tapItem1 = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::textFieldPressed1));
-	tapItem1->setPosition(ccp(size.width / 2, size.height/2));
-	pMenu->addChild(tapItem1, 1);
 
-	text2 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入密码", "fonts/FZZYHandelGotD.ttf", 25);
-	CCLabelTTF * underline2=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 25);
-	text2->setPosition(ccp(size.width / 2, size.height/3));
-	underline2->setPosition(ccp(size.width / 2, size.height /3));
-	text2->setColor(ccWHITE);
-	underline2->setColor(ccBLACK);
-	this->addChild(text2,2);
-	this->addChild(underline2);
-	text2->setDelegate(this);
-	tapItem2 = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::textFieldPressed2));
-	tapItem2->setPosition(ccp(size.width / 2, size.height/3));
-	pMenu->addChild(tapItem2, 1);
-
-	text3 = CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZZYHandelGotD.ttf", 25);
-	text3->setString("192.168.1.122");
-	CCLabelTTF * underline3=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 25);
-	text3->setPosition(ccp(size.width / 2, size.height/3*2));
-	underline3->setPosition(ccp(size.width / 2, size.height /3*2));
-	text3->setColor(ccWHITE);
-	underline3->setColor(ccBLACK);
-	this->addChild(text3,2);
-	this->addChild(underline3);
-	text3->setDelegate(this);
-	CCMenuItem* tapItem3 = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::textFieldPressed3));
-	tapItem3->setPosition(ccp(size.width / 2, size.height/3*2));
-	pMenu->addChild(tapItem3, 1);
-
-    message = CCLabelTTF::create("请登录或注册", "fonts/FZZYHandelGotD.ttf", 25);
+    message = CCLabelTTF::create("请登录或注册", "fonts/FZKaTong-M19T.ttf", 25);
     message->setPosition(ccp(size.width / 2, size.height /4*3));
     message->setColor(ccYELLOW);
     this->addChild(message, 1);
-
-	return true;
+    return true;
 }
-void LoginLayer::textFieldPressed1(CCObject *sender)
+void LoginLayer::usernameFieldPressed(CCObject *sender)
 {
-	text1->attachWithIME();
+	usernameField->attachWithIME();
 }
-void LoginLayer::textFieldPressed3(CCObject *sender)
+void LoginLayer::serverFieldPressed(CCObject *sender)
 {
-	text3->attachWithIME();
+	serverField->attachWithIME();
 }
-void LoginLayer::textFieldPressed2(CCObject *sender)
+void LoginLayer::passwdFieldPressed(CCObject *sender)
 {
-	text2->attachWithIME();
-	text2->setVisible(false);
-	tapItem2->setString("********");
+	passwdField->attachWithIME();
+	passwdField->setVisible(false);
+	passwdTapItem->setString("********");
 }
 bool LoginLayer::onTextFieldAttachWithIME(CCTextFieldTTF *sender)
 {
@@ -152,11 +150,11 @@ void LoginLayer::checkNameExist(){
 	curl = curl_easy_init();
 	char postField[80],writeData[80],url[80];
 	if (curl){
-		sprintf(url,"http://%s:8080/Server/check.jsp",text3->getString());
+		sprintf(url,"http://%s:8080/Server/check.jsp",serverField->getString());
 		CCLog("%s!",url);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"username=%s",text1->getString());
+		sprintf(postField,"username=%s",usernameField->getString());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
        curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
@@ -178,10 +176,10 @@ void LoginLayer::regist(){
 	curl = curl_easy_init();
 	char postField[80],writeData[80],url[80];
 	if (curl){
-		sprintf(url,"http://%s:8080/Server/regist.jsp",text3->getString());
+		sprintf(url,"http://%s:8080/Server/regist.jsp",serverField->getString());
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"username=%s&password=%s",text1->getString(),text2->getString());
+		sprintf(postField,"username=%s&password=%s",usernameField->getString(),passwdField->getString());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
        curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
@@ -197,10 +195,10 @@ void LoginLayer::login(){
 	curl = curl_easy_init();
 	char postField[80],writeData[80],url[80];
 	if (curl){
-		sprintf(url,"http://%s:8080/Server/login.jsp",text3->getString());
+		sprintf(url,"http://%s:8080/Server/login.jsp",serverField->getString());
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"username=%s&password=%s",text1->getString(),text2->getString());
+		sprintf(postField,"username=%s&password=%s",usernameField->getString(),passwdField->getString());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
        curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
@@ -212,7 +210,7 @@ void LoginLayer::login(){
     	message->setString("密码错误");
     }
     else{
-    	strcpy(ShareClass::username,text1->getString());
+    	strcpy(ShareClass::username,usernameField->getString());
     	ShareClass::userid=httpAns;
     	CCScene *pScene = GameScene::scene();
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));

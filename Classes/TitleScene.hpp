@@ -86,10 +86,10 @@ void TitleScene::showBackground(){
 	CCScaleTo *scale_right=CCScaleTo::create(1,size.height/title_right->getContentSize().height);
 	CCMoveTo *move_left=CCMoveTo::create(1,ccp(title_left->getContentSize().width*size.height/title_left->getContentSize().height/2,size.height/2));
 	CCMoveTo *move_right=CCMoveTo::create(1,ccp(size.width-title_right->getContentSize().width*size.height/title_right->getContentSize().height/2,size.height/2));
-	title_left->runAction(move_left);
-	title_left->runAction(scale_left);
-	title_right->runAction(move_right);
-	title_right->runAction(scale_right);
+	title_left->runAction(CCEaseExponentialOut::create(move_left));
+	title_left->runAction(CCEaseExponentialOut::create(scale_left));
+	title_right->runAction(CCEaseExponentialOut::create(move_right));
+	title_right->runAction(CCEaseExponentialOut::create(scale_right));
 	this->addChild(title_left,1);
 	this->addChild(title_right,1);
 	CCSprite *lefttop=CCSprite::create("image/title_lefttop.png");
