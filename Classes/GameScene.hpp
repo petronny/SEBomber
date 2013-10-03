@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "ShareClass.hpp"
 #include "SimpleAudioEngine.h"
-
+#include "GreenBird.hpp"
 USING_NS_CC;
 using namespace CocosDenshion;
 class GameScene : public cocos2d::CCLayer
@@ -18,10 +18,9 @@ public:
     
     // a selector callback
     void menuCloseCallback(CCObject* pSender);
-    void moveActionEnd(CCNode* sender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
-    cocos2d::CCSprite* gbird;
+    GreenBird* gbird;
     virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
@@ -102,58 +101,22 @@ bool GameScene::init()
     map->setScaleX(size.width/(map->getMapSize().width*map->getTileSize().width));
     map->setScaleY(size.height/(map->getMapSize().height*map->getTileSize().height));
     this->addChild(map,0);
-
-	gbird = CCSprite::create("green_bird.png", CCRectMake(0,0,49,30));
-	gbird->setPosition(ccp(40,size.height/2));
-	this->addChild(gbird, 2);
+	gbird=new GreenBird(ccp(size.width/2,size.height/2));
+	this->addChild(gbird->sprite, 2);
      return true;
 }
-
-
 
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	CCSize size = CCDirector::sharedDirector()->getWinSize();
-	CCMoveTo* move = CCMoveTo::create(2, ccp(size.width-40, size.height/2));
-	CCMoveTo* moveback = CCMoveTo::create(2, ccp(40, size.height/2));
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
-	float w = texture->getContentSize().width / 2;
-	float h = texture->getContentSize().height;
-	CCAnimation* animation = CCAnimation::create();
-	animation->setDelayPerUnit(0.1f);
-	for(int i = 0; i <2; i ++)
-		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
-	CCAnimate* animate = CCAnimate::create(animation);
-	gbird->runAction(CCRepeatForever::create(animate));
-
-	CCFiniteTimeAction* flipXAction = CCFlipX::create(true);
-	CCCallFuncN* end = CCCallFuncN::create(this,callfuncN_selector(GameScene::moveActionEnd));
-	CCAction* action = CCSequence::create(flipXAction,move, flipXAction->reverse(),moveback,end, NULL);
-	gbird->runAction(action);
-}
-
-void GameScene::moveActionEnd(CCNode* sender)
-{
 	CCDirector::sharedDirector()->end();
 	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 	    exit(0);
 	#endif
 }
 bool GameScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-	gbird->stopAllActions();
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
-	float w = texture->getContentSize().width / 2;
-	float h = texture->getContentSize().height;
-	CCAnimation* animation = CCAnimation::create();
-	animation->setDelayPerUnit(0.1f);
-	for(int i = 0; i <2; i ++)
-		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
-	CCAnimate* animate = CCAnimate::create(animation);
-	gbird->runAction(CCRepeatForever::create(animate));
 	CCPoint ptNode = convertTouchToNodeSpace(pTouch);
-	CCMoveTo* move = CCMoveTo::create(ccpDistance(gbird->getPosition(),ptNode)/200, ptNode);
-	gbird->runAction(move);
+	gbird->moveto(ptNode);
 	return true;
 }
 void GameScene::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent){
