@@ -3,9 +3,9 @@
 typedef unsigned int size_t;
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
+#include "LoginLayer.hpp"
 USING_NS_CC;
-using namespace CocosDenshion;
-class TitleScene : public CCLayer ,public CCTextFieldDelegate
+class TitleScene : public CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -18,8 +18,10 @@ public:
     CREATE_FUNC(TitleScene);
     void showBackground();
     void showTitle();
+    void showLoginLayer();
 	CCSize size;
 	CCSprite *bomb,*title,*touch;
+	static CCScene *titleScene;
     virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
@@ -27,19 +29,19 @@ public:
     virtual void registerWithTouchDispatcher();
 
 };
+CCScene *TitleScene::titleScene;
 CCScene* TitleScene::scene()
 {
 	// 'scene' is an autorelease object
-	CCScene *scene = CCScene::create();
+	titleScene = CCScene::create();
 	
 	// 'layer' is an autorelease object
 	TitleScene *layer = TitleScene::create();
-
 	// add layer as a child to scene
-	scene->addChild(layer);
+	titleScene->addChild(layer,0);
 
 	// return the scene
-	return scene;
+	return titleScene;
 }
 
 // on "init" you need to initialize your instance
@@ -52,6 +54,7 @@ bool TitleScene::init()
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_0.ogg");
 	size = CCDirector::sharedDirector()->getWinSize();
 	bomb=CCSprite::create("image/bomb.png");
+	bomb->setScale(size.height/4/bomb->getContentSize().height);
 	CCFiniteTimeAction* place=CCPlace::create(ccp(size.width/2,size.height+bomb->getContentSize().height));
 	CCAction *movein=CCEaseExponentialOut::create(CCMoveTo::create(2,ccp(size.width/2,size.height/4)));
 	CCAction *moveback=CCEaseExponentialOut::create(CCMoveTo::create(2,ccp(size.width/2,size.height/2)));
@@ -137,11 +140,17 @@ void TitleScene::showTitle(){
 	this->addChild(touch,4);
 	this->setTouchEnabled(true);
 }
+void TitleScene::showLoginLayer(){
+	CCLayer *loginLayer=LoginLayer::create();
+	titleScene->addChild(loginLayer,1);
+}
 bool TitleScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-	CCAction* action=CCEaseExponentialOut::create(CCMoveBy::create(0.5,ccp(0, size.height/2 - bomb->boundingBox().size.height/2)));
+	CCFiniteTimeAction *showmenu=CCCallFuncN::create(this,callfuncN_selector(TitleScene::showLoginLayer));
+	CCFiniteTimeAction* moveup=CCEaseExponentialOut::create(CCMoveBy::create(0.5,ccp(0, size.height/2 - bomb->boundingBox().size.height/2)));
+	CCAction *action=CCSequence::create(moveup,showmenu,NULL);
 	bomb->runAction(action);
-	action=CCEaseExponentialOut::create(CCMoveBy::create(0.5,ccp(0, size.height/2 - bomb->boundingBox().size.height/2)));
-	title->runAction(action);
+	moveup=CCEaseExponentialOut::create(CCMoveBy::create(0.5,ccp(0, size.height/2 - bomb->boundingBox().size.height/2)));
+	title->runAction(moveup);
 	touch->stopAllActions();
 	touch->setVisible(false);
 	this->setTouchEnabled(false);

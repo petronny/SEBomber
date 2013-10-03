@@ -1,5 +1,5 @@
-#ifndef __LOGIN_SCENE_H__
-#define __LOGIN_SCENE_H__
+#ifndef __LOGIN_LAYER__
+#define __LOGIN_LAYER__
 typedef unsigned int size_t;
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
@@ -7,24 +7,21 @@ typedef unsigned int size_t;
 #include "curl/curl.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "string.h"
 #include "ShareClass.hpp"
-using namespace cocos2d;
+USING_NS_CC;
 using namespace CocosDenshion;
-class LoginScene : public CCLayer ,public CCTextFieldDelegate
+class LoginLayer : public CCLayer ,public CCTextFieldDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
-
-    // there's no 'id' in cpp, so we recommand to return the exactly class pointer
-    static CCScene* scene();
-    
     // a selector callback
     void loginButtonClicked(CCObject* pSender);
     void registButtonClicked(CCObject* pSender);
 
     // implement the "static node()" method manually
-    CREATE_FUNC(LoginScene);
+    CREATE_FUNC(LoginLayer);
     static size_t writehtml(uint8_t* ptr,size_t size,size_t number,void *stream);
     void textFieldPressed1(CCObject *sender);   
     void textFieldPressed2(CCObject *sender);   
@@ -42,50 +39,28 @@ public:
     static int httpAns;
     void menuCloseCallback(CCObject* pSender);
 };
-int LoginScene::httpAns;
-
-CCScene* LoginScene::scene()
-{
-	// 'scene' is an autorelease object
-	CCScene *scene = CCScene::create();
-	
-	// 'layer' is an autorelease object
-	LoginScene *layer = LoginScene::create();
-
-	// add layer as a child to scene
-	scene->addChild(layer);
-
-	// return the scene
-	return scene;
-}
-
+int LoginLayer::httpAns;
 // on "init" you need to initialize your instance
-bool LoginScene::init()
+bool LoginLayer::init()
 {
-	if ( !CCLayer::init() )
+	if (!CCLayer::init())
 	{
 		return false;
 	}
-	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_0.ogg");
-	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_0.ogg",true);
-	SimpleAudioEngine::sharedEngine()->setBackgroundMusicVolume(1.0f);
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	CCSize size = CCDirector::sharedDirector()->getWinSize();
-    CCMenuItemImage *pCloseItem = CCMenuItemImage::create("CloseNormal.png",
-                                        "CloseSelected.png",
-                                        this,
-                                        menu_selector(LoginScene::menuCloseCallback));
+    CCMenuItemImage *pCloseItem = CCMenuItemImage::create("CloseNormal.png","CloseSelected.png",this,menu_selector(LoginLayer::menuCloseCallback));
 
-	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
+    pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
 
-	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginScene::loginButtonClicked));
+	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginLayer::loginButtonClicked));
 	loginButton->setScale(size.width/6/loginButton->boundingBox().size.width);
 	loginButton->setPosition( ccp(size.width/3,size.height/6));
 	CCLabelTTF *loginLabel=CCLabelTTF::create("登录","fonts/FZZYHandelGotD.ttf",25);
 	loginLabel->setPosition( ccp(size.width/3,size.height/6));
 	loginLabel->setColor(ccYELLOW);
 	this->addChild(loginLabel,2);
-	CCMenuItemImage *registButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginScene::registButtonClicked));
+	CCMenuItemImage *registButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginLayer::registButtonClicked));
 	registButton->setScale(size.width/6/registButton->boundingBox().size.width);
 	registButton->setPosition( ccp(size.width/3*2,size.height/6));
 	CCLabelTTF *registLabel=CCLabelTTF::create("注册","fonts/FZZYHandelGotD.ttf",25);
@@ -99,30 +74,6 @@ bool LoginScene::init()
 
 	/////////////////////////////
 	// 3. add your codes below...
-
-	CCSprite* title=CCSprite::create("image/003c.png");
-	CCAnimation *animation = CCAnimation::create();
-	animation->setDelayPerUnit(0.25f);
-	animation->addSpriteFrameWithFileName("image/003c-r.png");
-	animation->addSpriteFrameWithFileName("image/003c-g.png");
-	animation->addSpriteFrameWithFileName("image/003c-b.png");
-	animation->addSpriteFrameWithFileName("image/003c.png");
-	CCAnimate *animate = CCAnimate::create(animation);
-	title->runAction(CCRepeatForever::create(animate));
-	title->setScale(size.width/2/title->boundingBox().size.width);
-	title->setPosition(ccp(size.width / 2, size.height - title->boundingBox().size.height/2) );
-	// add the label as a child to this layer
-	this->addChild(title, 1);
-
-	// add "LoginScene" splash screen"
-	CCSprite* background = CCSprite::create("image/bg.jpg");
-	// position the sprite on the center of the screen
-	background->setPosition( ccp(size.width/2, size.height/2) );
-	background->setScaleX(size.width/background->boundingBox().size.width);
-	background->setScaleY(size.height/background->boundingBox().size.height);
-	// add the sprite as a child to this layer
-	this->addChild(background, 0);
-	
 	text1 = CCTextFieldTTF::textFieldWithPlaceHolder("点此输入用户名", "fonts/FZZYHandelGotD.ttf", 25);
 	CCLabelTTF * underline1=CCLabelTTF::create("______________", "fonts/FZZYHandelGotD.ttf", 25);
 	text1->setPosition(ccp(size.width / 2, size.height/2));
@@ -132,7 +83,7 @@ bool LoginScene::init()
 	this->addChild(text1,2);
 	this->addChild(underline1);
 	text1->setDelegate(this);
-	CCMenuItem* tapItem1 = CCMenuItemFont::create("              ",this,menu_selector(LoginScene::textFieldPressed1));
+	CCMenuItem* tapItem1 = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::textFieldPressed1));
 	tapItem1->setPosition(ccp(size.width / 2, size.height/2));
 	pMenu->addChild(tapItem1, 1);
 
@@ -145,7 +96,7 @@ bool LoginScene::init()
 	this->addChild(text2,2);
 	this->addChild(underline2);
 	text2->setDelegate(this);
-	tapItem2 = CCMenuItemFont::create("              ",this,menu_selector(LoginScene::textFieldPressed2));
+	tapItem2 = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::textFieldPressed2));
 	tapItem2->setPosition(ccp(size.width / 2, size.height/3));
 	pMenu->addChild(tapItem2, 1);
 
@@ -159,7 +110,7 @@ bool LoginScene::init()
 	this->addChild(text3,2);
 	this->addChild(underline3);
 	text3->setDelegate(this);
-	CCMenuItem* tapItem3 = CCMenuItemFont::create("              ",this,menu_selector(LoginScene::textFieldPressed3));
+	CCMenuItem* tapItem3 = CCMenuItemFont::create("              ",this,menu_selector(LoginLayer::textFieldPressed3));
 	tapItem3->setPosition(ccp(size.width / 2, size.height/3*2));
 	pMenu->addChild(tapItem3, 1);
 
@@ -170,31 +121,31 @@ bool LoginScene::init()
 
 	return true;
 }
-void LoginScene::textFieldPressed1(CCObject *sender)
+void LoginLayer::textFieldPressed1(CCObject *sender)
 {
 	text1->attachWithIME();
 }
-void LoginScene::textFieldPressed3(CCObject *sender)
+void LoginLayer::textFieldPressed3(CCObject *sender)
 {
 	text3->attachWithIME();
 }
-void LoginScene::textFieldPressed2(CCObject *sender)
+void LoginLayer::textFieldPressed2(CCObject *sender)
 {
 	text2->attachWithIME();
 	text2->setVisible(false);
 	tapItem2->setString("********");
 }
-bool LoginScene::onTextFieldAttachWithIME(CCTextFieldTTF *sender)
+bool LoginLayer::onTextFieldAttachWithIME(CCTextFieldTTF *sender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	return false;
 }
-bool LoginScene::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
+bool LoginLayer::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	return false;
 }
-void LoginScene::checkNameExist(){
+void LoginLayer::checkNameExist(){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
@@ -220,7 +171,7 @@ void LoginScene::checkNameExist(){
 	    ShareClass::userid=httpAns;
     curl_easy_cleanup(curl);
 }
-void LoginScene::regist(){
+void LoginLayer::regist(){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
@@ -239,7 +190,7 @@ void LoginScene::regist(){
 	}
     curl_easy_cleanup(curl);
 }
-void LoginScene::login(){
+void LoginLayer::login(){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
@@ -267,7 +218,7 @@ void LoginScene::login(){
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
     }
 }
-void LoginScene::loginButtonClicked(CCObject* pSender)
+void LoginLayer::loginButtonClicked(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
@@ -278,7 +229,7 @@ void LoginScene::loginButtonClicked(CCObject* pSender)
 			login();
 	}
 }
-void LoginScene::registButtonClicked(CCObject* pSender)
+void LoginLayer::registButtonClicked(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
@@ -291,14 +242,14 @@ void LoginScene::registButtonClicked(CCObject* pSender)
 		}
 	}
 }
-size_t LoginScene::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream){
+size_t LoginLayer::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream){
 	char ans[4];
 	ans[0]=*(ptr+12);	ans[1]=*(ptr+13);	ans[2]=*(ptr+14);	ans[3]=*(ptr+15);
 	httpAns=atoi(ans);
 	return size*number;
 }
 
-void LoginScene::menuCloseCallback(CCObject* pSender)
+void LoginLayer::menuCloseCallback(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	CCDirector::sharedDirector()->end();
@@ -306,4 +257,4 @@ void LoginScene::menuCloseCallback(CCObject* pSender)
     exit(0);
 #endif
 }
-#endif // __LoginScene_SCENE_H__
+#endif // __LoginLayer_LAYER__
