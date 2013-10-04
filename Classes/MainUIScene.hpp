@@ -61,8 +61,10 @@ bool MainUIScene::init()
 	logoutItem->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*59));
 	pMenu->addChild(logoutItem);
 
-	CCSprite *face=CCSprite::create("image/face/face01.png");
-	face->setScale(size.height/ui_right->getContentSize().height*1.15);
+	char facePath[80];
+	sprintf(facePath,"image/face/face%d.png",ShareData::face);
+	CCSprite *face=CCSprite::create(facePath);
+	face->setScale(size.height/ui_right->getContentSize().height*1.12);
 	face->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*39));
 	this->addChild(face,2);
 	return true;

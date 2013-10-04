@@ -23,6 +23,7 @@ public:
     void checkNameExist();
     void login();
     void regist();
+    void fetchData();
     CCTextFieldTTF *usernameField,*passwdField,*serverField;
     CCMenuItemFont* passwdTapItem;
     CCLabelTTF * message;
@@ -206,6 +207,7 @@ void LoginLayer::login(){
     else{
     	strcpy(ShareData::username,usernameField->getString());
     	ShareData::userid=httpAns;
+    	fetchData();
     	CCScene *pScene = MainUIScene::scene();
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
     }
@@ -254,5 +256,8 @@ void LoginLayer::menuCloseCallback(CCObject* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
+}
+void LoginLayer::fetchData(){
+	ShareData::face=1;
 }
 #endif // __LoginLayer_LAYER__
