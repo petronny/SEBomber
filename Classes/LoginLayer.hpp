@@ -9,6 +9,7 @@ typedef unsigned int size_t;
 #include "stdlib.h"
 #include "string.h"
 #include "ShareClass.hpp"
+#include "MessageLayer.hpp"
 USING_NS_CC;
 class LoginLayer : public CCLayer ,public CCTextFieldDelegate
 {
@@ -36,6 +37,7 @@ public:
     bool onTextFieldDetachWithIME(CCTextFieldTTF *sender);
     static int httpAns;
     void menuCloseCallback(CCObject* pSender);
+    void showMessage(const char* st);
 };
 int LoginLayer::httpAns;
 // onserverField "init" you need to initialize your instance
@@ -112,11 +114,6 @@ bool LoginLayer::init()
 	registLabel->setColor(ccYELLOW);
 	this->addChild(registLabel,3);
 
-
-    message = CCLabelTTF::create("请登录或注册", "fonts/FZKaTong-M19T.ttf", 25);
-    message->setPosition(ccp(size.width / 2, size.height /4*3));
-    message->setColor(ccYELLOW);
-    this->addChild(message, 1);
     return true;
 }
 void LoginLayer::usernameFieldPressed(CCObject *sender)
@@ -162,7 +159,7 @@ void LoginLayer::checkNameExist(){
 		res = curl_easy_perform(curl);
 	}
 	if(res!=0){
-		message->setString("连接失败");
+		showMessage("连接失败");
 		httpAns=-404;
 	}
 	else
@@ -207,7 +204,7 @@ void LoginLayer::login(){
 	}
     curl_easy_cleanup(curl);
     if(httpAns==-1 or httpAns==-404){
-    	message->setString("密码错误");
+    	showMessage("密码错误");
     }
     else{
     	strcpy(ShareClass::username,usernameField->getString());
@@ -222,7 +219,7 @@ void LoginLayer::loginButtonClicked(CCObject* pSender)
 	checkNameExist();
 	if(httpAns!=-404){
 		if(ShareClass::userid==-1)
-			message->setString("用户名不存在");
+			showMessage("用户名不存在");
 		else
 			login();
 	}
@@ -233,7 +230,7 @@ void LoginLayer::registButtonClicked(CCObject* pSender)
 	checkNameExist();
 	if(httpAns!=-404){
 		if(ShareClass::userid!=-1)
-			message->setString("该用户名已存在");
+			showMessage("该用户名已存在");
 		else{
 			regist();
 			login();
@@ -246,7 +243,13 @@ size_t LoginLayer::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream
 	httpAns=atoi(ans);
 	return size*number;
 }
-
+void LoginLayer::showMessage(const char* st){
+	CCLayer* messageLayer=MessageLayer::create();
+	CCLabelTTF *message=CCLabelTTF::create(st,"fonts/FZKaTong-M19T.ttf",60);
+	message->setPosition(ccp(size.width/2,size.height/2));
+	messageLayer->addChild(message,1);
+	this->getParent()->addChild(messageLayer,20);
+}//
 void LoginLayer::menuCloseCallback(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");

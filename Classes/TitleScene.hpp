@@ -34,7 +34,7 @@ CCScene* TitleScene::scene()
 {
 	// 'scene' is an autorelease object
 	titleScene = CCScene::create();
-	
+
 	// 'layer' is an autorelease object
 	TitleScene *layer = TitleScene::create();
 	// add layer as a child to scene
@@ -151,8 +151,7 @@ bool TitleScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
 	bomb->runAction(action);
 	moveup=CCEaseExponentialOut::create(CCMoveBy::create(0.5,ccp(0, size.height/2 - bomb->boundingBox().size.height/2)));
 	title->runAction(moveup);
-	touch->stopAllActions();
-	touch->setVisible(false);
+	touch->removeFromParentAndCleanup(true);
 	this->setTouchEnabled(false);
 	return true;
 }
