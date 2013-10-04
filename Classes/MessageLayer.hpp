@@ -1,6 +1,5 @@
 #ifndef __MESSAGE_LAYER__
 #define __MESSAGE_LAYER__
-typedef unsigned int size_t;
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 USING_NS_CC;
@@ -55,5 +54,4 @@ void MessageLayer::registerWithTouchDispatcher()
     CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
     CCLayer::registerWithTouchDispatcher();
 }
-
-#endif // __MessageLayer_LAYER__
+#endif

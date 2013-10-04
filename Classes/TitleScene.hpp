@@ -1,9 +1,7 @@
-#ifndef __TITLE_SCENE_H__
-#define __TITLE_SCENE_H__
-typedef unsigned int size_t;
+#ifndef __TITLE_SCENE__
+#define __TITLE_SCENE__
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-#include "LoginLayer.hpp"
 USING_NS_CC;
 class TitleScene : public CCLayer
 {
@@ -29,6 +27,8 @@ public:
     virtual void registerWithTouchDispatcher();
 
 };
+
+#include "LoginLayer.hpp"
 CCScene *TitleScene::titleScene;
 CCScene* TitleScene::scene()
 {
@@ -52,6 +52,7 @@ bool TitleScene::init()
 		return false;
 	}
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_0.ogg");
+	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_11.ogg");
 	size = CCDirector::sharedDirector()->getWinSize();
 	bomb=CCSprite::create("image/bomb.png");
 	bomb->setScale(size.height/4/bomb->getContentSize().height);
@@ -66,7 +67,6 @@ bool TitleScene::init()
 	return true;
 }
 void TitleScene::showBackground(){
-	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_11.ogg");
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_11.ogg");
 	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_0.ogg",true);
 	CCSprite *background=CCSprite::create("image/bg.png");

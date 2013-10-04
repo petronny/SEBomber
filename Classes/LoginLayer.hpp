@@ -3,13 +3,7 @@
 typedef unsigned int size_t;
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-#include "GameScene.hpp"
 #include "curl/curl.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "ShareClass.hpp"
-#include "MessageLayer.hpp"
 USING_NS_CC;
 class LoginLayer : public CCLayer ,public CCTextFieldDelegate
 {
@@ -39,6 +33,9 @@ public:
     void menuCloseCallback(CCObject* pSender);
     void showMessage(const char* st);
 };
+#include "MainUIScene.hpp"
+#include "ShareData.hpp"
+#include "MessageLayer.hpp"
 int LoginLayer::httpAns;
 // onserverField "init" you need to initialize your instance
 bool LoginLayer::init()
@@ -163,7 +160,7 @@ void LoginLayer::checkNameExist(){
 		httpAns=-404;
 	}
 	else
-	    ShareClass::userid=httpAns;
+	    ShareData::userid=httpAns;
     curl_easy_cleanup(curl);
 }
 void LoginLayer::regist(){
@@ -207,9 +204,9 @@ void LoginLayer::login(){
     	showMessage("密码错误");
     }
     else{
-    	strcpy(ShareClass::username,usernameField->getString());
-    	ShareClass::userid=httpAns;
-    	CCScene *pScene = GameScene::scene();
+    	strcpy(ShareData::username,usernameField->getString());
+    	ShareData::userid=httpAns;
+    	CCScene *pScene = MainUIScene::scene();
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
     }
 }
@@ -218,7 +215,7 @@ void LoginLayer::loginButtonClicked(CCObject* pSender)
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
 	if(httpAns!=-404){
-		if(ShareClass::userid==-1)
+		if(ShareData::userid==-1)
 			showMessage("用户名不存在");
 		else
 			login();
@@ -229,7 +226,7 @@ void LoginLayer::registButtonClicked(CCObject* pSender)
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
 	if(httpAns!=-404){
-		if(ShareClass::userid!=-1)
+		if(ShareData::userid!=-1)
 			showMessage("该用户名已存在");
 		else{
 			regist();
