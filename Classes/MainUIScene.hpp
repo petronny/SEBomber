@@ -13,9 +13,15 @@ public:
     static CCScene* scene();
     // a selector callback
     void logout();
+    void multiplayerSelected();
+    void buddylistSelected();
+    void inventorySelected();
+    void storeSelected();
     // implement the "static node()" method manually
     CREATE_FUNC(MainUIScene);
 	CCSize size;
+	CCSprite* buttonSurround;
+	CCMenuItemImage *multiplayerItem,*buddylistItem,*inventoryItem,*storeItem;
 	static CCScene *mainUIScene;
 };
 #include "TitleScene.hpp"
@@ -71,9 +77,55 @@ bool MainUIScene::init()
 	this->addChild(face,2);
 
 	CCLabelTTF *usernameLabel=CCLabelTTF::create(ShareData::username,"fonts/FZKaTong-M19T.ttf",30);
-	usernameLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*51));
+	usernameLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*49));
 	usernameLabel->setColor(ccMAGENTA);
 	this->addChild(usernameLabel,2);
+
+	multiplayerItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUIScene::multiplayerSelected));
+	multiplayerItem->setScaleX((size.width-ui_right->boundingBox().size.width)/4/multiplayerItem->getContentSize().width);
+	multiplayerItem->setScaleY(size.height/8/multiplayerItem->getContentSize().height);
+	multiplayerItem->setPosition(ccp(ui_right->boundingBox().size.width+multiplayerItem->boundingBox().size.width/2,size.height-multiplayerItem->boundingBox().size.height/2));
+	pMenu->addChild(multiplayerItem);
+	CCLabelTTF *multiplayerLabel=CCLabelTTF::create("多人模式","fonts/FZKaTong-M19T.ttf",25);
+	multiplayerLabel->setPosition(multiplayerItem->getPosition());
+	multiplayerLabel->setColor(ccYELLOW);
+	this->addChild(multiplayerLabel,3);
+
+	buddylistItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUIScene::buddylistSelected));
+	buddylistItem->setScaleX((size.width-ui_right->boundingBox().size.width)/4/multiplayerItem->getContentSize().width);
+	buddylistItem->setScaleY(size.height/8/multiplayerItem->getContentSize().height);
+	buddylistItem->setPosition(ccp(ui_right->boundingBox().size.width+multiplayerItem->boundingBox().size.width*3/2,size.height-multiplayerItem->boundingBox().size.height/2));
+	pMenu->addChild(buddylistItem);
+	CCLabelTTF *buddylistLabel=CCLabelTTF::create("我的好友","fonts/FZKaTong-M19T.ttf",25);
+	buddylistLabel->setPosition(buddylistItem->getPosition());
+	buddylistLabel->setColor(ccYELLOW);
+	this->addChild(buddylistLabel,3);
+
+	inventoryItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUIScene::inventorySelected));
+	inventoryItem->setScaleX((size.width-ui_right->boundingBox().size.width)/4/multiplayerItem->getContentSize().width);
+	inventoryItem->setScaleY(size.height/8/multiplayerItem->getContentSize().height);
+	inventoryItem->setPosition(ccp(ui_right->boundingBox().size.width+multiplayerItem->boundingBox().size.width*5/2,size.height-multiplayerItem->boundingBox().size.height/2));
+	pMenu->addChild(inventoryItem);
+	CCLabelTTF *inventoryLabel=CCLabelTTF::create("我的物品","fonts/FZKaTong-M19T.ttf",25);
+	inventoryLabel->setPosition(inventoryItem->getPosition());
+	inventoryLabel->setColor(ccYELLOW);
+	this->addChild(inventoryLabel,3);
+
+	storeItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUIScene::storeSelected));
+	storeItem->setScaleX((size.width-ui_right->boundingBox().size.width)/4/multiplayerItem->getContentSize().width);
+	storeItem->setScaleY(size.height/8/multiplayerItem->getContentSize().height);
+	storeItem->setPosition(ccp(ui_right->boundingBox().size.width+multiplayerItem->boundingBox().size.width*7/2,size.height-multiplayerItem->boundingBox().size.height/2));
+	pMenu->addChild(storeItem);
+	CCLabelTTF *storeLabel=CCLabelTTF::create("道具商店","fonts/FZKaTong-M19T.ttf",25);
+	storeLabel->setPosition(storeItem->getPosition());
+	storeLabel->setColor(ccYELLOW);
+	this->addChild(storeLabel,3);
+
+	buttonSurround=CCSprite::create("image/ui/button_surround.png");
+	buttonSurround->setScaleX(multiplayerItem->boundingBox().size.width/buttonSurround->getContentSize().width);
+	buttonSurround->setScaleY(multiplayerItem->boundingBox().size.height/buttonSurround->getContentSize().height);
+	buttonSurround->setPosition(ccp(ui_right->boundingBox().size.width+multiplayerItem->boundingBox().size.width/2,size.height-multiplayerItem->boundingBox().size.height/2));
+	this->addChild(buttonSurround,3);
 
 	return true;
 }
@@ -82,5 +134,25 @@ void MainUIScene::logout(){
 	ShareData::userid=-1;
 	CCScene *pScene =TitleScene::scene();
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
+}
+void MainUIScene::multiplayerSelected(){
+	buttonSurround->stopAllActions();
+	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,multiplayerItem->getPosition()));
+	buttonSurround->runAction(move);
+}
+void MainUIScene::buddylistSelected(){
+	buttonSurround->stopAllActions();
+	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,buddylistItem->getPosition()));
+	buttonSurround->runAction(move);
+}
+void MainUIScene::inventorySelected(){
+	buttonSurround->stopAllActions();
+	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,inventoryItem->getPosition()));
+	buttonSurround->runAction(move);
+}
+void MainUIScene::storeSelected(){
+	buttonSurround->stopAllActions();
+	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,storeItem->getPosition()));
+	buttonSurround->runAction(move);
 }
 #endif
