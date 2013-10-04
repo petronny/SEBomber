@@ -43,20 +43,28 @@ bool MainUIScene::init()
 	CCMenu* pMenu = CCMenu::create();
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu,2);
+
 	CCSprite *background=CCSprite::create("image/ui/bg.jpg");
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
 	this->addChild(background,0);
+
 	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);
 	ui_right->setPosition(ccp(ui_right->boundingBox().size.width/2,size.height/2));
 	this->addChild(ui_right,1);
+
 	CCLabelTTF *logoutLabel=CCLabelTTF::create("登\t出","fonts/FZKaTong-M19T.ttf",25);
 	logoutLabel->setColor(ccYELLOW);
 	CCMenuItemLabel *logoutItem=CCMenuItemLabel::create(logoutLabel,this,menu_selector(MainUIScene::logout));
-	logoutItem->setPosition(ccp(ui_right->boundingBox().size.width/64*33,size.height/64*59));
+	logoutItem->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*59));
 	pMenu->addChild(logoutItem);
+
+	CCSprite *face=CCSprite::create("image/face/face01.png");
+	face->setScale(size.height/ui_right->getContentSize().height*1.15);
+	face->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*39));
+	this->addChild(face,2);
 	return true;
 }
 void MainUIScene::logout(){

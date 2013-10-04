@@ -13,9 +13,9 @@ public:
 	CCMoveTo* move;
 };
 GreenBird::GreenBird(CCPoint a){
-	sprite = CCSprite::create("green_bird.png", CCRectMake(0,0,49,30));
+	sprite = CCSprite::create("image/unit/green_bird.png", CCRectMake(0,0,49,30));
 	sprite->setPosition(a);
-	texture = CCTextureCache::sharedTextureCache()->addImage("green_bird.png");
+	texture = CCTextureCache::sharedTextureCache()->addImage("image/unit/green_bird.png");
 	float w = texture->getContentSize().width / 2;
 	float h = texture->getContentSize().height;
 	animation = CCAnimation::create();
