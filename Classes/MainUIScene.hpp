@@ -17,11 +17,12 @@ public:
     void buddylistSelected();
     void inventorySelected();
     void storeSelected();
+    void okButtonClicked();
     // implement the "static node()" method manually
     CREATE_FUNC(MainUIScene);
 	CCSize size;
 	CCSprite* buttonSurround;
-	CCMenuItemImage *multiplayerItem,*buddylistItem,*inventoryItem,*storeItem;
+	CCMenuItemImage *multiplayerItem,*buddylistItem,*inventoryItem,*storeItem,*okButtonItem;
 	static CCScene *mainUIScene;
 };
 #include "TitleScene.hpp"
@@ -169,6 +170,12 @@ bool MainUIScene::init()
 	CCLabelTTF *magicBubbleLabel=CCLabelTTF::create(magicBubbleNum,"fonts/FZKaTong-M19T.ttf",25);
 	magicBubbleLabel->setPosition(ccp(rankLabel->getPositionX(),magicBubble->getPositionY()));
 	this->addChild(magicBubbleLabel,2);
+
+	okButtonItem=CCMenuItemImage::create("image/ui/ok_button_normal.png","image/ui/ok_button_selected.png","image/ui/ok_button_disabled.png",this,menu_selector(MainUIScene::okButtonClicked));
+	okButtonItem->setScale(size.height/ui_right->getContentSize().height);
+	okButtonItem->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/512*77));
+	okButtonItem->setEnabled(false);
+	pMenu->addChild(okButtonItem);
 	return true;
 }
 void MainUIScene::logout(){
@@ -213,5 +220,7 @@ void MainUIScene::storeSelected(){
 	mainUIScene->removeChildByTag(1,true);
 	CCLayer *storeLayer=MainUISceneStoreLayer::create();
 	mainUIScene->addChild(storeLayer,1,1);
+}
+void MainUIScene::okButtonClicked(){
 }
 #endif
