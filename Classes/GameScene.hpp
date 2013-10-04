@@ -2,7 +2,7 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
-#include "ShareClass.hpp"
+#include "ShareData.hpp"
 #include "SimpleAudioEngine.h"
 #include "GreenBird.hpp"
 USING_NS_CC;

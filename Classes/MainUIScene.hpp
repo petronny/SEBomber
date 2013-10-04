@@ -26,6 +26,10 @@ public:
 };
 #include "TitleScene.hpp"
 #include "ShareData.hpp"
+#include "MainUISceneBuddyListLayer.hpp"
+#include "MainUISceneInventoryLayer.hpp"
+#include "MainUISceneMultiplayerLayer.hpp"
+#include "MainUISceneStoreLayer.hpp"
 CCScene *MainUIScene::mainUIScene;
 CCScene* MainUIScene::scene()
 {
@@ -47,6 +51,7 @@ bool MainUIScene::init()
 	}
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_6.ogg");
 	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_6.ogg",true);
+	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	size = CCDirector::sharedDirector()->getWinSize();
 	CCMenu* pMenu = CCMenu::create();
 	pMenu->setPosition( CCPointZero );
@@ -124,35 +129,89 @@ bool MainUIScene::init()
 	buttonSurround=CCSprite::create("image/ui/button_surround.png");
 	buttonSurround->setScaleX(multiplayerItem->boundingBox().size.width/buttonSurround->getContentSize().width);
 	buttonSurround->setScaleY(multiplayerItem->boundingBox().size.height/buttonSurround->getContentSize().height);
-	buttonSurround->setPosition(ccp(ui_right->boundingBox().size.width+multiplayerItem->boundingBox().size.width/2,size.height-multiplayerItem->boundingBox().size.height/2));
+	multiplayerSelected();
 	this->addChild(buttonSurround,3);
 
+	CCSprite *rankSprite=CCSprite::create("image/ui/rank.png");
+	rankSprite->setScale(size.height/16/rankSprite->getContentSize().height);
+	rankSprite->setPosition(ccp(ui_right->boundingBox().size.width/128*37,size.height/64*27));
+	this->addChild(rankSprite,2);
+
+	char rankPath[80];
+	sprintf(rankPath,"image/rank/rank%d.png",ShareData::rank);
+	CCSprite *rank=CCSprite::create(rankPath);
+	rank->setScale(rankSprite->boundingBox().size.width/rank->getContentSize().width);
+	rank->setPosition(rankSprite->getPosition());
+	this->addChild(rank,3);
+
+	char rankMessage[20];
+	sprintf(rankMessage,"Lv.%d",ShareData::rank);
+	CCLabelTTF *rankLabel=CCLabelTTF::create(rankMessage,"fonts/FZKaTong-M19T.ttf",25);
+	rankLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*82,rankSprite->getPositionY()));
+	this->addChild(rankLabel,3);
+
+	CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage("image/ui/magic_bubble.png");
+	float w = texture->getContentSize().width / 2;
+	float h = texture->getContentSize().height;
+	CCAnimation *animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.5f);
+	for(int i = 0; i <2; i ++)
+		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
+	CCAnimate *animate = CCAnimate::create(animation);
+	CCSprite *magicBubble=CCSprite::create("image/ui/magic_bubble.png",CCRectMake(0,0,w,h));
+	magicBubble->setScale(rankSprite->boundingBox().size.width/magicBubble->getContentSize().width*1.4);
+	magicBubble->runAction(CCRepeatForever::create(animate));
+	magicBubble->setPosition(ccp(rank->getPositionX(),size.height/128*45));
+	this->addChild(magicBubble,2);
+
+	char magicBubbleNum[80];
+	sprintf(magicBubbleNum,"%d",ShareData::magicBubbleNum);
+	CCLabelTTF *magicBubbleLabel=CCLabelTTF::create(magicBubbleNum,"fonts/FZKaTong-M19T.ttf",25);
+	magicBubbleLabel->setPosition(ccp(rankLabel->getPositionX(),magicBubble->getPositionY()));
+	this->addChild(magicBubbleLabel,2);
 	return true;
 }
 void MainUIScene::logout(){
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
 	ShareData::userid=-1;
 	CCScene *pScene =TitleScene::scene();
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 }
 void MainUIScene::multiplayerSelected(){
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	buttonSurround->stopAllActions();
 	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,multiplayerItem->getPosition()));
 	buttonSurround->runAction(move);
+	mainUIScene->removeChildByTag(1,true);
+	CCLayer *multiplayerLayer=MainUISceneMultiplayerLayer::create();
+	mainUIScene->addChild(multiplayerLayer,1,1);
 }
 void MainUIScene::buddylistSelected(){
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	buttonSurround->stopAllActions();
 	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,buddylistItem->getPosition()));
 	buttonSurround->runAction(move);
+	mainUIScene->removeChildByTag(1,true);
+	CCLayer *buddylistLayer=MainUISceneBuddyListLayer::create();
+	mainUIScene->addChild(buddylistLayer,1,1);
 }
 void MainUIScene::inventorySelected(){
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	buttonSurround->stopAllActions();
 	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,inventoryItem->getPosition()));
 	buttonSurround->runAction(move);
+	mainUIScene->removeChildByTag(1,true);
+	CCLayer *inventoryLayer=MainUISceneInventoryLayer::create();
+	mainUIScene->addChild(inventoryLayer,1,1);
 }
 void MainUIScene::storeSelected(){
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	buttonSurround->stopAllActions();
 	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,storeItem->getPosition()));
 	buttonSurround->runAction(move);
+	mainUIScene->removeChildByTag(1,true);
+	CCLayer *storeLayer=MainUISceneStoreLayer::create();
+	mainUIScene->addChild(storeLayer,1,1);
 }
 #endif

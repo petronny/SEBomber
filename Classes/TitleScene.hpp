@@ -28,7 +28,7 @@ public:
 
 };
 
-#include "LoginLayer.hpp"
+#include "TitleSceneLoginLayer.hpp"
 CCScene *TitleScene::titleScene;
 CCScene* TitleScene::scene()
 {
@@ -141,7 +141,7 @@ void TitleScene::showTitle(){
 	this->setTouchEnabled(true);
 }
 void TitleScene::showLoginLayer(){
-	CCLayer *loginLayer=LoginLayer::create();
+	CCLayer *loginLayer=TitleSceneLoginLayer::create();
 	titleScene->addChild(loginLayer,1);
 }
 bool TitleScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
