@@ -54,7 +54,7 @@ bool TitleScene::init()
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_0.ogg");
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_11.ogg");
 	size = CCDirector::sharedDirector()->getWinSize();
-	bomb=CCSprite::create("image/bomb.png");
+	bomb=CCSprite::create("image/ui/bomb.png");
 	bomb->setScale(size.height/4/bomb->getContentSize().height);
 	CCFiniteTimeAction* place=CCPlace::create(ccp(size.width/2,size.height+bomb->getContentSize().height));
 	CCAction *movein=CCEaseExponentialOut::create(CCMoveTo::create(2,ccp(size.width/2,size.height/4)));
@@ -69,15 +69,15 @@ bool TitleScene::init()
 void TitleScene::showBackground(){
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_11.ogg");
 	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_0.ogg",true);
-	CCSprite *background=CCSprite::create("image/bg.png");
+	CCSprite *background=CCSprite::create("image/ui/bg.png");
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
 	CCAction *fadein=CCFadeIn::create(0.5);
 	background->runAction(fadein);
 	this->addChild(background,0);
-	CCSprite *title_left=CCSprite::create("image/title_left.png");
-	CCSprite *title_right=CCSprite::create("image/title_right.png");
+	CCSprite *title_left=CCSprite::create("image/ui/title_left.png");
+	CCSprite *title_right=CCSprite::create("image/ui/title_right.png");
 	title_left->setPosition(ccp(size.width/2,size.height/2));
 	title_right->setPosition(ccp(size.width/2,size.height/2));
 	title_left->setScale(0);
@@ -92,10 +92,10 @@ void TitleScene::showBackground(){
 	title_right->runAction(CCEaseExponentialOut::create(scale_right));
 	this->addChild(title_left,1);
 	this->addChild(title_right,1);
-	CCSprite *lefttop=CCSprite::create("image/title_lefttop.png");
-	CCSprite *leftbottom=CCSprite::create("image/title_leftbottom.png");
-	CCSprite *righttop=CCSprite::create("image/title_righttop.png");
-	CCSprite *rightbottom=CCSprite::create("image/title_rightbottom.png");
+	CCSprite *lefttop=CCSprite::create("image/ui/title_lefttop.png");
+	CCSprite *leftbottom=CCSprite::create("image/ui/title_leftbottom.png");
+	CCSprite *righttop=CCSprite::create("image/ui/title_righttop.png");
+	CCSprite *rightbottom=CCSprite::create("image/ui/title_rightbottom.png");
 //	leftbottom->setScale(0);lefttop->setScale(0);rightbottom->setScale(0);righttop->setScale(0);
 	leftbottom->setPosition(ccp(size.width/2,size.height/2));
 	lefttop->setPosition(ccp(size.width/2,size.height/2));
@@ -115,13 +115,13 @@ void TitleScene::showBackground(){
 	this->addChild(righttop,2);
 }
 void TitleScene::showTitle(){
-	title=CCSprite::create("image/003c.png");
+	title=CCSprite::create("image/ui/003c.png");
 	CCAnimation *animation = CCAnimation::create();
 	animation->setDelayPerUnit(0.25f);
-	animation->addSpriteFrameWithFileName("image/003c-r.png");
-	animation->addSpriteFrameWithFileName("image/003c-g.png");
-	animation->addSpriteFrameWithFileName("image/003c-b.png");
-	animation->addSpriteFrameWithFileName("image/003c.png");
+	animation->addSpriteFrameWithFileName("image/ui/003c-r.png");
+	animation->addSpriteFrameWithFileName("image/ui/003c-g.png");
+	animation->addSpriteFrameWithFileName("image/ui/003c-b.png");
+	animation->addSpriteFrameWithFileName("image/ui/003c.png");
 	CCAnimate *animate = CCAnimate::create(animation);
 	title->runAction(CCRepeatForever::create(animate));
 	title->setScale(size.width/3/title->getContentSize().width);
@@ -130,7 +130,7 @@ void TitleScene::showTitle(){
 	title->runAction(fadein);
 	// add the label as a child to this layer
 	this->addChild(title, 4);
-	touch=CCSprite::create("image/touch.png");
+	touch=CCSprite::create("image/ui/touch.png");
 	touch->setPosition(ccp	(size.width/2,size.height/4));
 	CCAction *delay2=CCDelayTime::create(1);
 	CCAction *delay1=CCDelayTime::create(0.5);

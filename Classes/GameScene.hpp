@@ -69,8 +69,8 @@ bool GameScene::init()
 
     // add a "close" icon to exit the progress. it's an autorelease object
     CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-                                        "CloseNormal.png",
-                                        "CloseSelected.png",
+                                        "image/ui/CloseNormal.png",
+                                        "image/ui/CloseSelected.png",
                                         this,
                                         menu_selector(GameScene::menuCloseCallback));
     
@@ -88,7 +88,7 @@ bool GameScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    CCLabelTTF* pLabel = CCLabelTTF::create(ShareClass::username, "fonts/FZZYHandelGotD.ttf", 30);
+    CCLabelTTF* pLabel = CCLabelTTF::create(ShareData::username, "fonts/FZZYHandelGotD.ttf", 30);
     
     // position the label on the center of the screen
     pLabel->setPosition(ccp(origin.x + size.width/2,

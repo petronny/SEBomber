@@ -28,7 +28,7 @@ bool MessageLayer::init()
 	size = CCDirector::sharedDirector()->getWinSize();
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_13.ogg");
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_13.ogg");
-	CCSprite *messageBackground=CCSprite::create("image/black_blank.png");
+	CCSprite *messageBackground=CCSprite::create("image/ui/black_blank.png");
 	messageBackground->setScaleX(size.width/messageBackground->getContentSize().width);
 	messageBackground->setScaleY(size.height/messageBackground->getContentSize().height);
 	messageBackground->setPosition(ccp(size.width/2,size.height/2));

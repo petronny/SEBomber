@@ -43,12 +43,12 @@ bool MainUIScene::init()
 	CCMenu* pMenu = CCMenu::create();
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu,2);
-	CCSprite *background=CCSprite::create("image/bg.jpg");
+	CCSprite *background=CCSprite::create("image/ui/bg.jpg");
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
 	this->addChild(background,0);
-	CCSprite *ui_right=CCSprite::create("image/ui_right.png");
+	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);
 	ui_right->setPosition(ccp(ui_right->boundingBox().size.width/2,size.height/2));
 	this->addChild(ui_right,1);

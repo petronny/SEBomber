@@ -46,13 +46,13 @@ bool LoginLayer::init()
 	}
 	size = CCDirector::sharedDirector()->getWinSize();
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
-	CCMenuItemImage *pCloseItem = CCMenuItemImage::create("CloseNormal.png","CloseSelected.png",this,menu_selector(LoginLayer::menuCloseCallback));
+	CCMenuItemImage *pCloseItem = CCMenuItemImage::create("image/ui/CloseNormal.png","image/ui/CloseSelected.png",this,menu_selector(LoginLayer::menuCloseCallback));
     pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,pCloseItem->getContentSize().height/2));
 	CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu,1);
 
-	CCSprite* menuBackground=CCSprite::create("image/mainmenu.png");
+	CCSprite* menuBackground=CCSprite::create("image/ui/mainmenu.png");
 	menuBackground->setScale(size.height/24*14/menuBackground->getContentSize().height);
 	menuBackground->setPosition(ccp(size.width/2,menuBackground->boundingBox().size.height/2+size.height/64*7));
 	this->addChild(menuBackground,0);
@@ -91,7 +91,7 @@ bool LoginLayer::init()
 	passwdTapItem->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/32*5+size.height/64*7));
 	pMenu->addChild(passwdTapItem, 1);
 
-	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginLayer::loginButtonClicked));
+	CCMenuItemImage *loginButton = CCMenuItemImage::create("image/ui/c8.png","image/ui/c3.png",this,menu_selector(LoginLayer::loginButtonClicked));
 	loginButton->setScaleY(size.height/64*7/loginButton->getContentSize().height);
 	loginButton->setScaleX(menuBackground->boundingBox().size.width/2/loginButton->getContentSize().width);
 	loginButton->setPosition( ccp(size.width/2-menuBackground->boundingBox().size.width/4,loginButton->boundingBox().size.height/2));
@@ -101,7 +101,7 @@ bool LoginLayer::init()
 	loginLabel->setColor(ccYELLOW);
 	this->addChild(loginLabel,3);
 
-	CCMenuItemImage *registButton = CCMenuItemImage::create("image/c8.png","image/c3.png",this,menu_selector(LoginLayer::registButtonClicked));
+	CCMenuItemImage *registButton = CCMenuItemImage::create("image/ui/c8.png","image/ui/c3.png",this,menu_selector(LoginLayer::registButtonClicked));
 	registButton->setScaleY(size.height/64*7/registButton->getContentSize().height);
 	registButton->setScaleX(menuBackground->boundingBox().size.width/2/registButton->getContentSize().width);
 	registButton->setPosition( ccp(size.width/2+menuBackground->boundingBox().size.width/4,registButton->boundingBox().size.height/2));
