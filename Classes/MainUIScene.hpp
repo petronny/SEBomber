@@ -39,6 +39,8 @@ bool MainUIScene::init()
 	{
 		return false;
 	}
+	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_6.ogg");
+	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_6.ogg",true);
 	size = CCDirector::sharedDirector()->getWinSize();
 	CCMenu* pMenu = CCMenu::create();
 	pMenu->setPosition( CCPointZero );
@@ -67,6 +69,12 @@ bool MainUIScene::init()
 	face->setScale(size.height/ui_right->getContentSize().height*1.12);
 	face->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*39));
 	this->addChild(face,2);
+
+	CCLabelTTF *usernameLabel=CCLabelTTF::create(ShareData::username,"fonts/FZKaTong-M19T.ttf",30);
+	usernameLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*51));
+	usernameLabel->setColor(ccMAGENTA);
+	this->addChild(usernameLabel,2);
+
 	return true;
 }
 void MainUIScene::logout(){
