@@ -1,13 +1,10 @@
 #include "AppDelegate.h"
-
+#include "SimpleAudioEngine.h"
 #include "cocos2d.h"
-#include "HelloWorldScene.h"
-#include "HelloWorldScene2.h"
+#include "TitleScene.hpp"
 USING_NS_CC;
-
 AppDelegate::AppDelegate()
 {
-
 }
 
 AppDelegate::~AppDelegate()
@@ -27,7 +24,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     pDirector->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    CCScene *pScene = HelloWorld::scene();
+    CCScene *pScene = TitleScene::scene();
 
     // run
     pDirector->runWithScene(pScene);
@@ -41,7 +38,7 @@ void AppDelegate::applicationDidEnterBackground()
     CCDirector::sharedDirector()->pause();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
 
 // this function will be called when the app is active again
@@ -50,5 +47,5 @@ void AppDelegate::applicationWillEnterForeground()
     CCDirector::sharedDirector()->resume();
     
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 }

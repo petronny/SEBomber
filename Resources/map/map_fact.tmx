@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="16" height="12" tilewidth="40" tileheight="40">
+ <tileset firstgid="1" name="map_fact_tile2" tilewidth="40" tileheight="40">
+  <image source="map_fact/map_fact_tile2.png" width="600" height="40"/>
+ </tileset>
+ <tileset firstgid="16" name="map_fact_object1" tilewidth="40" tileheight="49" spacing="1" margin="1">
+  <image source="map_fact/map_fact_object1.png" width="83" height="51"/>
+ </tileset>
+ <tileset firstgid="18" name="map_fact_tile6" tilewidth="40" tileheight="120">
+  <image source="map_fact/map_fact_tile6.png" width="600" height="120"/>
+ </tileset>
+ <layer name="块层 1" width="16" height="12">
+  <data encoding="base64" compression="zlib">
+   eJzjYmBgYCMTcwMxJxAzkok5R/WP6qdQPw8D+emXF4gBIp0CFw==
+  </data>
+ </layer>
+ <layer name="块层 2" width="16" height="12">
+  <data encoding="base64" compression="zlib">
+   eJxjYBj6QAiIhYFYZKAdMgqGHAAAgXAAOg==
+  </data>
+ </layer>
+</map>

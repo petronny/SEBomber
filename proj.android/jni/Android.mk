@@ -6,10 +6,8 @@ LOCAL_MODULE := game_shared
 
 LOCAL_MODULE_FILENAME := libgame
 
-LOCAL_SRC_FILES := hellocpp/main.cpp \
-                   ../../Classes/AppDelegate.cpp \
-                   ../../Classes/HelloWorldScene.cpp \
-                   ../../Classes/HelloWorldScene2.cpp \
+LOCAL_SRC_FILES := main.cpp \
+                   ../../Classes/AppDelegate.cpp 
                    
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes                   
 
