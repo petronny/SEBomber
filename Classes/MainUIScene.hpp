@@ -31,6 +31,7 @@ public:
 #include "MainUISceneInventoryLayer.hpp"
 #include "MainUISceneMultiplayerLayer.hpp"
 #include "MainUISceneStoreLayer.hpp"
+#include "GameScene.hpp"
 CCScene *MainUIScene::mainUIScene;
 CCScene* MainUIScene::scene()
 {
@@ -174,7 +175,7 @@ bool MainUIScene::init()
 	okButtonItem=CCMenuItemImage::create("image/ui/ok_button_normal.png","image/ui/ok_button_selected.png","image/ui/ok_button_disabled.png",this,menu_selector(MainUIScene::okButtonClicked));
 	okButtonItem->setScale(size.height/ui_right->getContentSize().height);
 	okButtonItem->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/512*77));
-	okButtonItem->setEnabled(false);
+//	okButtonItem->setEnabled(false);
 	pMenu->addChild(okButtonItem);
 	return true;
 }
@@ -222,5 +223,7 @@ void MainUIScene::storeSelected(){
 	mainUIScene->addChild(storeLayer,1,1);
 }
 void MainUIScene::okButtonClicked(){
+	CCScene *pScene =GameScene::scene();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 }
 #endif

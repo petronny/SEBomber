@@ -2,7 +2,6 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
-#include "ShareData.hpp"
 #include "SimpleAudioEngine.h"
 #include "GreenBird.hpp"
 USING_NS_CC;
@@ -12,7 +11,6 @@ class GameScene : public cocos2d::CCLayer
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
-
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::CCScene* scene();
     
@@ -21,13 +19,16 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
     GreenBird* gbird;
-    virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
+	CCSize size;
+	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
+	virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
+	virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
+	virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
+    CCTMXTiledMap *map;
+    int doubleTouchCount;
 };
-
+#include "ShareData.hpp"
 CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
@@ -60,7 +61,7 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_2.ogg");
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
-    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
     /////////////////////////////
@@ -96,12 +97,14 @@ bool GameScene::init()
 
     // add the label as a child to this layer
     this->addChild(pLabel, 1);
-    CCTMXTiledMap *map=CCTMXTiledMap::create("map/map_fact.tmx");
-    map->setScaleX(size.width/(map->getMapSize().width*map->getTileSize().width));
-    map->setScaleY(size.height/(map->getMapSize().height*map->getTileSize().height));
+    map=CCTMXTiledMap::create("map/map_fact.tmx");
+//    map->setScaleX(size.width/(map->getMapSize().width*map->getTileSize().width));
+//   map->setScaleY(size.height/(map->getMapSize().height*map->getTileSize().height));
+    map->setPosition(CCPointZero);
     this->addChild(map,0);
 	gbird=new GreenBird(ccp(size.width/2,size.height/2));
 	this->addChild(gbird->sprite, 2);
+	doubleTouchCount=0;
      return true;
 }
 
@@ -113,20 +116,29 @@ void GameScene::menuCloseCallback(CCObject* pSender)
 	    exit(0);
 	#endif
 }
-bool GameScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-	CCPoint ptNode = convertTouchToNodeSpace(pTouch);
-	gbird->moveto(ptNode);
-	return true;
+void GameScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent){
 }
-void GameScene::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent){
+void GameScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent){
 }
-void GameScene::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent){
+void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
+	if(pTouches->count()==2){
+		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
+		map->setPosition(ccpAdd(map->getPosition(),touch->getDelta()));
+		doubleTouchCount=2;
+	}
 }
-void GameScene::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent){
+void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
+	if(pTouches->count()==1 and doubleTouchCount==0)
+	{
+		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
+		CCPoint ptNode = convertTouchToNodeSpace(touch);
+		gbird->moveto(ptNode);
+	}
+	if(doubleTouchCount>0)doubleTouchCount--;
 }
 void GameScene::registerWithTouchDispatcher()
 {
-    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
+    CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate(this, 0);
     CCLayer::registerWithTouchDispatcher();
 }
 #endif // __HELLOWORLD_SCENE2_H__
