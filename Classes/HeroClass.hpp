@@ -4,13 +4,12 @@
 USING_NS_CC;
 class Hero{
 public:
-	virtual void moveto(CCPoint a);
+	virtual ~Hero(){}
+	virtual void moveto(CCPoint a){}
 	CCSprite *sprite;
 	CCTexture2D* texture;
 	CCAnimate* animate;
 	CCAnimation* animation;
 	CCMoveTo* move;
 };
-void Hero::moveto(CCPoint a){
-}
 #endif
