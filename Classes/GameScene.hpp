@@ -32,7 +32,7 @@ public:
     int doubleTouchCount,tripleTouchCount;
     CCPoint firstTripleTouchPoint;
 };
-#include "ShareData.hpp"
+#include "UserData.hpp"
 #include "GameSceneChatLayer.hpp"
 #include "GameSceneMessageLayer.hpp"
 #include "GameSceneStatusLayer.hpp"
@@ -97,7 +97,7 @@ bool GameScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    CCLabelTTF* pLabel = CCLabelTTF::create(ShareData::username, "fonts/FZZYHandelGotD.ttf", 30);
+    CCLabelTTF* pLabel = CCLabelTTF::create(UserData::username, "fonts/FZZYHandelGotD.ttf", 30);
     
     // position the label on the center of the screen
     pLabel->setPosition(ccp(origin.x + size.width/2,

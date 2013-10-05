@@ -34,7 +34,7 @@ public:
     void showMessage(const char* st);
 };
 #include "MainUIScene.hpp"
-#include "ShareData.hpp"
+#include "UserData.hpp"
 #include "TitleSceneMessageLayer.hpp"
 int TitleSceneLoginLayer::httpAns;
 // onserverField "init" you need to initialize your instance
@@ -160,7 +160,7 @@ void TitleSceneLoginLayer::checkNameExist(){
 		httpAns=-404;
 	}
 	else
-	    ShareData::userid=httpAns;
+	    UserData::userid=httpAns;
     curl_easy_cleanup(curl);
 }
 void TitleSceneLoginLayer::regist(){
@@ -204,8 +204,8 @@ void TitleSceneLoginLayer::login(){
     	showMessage("密码错误");
     }
     else{
-    	strcpy(ShareData::username,usernameField->getString());
-    	ShareData::userid=httpAns;
+    	strcpy(UserData::username,usernameField->getString());
+    	UserData::userid=httpAns;
     	fetchData();
     	CCScene *pScene = MainUIScene::scene();
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
@@ -216,7 +216,7 @@ void TitleSceneLoginLayer::loginButtonClicked(CCObject* pSender)
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
 	if(httpAns!=-404){
-		if(ShareData::userid==-1)
+		if(UserData::userid==-1)
 			showMessage("用户名不存在");
 		else
 			login();
@@ -227,7 +227,7 @@ void TitleSceneLoginLayer::registButtonClicked(CCObject* pSender)
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	checkNameExist();
 	if(httpAns!=-404){
-		if(ShareData::userid!=-1)
+		if(UserData::userid!=-1)
 			showMessage("该用户名已存在");
 		else{
 			regist();
@@ -257,9 +257,9 @@ void TitleSceneLoginLayer::menuCloseCallback(CCObject* pSender)
 #endif
 }
 void TitleSceneLoginLayer::fetchData(){
-	ShareData::face=1;
-	ShareData::rank=1;
-	ShareData::magicBubbleNum=0;
-	ShareData::emotion=1;
+	UserData::face=1;
+	UserData::rank=1;
+	UserData::magicBubbleNum=0;
+	UserData::emotion=1;
 }
 #endif // __TitleSceneLoginLayer_LAYER__

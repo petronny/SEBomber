@@ -5,7 +5,7 @@ USING_NS_CC;
 #include "HeroClass.hpp"
 class GreenBird:public Hero{
 public:
-	virtual void moveto(CCPoint a);
+	void moveto(CCPoint a);
 	GreenBird(CCPoint a);
 };
 GreenBird::GreenBird(CCPoint a){
