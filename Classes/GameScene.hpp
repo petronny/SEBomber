@@ -1,9 +1,10 @@
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
+#ifndef __GAME_SCENE__
+#define __GAME_SCENE__
 
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "GreenBird.hpp"
+#include "math.h"
 USING_NS_CC;
 using namespace CocosDenshion;
 class GameScene : public cocos2d::CCLayer
@@ -111,10 +112,8 @@ bool GameScene::init()
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	CCDirector::sharedDirector()->end();
-	#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-	    exit(0);
-	#endif
+	this->setTouchEnabled(false);
+
 }
 void GameScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent){
 }
@@ -123,7 +122,12 @@ void GameScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent){
 void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	if(pTouches->count()==2){
 		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
-		map->setPosition(ccpAdd(map->getPosition(),touch->getDelta()));
+		float x=ccpAdd(map->getPosition(),touch->getDelta()).x;
+		float y=ccpAdd(map->getPosition(),touch->getDelta()).y;
+		if(x>0)x=0;if(y>0)y=0;
+//		if(x>map->getMapSize().width)x=map->getMapSize().width;
+//		if(y>map->getMapSize().height)y=map->getMapSize().height;
+		map->setPosition(ccp(x,y));
 		doubleTouchCount=2;
 	}
 }

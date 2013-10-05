@@ -17,6 +17,10 @@ public:
 // onserverField "init" you need to initialize your instance
 bool MainUISceneInventoryLayer::init()
 {
+	//目标：双指上下滑动可以翻滚
+	//对每个物品显示一个背景格子，样子
+	//对可以重叠的物品显示数量
+	//点击一个道具即表示使用（例如头像，特效等等），右下角显示对勾，该道具背景变色
 	if (!CCLayer::init()){
 		return false;
 	}
