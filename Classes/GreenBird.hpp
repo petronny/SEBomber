@@ -1,5 +1,5 @@
-#ifndef __GREEN_BIRD_H__
-#define __GREEN_BIRD_H__
+#ifndef __GREEN_BIRD__
+#define __GREEN_BIRD__
 #include "cocos2d.h"
 USING_NS_CC;
 class GreenBird{
