@@ -2,15 +2,11 @@
 #define __GREEN_BIRD__
 #include "cocos2d.h"
 USING_NS_CC;
-class GreenBird{
+#include "HeroClass.hpp"
+class GreenBird:public Hero{
 public:
-	void moveto(CCPoint a);
+	virtual void moveto(CCPoint a);
 	GreenBird(CCPoint a);
-	CCSprite *sprite;
-	CCTexture2D* texture;
-	CCAnimate* animate;
-	CCAnimation* animation;
-	CCMoveTo* move;
 };
 GreenBird::GreenBird(CCPoint a){
 	sprite = CCSprite::create();

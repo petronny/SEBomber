@@ -19,7 +19,7 @@ public:
     void menuCloseCallback(CCObject* pSender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
-    GreenBird* gbird;
+    Hero* gbird;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
