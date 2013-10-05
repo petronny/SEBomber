@@ -99,9 +99,9 @@ bool GameScene::init()
     // add the label as a child to this layer
     this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
-//    map->setScaleX(size.width/(map->getMapSize().width*map->getTileSize().width));
-//   map->setScaleY(size.height/(map->getMapSize().height*map->getTileSize().height));
     map->setPosition(CCPointZero);
+    if(map->getContentSize().height<size.height or map->getContentSize().width<size.width)
+    	map->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
     this->addChild(map,0);
 	gbird=new GreenBird(ccp(size.width/2,size.height/2));
 	this->addChild(gbird->sprite, 2);
@@ -122,12 +122,12 @@ void GameScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent){
 void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	if(pTouches->count()==2){
 		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
-		float x=ccpAdd(map->getPosition(),touch->getDelta()).x;
-		float y=ccpAdd(map->getPosition(),touch->getDelta()).y;
+		float x=ccpAdd(this->getPosition(),touch->getDelta()).x;
+		float y=ccpAdd(this->getPosition(),touch->getDelta()).y;
 		if(x>0)x=0;if(y>0)y=0;
-//		if(x>map->getMapSize().width)x=map->getMapSize().width;
-//		if(y>map->getMapSize().height)y=map->getMapSize().height;
-		map->setPosition(ccp(x,y));
+		if(x<size.width-map->boundingBox().size.width)x=size.width-map->boundingBox().size.width;
+		if(y<size.height-map->boundingBox().size.height)y=size.height-map->boundingBox().size.height;
+		this->setPosition(ccp(x,y));
 		doubleTouchCount=2;
 	}
 }
