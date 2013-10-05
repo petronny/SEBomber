@@ -76,11 +76,6 @@ bool GameScene::init()
     chatLayer->setPosition(ccp(0,-size.height));
     gameScene->addChild(chatLayer,1);
     gameScene->addChild(statusLayer,1);
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-
-    // add a "close" icon to exit the progress. it's an autorelease object
     CCMenuItemImage *pCloseItem = CCMenuItemImage::create("image/ui/CloseNormal.png","image/ui/CloseSelected.png",this,menu_selector(GameScene::menuCloseCallback));
     
 	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,
@@ -90,20 +85,9 @@ bool GameScene::init()
     CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
     CCLabelTTF* pLabel = CCLabelTTF::create(UserData::username, "fonts/FZZYHandelGotD.ttf", 30);
-    
-    // position the label on the center of the screen
     pLabel->setPosition(ccp(origin.x + size.width/2,
                             origin.y + size.height - pLabel->getContentSize().height));
-
-    // add the label as a child to this layer
     this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
     map->setPosition(CCPointZero);
@@ -118,6 +102,7 @@ bool GameScene::init()
 
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
+	this->setTouchEnabled(false);
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	if(statusLayer->getPositionY()!=size.height){
 		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));

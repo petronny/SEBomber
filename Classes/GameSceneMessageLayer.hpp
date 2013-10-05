@@ -9,16 +9,17 @@ class GameSceneMessageLayer : public CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
+    bool init();
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(GameSceneMessageLayer);
 	CCSize size;
-    virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
-    virtual void registerWithTouchDispatcher();
+    bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
+    void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
+    void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
+    void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
+    void registerWithTouchDispatcher();
+    void enableTouch();
 };
 // onserverField "init" you need to initialize your instance
 bool GameSceneMessageLayer::init()
@@ -35,12 +36,19 @@ bool GameSceneMessageLayer::init()
 	background->setScaleY(size.height/background->getContentSize().height);
 	background->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(background,0);
-	this->setTouchEnabled(true);
+	CCFiniteTimeAction *delay=CCDelayTime::create(2);
+	CCFiniteTimeAction *enableTouch=CCCallFuncN::create(this,callfuncN_selector(GameSceneMessageLayer::enableTouch));
+	CCAction *action=CCSequence::create(delay,enableTouch,NULL);
+	this->runAction(action);
 	return true;
+}
+void GameSceneMessageLayer::enableTouch(){
+	this->setTouchEnabled(true);
 }
 bool GameSceneMessageLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
 	this->setTouchEnabled(false);
-	this->removeFromParentAndCleanup(true);
+	CCScene *pScene = MainUIScene::scene();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 	return true;
 }
 void GameSceneMessageLayer::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent){
@@ -53,7 +61,5 @@ void GameSceneMessageLayer::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
     CCLayer::registerWithTouchDispatcher();
-	CCScene *pScene = MainUIScene::scene();
-	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 }
 #endif
