@@ -2,6 +2,7 @@
 #define __GAME_SCENE_MESSAGE_LAYER__
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
+#include "MainUIScene.hpp"
 USING_NS_CC;
 using namespace CocosDenshion;
 class GameSceneMessageLayer : public CCLayer
@@ -25,8 +26,6 @@ bool GameSceneMessageLayer::init()
 	if (!CCLayer::init()){
 		return false;
 	}
-	//三指下滑移回此层
-	//提供对话支持
 	size = CCDirector::sharedDirector()->getWinSize();
 	CCLabelTTF *implentmenting=CCLabelTTF::create("Message施工中","fonts/FZKaTong-M19T.ttf",25);
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));
@@ -54,5 +53,7 @@ void GameSceneMessageLayer::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
     CCLayer::registerWithTouchDispatcher();
+	CCScene *pScene = MainUIScene::scene();
+	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 }
 #endif

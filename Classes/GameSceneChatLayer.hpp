@@ -20,8 +20,8 @@ bool GameSceneChatLayer::init()
 	if (!CCLayer::init()){
 		return false;
 	}
-	//目标：三指上划移回此层
-	//显示所有人的状态
+	//三指下滑移回此层
+	//提供对话支持
 	size = CCDirector::sharedDirector()->getWinSize();
 	CCLabelTTF *implentmenting=CCLabelTTF::create("Chat施工中","fonts/FZKaTong-M19T.ttf",25);
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));

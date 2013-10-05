@@ -20,12 +20,8 @@ bool GameSceneStatusLayer::init()
 	if (!CCLayer::init()){
 		return false;
 	}
-	//目标：双指上下滑动可以翻滚
-	//对每个物品显示一个背景格子，样子和价格
-	//对可以重复购买的物品提供批量购买
-	//单次购买的物品如果已购买显示禁用样式
-	//如果出现无法支付显示对应信息
-	//购买时提供确认购买的信息，可以使用一个新的层来完成提示信息
+	//目标：三指上划移回此层
+	//显示所有人的状态
 	size = CCDirector::sharedDirector()->getWinSize();
 	CCLabelTTF *implentmenting=CCLabelTTF::create("Status施工中","fonts/FZKaTong-M19T.ttf",25);
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));

@@ -81,11 +81,7 @@ bool GameScene::init()
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
-    CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-                                        "image/ui/CloseNormal.png",
-                                        "image/ui/CloseSelected.png",
-                                        this,
-                                        menu_selector(GameScene::menuCloseCallback));
+    CCMenuItemImage *pCloseItem = CCMenuItemImage::create("image/ui/CloseNormal.png","image/ui/CloseSelected.png",this,menu_selector(GameScene::menuCloseCallback));
     
 	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,
                                 pCloseItem->getContentSize().height/2));
@@ -178,6 +174,14 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 	}
 	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
 	{
+		if(statusLayer->getPositionY()!=size.height){
+			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
+			statusLayer->runAction(move);
+		}
+		if(chatLayer->getPositionY()!=-size.height){
+			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
+			chatLayer->runAction(move);
+		}
 		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
 		CCPoint ptNode = convertTouchToNodeSpace(touch);
 		gbird->moveto(ptNode);
