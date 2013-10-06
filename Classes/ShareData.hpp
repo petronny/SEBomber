@@ -7,17 +7,10 @@ public :
 	static int face;
 	static int rank;
 	static int magicBubbleNum;
-	ShareData(){
-		username[0]='a';
-		userid=1;
-		face=1;
-		rank=1;
-		magicBubbleNum=1;
-	}
 };
-char ShareData::username[20];
-int ShareData::userid;
-int ShareData::face;
-int ShareData::rank;
-int ShareData::magicBubbleNum;
+char ShareData::username[20]="a";
+int ShareData::userid=1;
+int ShareData::face=1;
+int ShareData::rank=1;
+int ShareData::magicBubbleNum=1;
 #endif

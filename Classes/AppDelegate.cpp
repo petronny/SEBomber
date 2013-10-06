@@ -3,6 +3,8 @@
 #include "cocos2d.h"
 #include "TitleScene.hpp"
 USING_NS_CC;
+using namespace CocosDenshion;
+
 AppDelegate::AppDelegate()
 {
 }
