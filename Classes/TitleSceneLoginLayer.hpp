@@ -260,5 +260,6 @@ void TitleSceneLoginLayer::fetchData(){
 	ShareData::face=1;
 	ShareData::rank=1;
 	ShareData::magicBubbleNum=0;
+	ShareData::emotion=1;
 }
 #endif // __TitleSceneLoginLayer_LAYER__
