@@ -27,6 +27,7 @@ public:
 	virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
+	CCPoint positionToTileCoord(CCPoint cocosCoord);
     CCTMXTiledMap *map;
     CCTMXLayer *mapBackgroundLayer,*mapItemLayer;
     static CCScene *gameScene;
@@ -185,5 +186,11 @@ void GameScene::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate(this, 0);
     CCLayer::registerWithTouchDispatcher();
+}
+CCPoint GameScene::positionToTileCoord(CCPoint cocosCoord)
+{
+	int x=cocosCoord.x / map->getTileSize().width;
+	int y=(((map->getMapSize().height-1)*map->getTileSize().height )-cocosCoord.y) / map->getTileSize().height;
+	return ccp(x,y);
 }
 #endif

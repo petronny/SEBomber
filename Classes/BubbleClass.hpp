@@ -16,7 +16,7 @@ Bubble::Bubble(int type,float time,int range,CCPoint a){
 	animation->setDelayPerUnit(0.2f);
 	for(int i = 0; i <2; i ++)
 		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
-	animate = CCAnimate::create(animation);
-	sprite->runAction(CCRepeatForever::create(animate));
+	CCAnimate *animate = CCAnimate::create(animation);
+	bubble->runAction(CCRepeatForever::create(animate));
 }
 #endif
