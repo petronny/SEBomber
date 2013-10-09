@@ -27,6 +27,11 @@ bool MainUISceneStoreLayer::init()
 	//如果出现无法支付显示对应信息
 	//购买时提供确认购买的信息，可以使用一个新的层来完成提示信息
 	size = CCDirector::sharedDirector()->getWinSize();
+	CCSprite *background=CCSprite::create("image/ui/black_blank.png");
+	background->setScaleX(size.width/background->getContentSize().width);
+	background->setScaleY(size.height/background->getContentSize().height);
+	background->setPosition(ccp(size.width/2,size.height/2));
+	this->addChild(background,0);
 	CCLabelTTF *implentmenting=CCLabelTTF::create("Store施工中","fonts/FZKaTong-M19T.ttf",25);
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(implentmenting);

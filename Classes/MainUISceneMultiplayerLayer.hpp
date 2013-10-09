@@ -31,6 +31,11 @@ bool MainUISceneMultiplayerLayer::init()
 		return false;
 	}
 	size = CCDirector::sharedDirector()->getWinSize();
+	CCSprite *background=CCSprite::create("image/ui/black_blank.png");
+	background->setScaleX(size.width/background->getContentSize().width);
+	background->setScaleY(size.height/background->getContentSize().height);
+	background->setPosition(ccp(size.width/2,size.height/2));
+	this->addChild(background,0);
 	CCLabelTTF *implentmenting=CCLabelTTF::create("Multiplayer施工中","fonts/FZKaTong-M19T.ttf",25);
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(implentmenting);

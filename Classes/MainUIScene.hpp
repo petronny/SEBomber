@@ -42,7 +42,7 @@ CCScene* MainUIScene::scene()
 	// 'layer' is an autorelease object
 	MainUIScene *layer = MainUIScene::create();
 	// add layer as a child to scene
-	mainUIScene->addChild(layer,0);
+	mainUIScene->addChild(layer,2);
 	// return the scene
 	return mainUIScene;
 }
@@ -61,11 +61,13 @@ bool MainUIScene::init()
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu,2);
 
+	CCLayer *backgroundLayer = CCLayer::create();
+	mainUIScene->addChild(backgroundLayer,0);
 	CCSprite *background=CCSprite::create("image/ui/bg.jpg");
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
-	this->addChild(background,0);
+	backgroundLayer->addChild(background,0);
 
 	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);
