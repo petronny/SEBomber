@@ -40,7 +40,7 @@ CCScene* MainUIScene::scene()
 	// 'layer' is an autorelease object
 	MainUIScene *layer = MainUIScene::create();
 	// add layer as a child to scene
-	mainUIScene->addChild(layer,0);
+	mainUIScene->addChild(layer,2);
 	// return the scene
 	return mainUIScene;
 }
@@ -55,15 +55,18 @@ bool MainUIScene::init()
 	SimpleAudioEngine::sharedEngine()->playBackgroundMusic("audio/bg_6.ogg",true);
 	SimpleAudioEngine::sharedEngine()->preloadEffect("audio/ef_0.ogg");
 	size = CCDirector::sharedDirector()->getWinSize();
+
 	CCMenu* pMenu = CCMenu::create();
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu,2);
 
+	CCLayer *layer0 = CCLayer::create();
+	mainUIScene->addChild(layer0,0);
 	CCSprite *background=CCSprite::create("image/ui/bg.jpg");
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
-	this->addChild(background,0);
+	layer0->addChild(background,0);
 
 	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);
