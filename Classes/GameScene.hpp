@@ -15,7 +15,8 @@ public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::CCScene* scene();
     
-    // a selector callback
+    // a selector callback    	map->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
+
     void menuCloseCallback(CCObject* pSender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
@@ -27,6 +28,7 @@ public:
 	virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
     CCTMXTiledMap *map;
+    CCTMXLayer *mapBackgroundLayer,*mapItemLayer;
     static CCScene *gameScene;
     CCLayer *statusLayer,*chatLayer;
     int doubleTouchCount,tripleTouchCount;
@@ -91,12 +93,17 @@ bool GameScene::init()
     this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
     map->setPosition(CCPointZero);
-    if(map->getContentSize().height<size.height or map->getContentSize().width<size.width)
-    	map->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
-    this->addChild(map,0);
-	gbird=new GreenBird(ccp(size.width/2,size.height/2));
-	this->addChild(gbird->sprite, 2);
-	doubleTouchCount=0;tripleTouchCount=0;
+    mapBackgroundLayer=map->layerNamed("background");
+    mapItemLayer=map->layerNamed("item");
+    if(map->getContentSize().height<size.height or map->getContentSize().width<size.width){
+    	mapBackgroundLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
+    	mapItemLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
+    }
+    this->addChild(mapItemLayer,3);
+    this->addChild(mapBackgroundLayer,0);
+    gbird=new GreenBird(ccp(size.width/2,size.height/2));
+    this->addChild(gbird->sprite, 2);
+    doubleTouchCount=0;tripleTouchCount=0;
      return true;
 }
 
@@ -125,8 +132,8 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		float x=ccpAdd(this->getPosition(),touch->getDelta()).x;
 		float y=ccpAdd(this->getPosition(),touch->getDelta()).y;
 		if(x>0)x=0;if(y>0)y=0;
-		if(x<size.width-map->boundingBox().size.width)x=size.width-map->boundingBox().size.width;
-		if(y<size.height-map->boundingBox().size.height)y=size.height-map->boundingBox().size.height;
+		if(x<size.width-mapBackgroundLayer->boundingBox().size.width)x=size.width-mapBackgroundLayer->boundingBox().size.width;
+		if(y<size.height-mapBackgroundLayer->boundingBox().size.height)y=size.height-mapBackgroundLayer->boundingBox().size.height;
 		this->setPosition(ccp(x,y));
 		doubleTouchCount=2;
 	}
