@@ -18,15 +18,17 @@ public:
     void inventorySelected();
     void storeSelected();
     void okButtonClicked();
+    void showEmotion(int num);
+    void showAvatar(int num);
     // implement the "static node()" method manually
     CREATE_FUNC(MainUIScene);
 	CCSize size;
-	CCSprite* buttonSurround;
+	CCSprite *buttonSurround,*emotion,*face;
 	CCMenuItemImage *multiplayerItem,*buddylistItem,*inventoryItem,*storeItem,*okButtonItem;
 	static CCScene *mainUIScene;
 };
 #include "TitleScene.hpp"
-#include "ShareData.hpp"
+#include "UserData.hpp"
 #include "MainUISceneBuddyListLayer.hpp"
 #include "MainUISceneInventoryLayer.hpp"
 #include "MainUISceneMultiplayerLayer.hpp"
@@ -76,14 +78,13 @@ bool MainUIScene::init()
 	logoutItem->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*59));
 	pMenu->addChild(logoutItem);
 
-	char facePath[80];
-	sprintf(facePath,"image/face/face%d.png",ShareData::face);
-	CCSprite *face=CCSprite::create(facePath);
+	face=CCSprite::create();
+	showAvatar(UserData::face);
 	face->setScale(size.height/ui_right->getContentSize().height*1.12);
 	face->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*39));
 	this->addChild(face,2);
 
-	CCLabelTTF *usernameLabel=CCLabelTTF::create(ShareData::username,"fonts/FZKaTong-M19T.ttf",30);
+	CCLabelTTF *usernameLabel=CCLabelTTF::create(UserData::username,"fonts/FZKaTong-M19T.ttf",30);
 	usernameLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*49));
 	usernameLabel->setColor(ccMAGENTA);
 	this->addChild(usernameLabel,2);
@@ -140,14 +141,14 @@ bool MainUIScene::init()
 	this->addChild(rankSprite,2);
 
 	char rankPath[80];
-	sprintf(rankPath,"image/rank/rank%d.png",ShareData::rank);
+	sprintf(rankPath,"image/rank/rank%d.png",UserData::rank);
 	CCSprite *rank=CCSprite::create(rankPath);
 	rank->setScale(rankSprite->boundingBox().size.width/rank->getContentSize().width);
 	rank->setPosition(rankSprite->getPosition());
 	this->addChild(rank,3);
 
 	char rankMessage[20];
-	sprintf(rankMessage,"Lv.%d",ShareData::rank);
+	sprintf(rankMessage,"Lv.%d",UserData::rank);
 	CCLabelTTF *rankLabel=CCLabelTTF::create(rankMessage,"fonts/FZKaTong-M19T.ttf",25);
 	rankLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*82,rankSprite->getPositionY()));
 	this->addChild(rankLabel,3);
@@ -167,7 +168,7 @@ bool MainUIScene::init()
 	this->addChild(magicBubble,2);
 
 	char magicBubbleNum[80];
-	sprintf(magicBubbleNum,"%d",ShareData::magicBubbleNum);
+	sprintf(magicBubbleNum,"%d",UserData::magicBubbleNum);
 	CCLabelTTF *magicBubbleLabel=CCLabelTTF::create(magicBubbleNum,"fonts/FZKaTong-M19T.ttf",25);
 	magicBubbleLabel->setPosition(ccp(rankLabel->getPositionX(),magicBubble->getPositionY()));
 	this->addChild(magicBubbleLabel,2);
@@ -177,12 +178,38 @@ bool MainUIScene::init()
 	okButtonItem->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/512*77));
 //	okButtonItem->setEnabled(false);
 	pMenu->addChild(okButtonItem);
+
+	emotion = CCSprite::create();
+	showEmotion(UserData::emotion);
+	emotion->setPosition(ccp(face->getPositionX()-face->boundingBox().size.width/4,face->getPositionY()+face->boundingBox().size.height/4));
+	this->addChild(emotion,3);
 	return true;
+}
+void MainUIScene::showAvatar(int num){
+	char facePath[80];
+	sprintf(facePath,"image/face/face%d.png",UserData::face);
+	face->initWithFile(facePath);
+}
+void MainUIScene::showEmotion(int num){
+	emotion->stopAllActions();
+	char emotionPath[80];
+	sprintf(emotionPath,"image/emotion/emotion%d.png",num);
+	CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage(emotionPath);
+	float w = texture->getContentSize().width / 2;
+	float h = texture->getContentSize().height;
+	emotion->setContentSize(CCSizeMake(w,h));
+	CCAnimation *animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.5f);
+	for(int i = 0; i <2; i ++)
+		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
+	CCAnimate *animate = CCAnimate::create(animation);
+	emotion->runAction(CCRepeatForever::create(animate));
+	emotion->setScale(face->boundingBox().size.height/2/emotion->boundingBox().size.height);
 }
 void MainUIScene::logout(){
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
-	ShareData::userid=-1;
+	UserData::userid=-1;
 	CCScene *pScene =TitleScene::scene();
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 }

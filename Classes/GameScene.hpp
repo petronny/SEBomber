@@ -15,11 +15,12 @@ public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::CCScene* scene();
     
-    // a selector callback
+    // a selector callback    	map->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
+
     void menuCloseCallback(CCObject* pSender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
-    GreenBird* gbird;
+    Hero* gbird;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
@@ -27,22 +28,28 @@ public:
 	virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
     CCTMXTiledMap *map;
-    int doubleTouchCount;
+    CCTMXLayer *mapBackgroundLayer,*mapItemLayer;
+    static CCScene *gameScene;
+    CCLayer *statusLayer,*chatLayer;
+    int doubleTouchCount,tripleTouchCount;
+    CCPoint firstTripleTouchPoint;
 };
-#include "ShareData.hpp"
+#include "UserData.hpp"
+#include "GameSceneChatLayer.hpp"
+#include "GameSceneMessageLayer.hpp"
+#include "GameSceneStatusLayer.hpp"
+CCScene *GameScene::gameScene;
 CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
-    CCScene *scene = CCScene::create();
+    gameScene = CCScene::create();
     
     // 'layer' is an autorelease object
-    GameScene *layer = GameScene::create();
-
+    CCLayer *gameLayer = GameScene::create();
     // add layer as a child to scene
-    scene->addChild(layer);
-
+    gameScene->addChild(gameLayer,0);
     // return the scene
-    return scene;
+    return gameScene;
 }
 
 // on "init" you need to initialize your instance
@@ -65,84 +72,118 @@ bool GameScene::init()
     size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-
-    // add a "close" icon to exit the progress. it's an autorelease object
-    CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-                                        "image/ui/CloseNormal.png",
-                                        "image/ui/CloseSelected.png",
-                                        this,
-                                        menu_selector(GameScene::menuCloseCallback));
+    statusLayer=GameSceneStatusLayer::create();
+    statusLayer->setPosition(ccp(0,size.height));
+    chatLayer=GameSceneChatLayer::create();
+    chatLayer->setPosition(ccp(0,-size.height));
+    gameScene->addChild(chatLayer,1);
+    gameScene->addChild(statusLayer,1);
+    CCMenuItemImage *pCloseItem = CCMenuItemImage::create("image/ui/CloseNormal.png","image/ui/CloseSelected.png",this,menu_selector(GameScene::menuCloseCallback));
     
-	pCloseItem->setPosition(ccp(origin.x + size.width - pCloseItem->getContentSize().width/2 ,
-                                origin.y + pCloseItem->getContentSize().height/2));
+	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,
+                                pCloseItem->getContentSize().height/2));
 
     // create menu, it's an autorelease object
     CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
-    CCLabelTTF* pLabel = CCLabelTTF::create(ShareData::username, "fonts/FZZYHandelGotD.ttf", 30);
-    
-    // position the label on the center of the screen
+    CCLabelTTF* pLabel = CCLabelTTF::create(UserData::username, "fonts/FZZYHandelGotD.ttf", 30);
     pLabel->setPosition(ccp(origin.x + size.width/2,
                             origin.y + size.height - pLabel->getContentSize().height));
-
-    // add the label as a child to this layer
     this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
-//    map->setScaleX(size.width/(map->getMapSize().width*map->getTileSize().width));
-//   map->setScaleY(size.height/(map->getMapSize().height*map->getTileSize().height));
     map->setPosition(CCPointZero);
-    this->addChild(map,0);
-	gbird=new GreenBird(ccp(size.width/2,size.height/2));
-	this->addChild(gbird->sprite, 2);
-	doubleTouchCount=0;
+    mapBackgroundLayer=map->layerNamed("background");
+    mapItemLayer=map->layerNamed("item");
+    if(map->getContentSize().height<size.height or map->getContentSize().width<size.width){
+    	mapBackgroundLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
+    	mapItemLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
+    }
+    this->addChild(mapItemLayer,3);
+    this->addChild(mapBackgroundLayer,0);
+    gbird=new GreenBird(ccp(size.width/2,size.height/2));
+    this->addChild(gbird->sprite, 2);
+    doubleTouchCount=0;tripleTouchCount=0;
      return true;
 }
 
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
-	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	this->setTouchEnabled(false);
-
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
+	if(statusLayer->getPositionY()!=size.height){
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
+		statusLayer->runAction(move);
+	}
+	if(chatLayer->getPositionY()!=-size.height){
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
+		chatLayer->runAction(move);
+	}
+	CCLayer* messageLayer=GameSceneMessageLayer::create();
+	gameScene->addChild(messageLayer,2);
 }
 void GameScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent){
 }
 void GameScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent){
 }
 void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
-	if(pTouches->count()==2){
+	if(pTouches->count()==2 and tripleTouchCount==0){
 		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
-		float x=ccpAdd(map->getPosition(),touch->getDelta()).x;
-		float y=ccpAdd(map->getPosition(),touch->getDelta()).y;
+		float x=ccpAdd(this->getPosition(),touch->getDelta()).x;
+		float y=ccpAdd(this->getPosition(),touch->getDelta()).y;
 		if(x>0)x=0;if(y>0)y=0;
-//		if(x>map->getMapSize().width)x=map->getMapSize().width;
-//		if(y>map->getMapSize().height)y=map->getMapSize().height;
-		map->setPosition(ccp(x,y));
+		if(x<size.width-mapBackgroundLayer->boundingBox().size.width)x=size.width-mapBackgroundLayer->boundingBox().size.width;
+		if(y<size.height-mapBackgroundLayer->boundingBox().size.height)y=size.height-mapBackgroundLayer->boundingBox().size.height;
+		this->setPosition(ccp(x,y));
 		doubleTouchCount=2;
+	}
+	if(pTouches->count()==3 and tripleTouchCount==0){
+		firstTripleTouchPoint=dynamic_cast<CCTouch*>(*pTouches->begin())->getLocationInView();
+		tripleTouchCount=3;
 	}
 }
 void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
-	if(pTouches->count()==1 and doubleTouchCount==0)
+	if(tripleTouchCount==3){
+		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
+		if(touch->getLocationInView().y-firstTripleTouchPoint.y>100){
+			if(chatLayer->getPositionY()!=-size.height){
+				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
+				chatLayer->runAction(move);
+			}else{
+				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,0)));
+				statusLayer->runAction(move);
+			}
+		}
+		if(touch->getLocationInView().y-firstTripleTouchPoint.y<-100){
+			if(statusLayer->getPositionY()!=size.height){
+				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
+				statusLayer->runAction(move);
+			}else{
+				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,0)));
+				chatLayer->runAction(move);
+			}
+		}
+	}
+	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
 	{
+		if(statusLayer->getPositionY()!=size.height){
+			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
+			statusLayer->runAction(move);
+		}
+		if(chatLayer->getPositionY()!=-size.height){
+			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
+			chatLayer->runAction(move);
+		}
 		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
 		CCPoint ptNode = convertTouchToNodeSpace(touch);
 		gbird->moveto(ptNode);
 	}
 	if(doubleTouchCount>0)doubleTouchCount--;
+	if(tripleTouchCount>0)tripleTouchCount--;
 }
 void GameScene::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate(this, 0);
     CCLayer::registerWithTouchDispatcher();
 }
-#endif // __HELLOWORLD_SCENE2_H__
+#endif

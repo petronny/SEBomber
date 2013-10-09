@@ -13,31 +13,24 @@ public:
     // a selector callback
     void loginButtonClicked(CCObject* pSender);
     void registButtonClicked(CCObject* pSender);
-    // implement the "static node()" method manually
-    CREATE_FUNC(TitleSceneLoginLayer);
-    static size_t writehtml(uint8_t* ptr,size_t size,size_t number,void *stream);
     void usernameFieldPressed(CCObject *sender);
     void passwdFieldPressed(CCObject *sender);
     void serverFieldPressed(CCObject *sender);
-    void checkNameExist();
+    // implement the "static node()" method manually
+    CREATE_FUNC(TitleSceneLoginLayer);
     void login();
-    void regist();
-    void fetchData();
     CCTextFieldTTF *usernameField,*passwdField,*serverField;
     CCMenuItemFont* passwdTapItem;
     CCLabelTTF * message;
 	CCSize size;
-    bool onTextFieldAttachWithIME(CCTextFieldTTF *sender);
-    bool onTextFieldDetachWithIME(CCTextFieldTTF *sender);
-    static int httpAns;
-    void menuCloseCallback(CCObject* pSender);
-    void showMessage(const char* st);
+	bool onTextFieldAttachWithIME(CCTextFieldTTF *sender);
+	bool onTextFieldDetachWithIME(CCTextFieldTTF *sender);
+	void menuCloseCallback(CCObject* pSender);
+	void showMessage(const char* st);
 };
 #include "MainUIScene.hpp"
-#include "ShareData.hpp"
+#include "UserData.hpp"
 #include "TitleSceneMessageLayer.hpp"
-int TitleSceneLoginLayer::httpAns;
-// onserverField "init" you need to initialize your instance
 bool TitleSceneLoginLayer::init()
 {
 	if (!CCLayer::init())
@@ -61,7 +54,7 @@ bool TitleSceneLoginLayer::init()
 	serverLabel->setPosition(ccp(size.width/2,menuBackground->boundingBox().size.height/32*27+size.height/64*7));
 	this->addChild(serverLabel,1);
 	serverField = CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZKaTong-M19T.ttf", 25);
-	serverField->setString("192.168.1.122");
+	serverField->setString("59.66.132.177");
 	serverField->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/8*6+size.height/64*7));
 	serverField->setDelegate(this);
 	this->addChild(serverField,1);
@@ -137,76 +130,12 @@ bool TitleSceneLoginLayer::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	return false;
 }
-void TitleSceneLoginLayer::checkNameExist(){
-	CURL *curl;
-	CURLcode res;
-	char buffer[10];
-	curl = curl_easy_init();
-	char postField[80],writeData[80],url[80];
-	if (curl){
-		sprintf(url,"http://%s:8080/Server/check.jsp",serverField->getString());
-		CCLog("%s!",url);
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"username=%s",usernameField->getString());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
-       curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-       curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
-		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
-		res = curl_easy_perform(curl);
-	}
-	if(res!=0){
-		showMessage("连接失败");
-		httpAns=-404;
-	}
-	else
-	    ShareData::userid=httpAns;
-    curl_easy_cleanup(curl);
-}
-void TitleSceneLoginLayer::regist(){
-	CURL *curl;
-	CURLcode res;
-	char buffer[10];
-	curl = curl_easy_init();
-	char postField[80],writeData[80],url[80];
-	if (curl){
-		sprintf(url,"http://%s:8080/Server/regist.jsp",serverField->getString());
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"username=%s&password=%s",usernameField->getString(),passwdField->getString());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
-       curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-       curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
-		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
-		res = curl_easy_perform(curl);
-	}
-    curl_easy_cleanup(curl);
-}
 void TitleSceneLoginLayer::login(){
-	CURL *curl;
-	CURLcode res;
-	char buffer[10];
-	curl = curl_easy_init();
-	char postField[80],writeData[80],url[80];
-	if (curl){
-		sprintf(url,"http://%s:8080/Server/login.jsp",serverField->getString());
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"username=%s&password=%s",usernameField->getString(),passwdField->getString());
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
-       curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-       curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,writehtml); //处理的函数
-		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
-		res = curl_easy_perform(curl);
-	}
-    curl_easy_cleanup(curl);
-    if(httpAns==-1 or httpAns==-404){
+	UserData::login();
+    if(UserData::httpAns==-1 or UserData::httpAns==-404){
     	showMessage("密码错误");
     }
     else{
-    	strcpy(ShareData::username,usernameField->getString());
-    	ShareData::userid=httpAns;
-    	fetchData();
     	CCScene *pScene = MainUIScene::scene();
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
     }
@@ -214,9 +143,9 @@ void TitleSceneLoginLayer::login(){
 void TitleSceneLoginLayer::loginButtonClicked(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	checkNameExist();
-	if(httpAns!=-404){
-		if(ShareData::userid==-1)
+	UserData::checkName();
+	if(UserData::httpAns!=-404){
+		if(UserData::userid==-1)
 			showMessage("用户名不存在");
 		else
 			login();
@@ -225,21 +154,15 @@ void TitleSceneLoginLayer::loginButtonClicked(CCObject* pSender)
 void TitleSceneLoginLayer::registButtonClicked(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	checkNameExist();
-	if(httpAns!=-404){
-		if(ShareData::userid!=-1)
+	UserData::checkName();
+	if(UserData::httpAns!=-404){
+		if(UserData::userid!=-1)
 			showMessage("该用户名已存在");
 		else{
-			regist();
+			UserData::regist();
 			login();
 		}
 	}
-}
-size_t TitleSceneLoginLayer::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream){
-	char ans[4];
-	ans[0]=*(ptr+12);	ans[1]=*(ptr+13);	ans[2]=*(ptr+14);	ans[3]=*(ptr+15);
-	httpAns=atoi(ans);
-	return size*number;
 }
 void TitleSceneLoginLayer::showMessage(const char* st){
 	CCLayer* messageLayer=TitleSceneMessageLayer::create();
@@ -247,7 +170,7 @@ void TitleSceneLoginLayer::showMessage(const char* st){
 	message->setPosition(ccp(size.width/2,size.height/2));
 	messageLayer->addChild(message,1);
 	this->getParent()->addChild(messageLayer,20);
-}//
+}
 void TitleSceneLoginLayer::menuCloseCallback(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
@@ -255,10 +178,5 @@ void TitleSceneLoginLayer::menuCloseCallback(CCObject* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
 #endif
-}
-void TitleSceneLoginLayer::fetchData(){
-	ShareData::face=1;
-	ShareData::rank=1;
-	ShareData::magicBubbleNum=0;
 }
 #endif // __TitleSceneLoginLayer_LAYER__
