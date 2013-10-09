@@ -25,6 +25,11 @@ bool MainUISceneInventoryLayer::init()
 		return false;
 	}
 	size = CCDirector::sharedDirector()->getWinSize();
+	CCSprite *messageBackground=CCSprite::create("image/ui/black_blank.png");
+	messageBackground->setScaleX(size.width/messageBackground->getContentSize().width);
+	messageBackground->setScaleY(size.height/messageBackground->getContentSize().height);
+	messageBackground->setPosition(ccp(size.width/2,size.height/2));
+	this->addChild(messageBackground,0);
 	CCLabelTTF *implentmenting=CCLabelTTF::create("Inventory施工中","fonts/FZKaTong-M19T.ttf",25);
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(implentmenting);
