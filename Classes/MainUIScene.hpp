@@ -42,7 +42,7 @@ CCScene* MainUIScene::scene()
 	// 'layer' is an autorelease object
 	MainUIScene *layer = MainUIScene::create();
 	// add layer as a child to scene
-	mainUIScene->addChild(layer,2);
+	mainUIScene->addChild(layer,2,10);
 	// return the scene
 	return mainUIScene;
 }
@@ -67,12 +67,12 @@ bool MainUIScene::init()
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
-	backgroundLayer->addChild(background,0);
+	backgroundLayer->addChild(background,-1);
 
 	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);
 	ui_right->setPosition(ccp(ui_right->boundingBox().size.width/2,size.height/2));
-	this->addChild(ui_right,1);
+	this->addChild(ui_right,1,10);
 
 	CCLabelTTF *logoutLabel=CCLabelTTF::create("登\t出","fonts/FZKaTong-M19T.ttf",25);
 	logoutLabel->setColor(ccYELLOW);
@@ -135,7 +135,7 @@ bool MainUIScene::init()
 	buttonSurround->setScaleX(multiplayerItem->boundingBox().size.width/buttonSurround->getContentSize().width);
 	buttonSurround->setScaleY(multiplayerItem->boundingBox().size.height/buttonSurround->getContentSize().height);
 	multiplayerSelected();
-	this->addChild(buttonSurround,3);
+	this->addChild(buttonSurround,3,11);
 
 	CCSprite *rankSprite=CCSprite::create("image/ui/rank.png");
 	rankSprite->setScale(size.height/16/rankSprite->getContentSize().height);
@@ -155,15 +155,17 @@ bool MainUIScene::init()
 	rankLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*82,rankSprite->getPositionY()));
 	this->addChild(rankLabel,3);
 
-	CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage("image/ui/magic_bubble.png");
-	float w = texture->getContentSize().width / 2;
+	CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage("image/ui/item_55.png");
+	CCTexture2D* texture2 = CCTextureCache::sharedTextureCache()->addImage("image/ui/item_57.png");
+	float w = texture->getContentSize().width ;
 	float h = texture->getContentSize().height;
 	CCAnimation *animation = CCAnimation::create();
 	animation->setDelayPerUnit(0.5f);
-	for(int i = 0; i <2; i ++)
-		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
+	//for(int i = 0; i <2; i ++)
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(0, 0, w, h));
+	animation->addSpriteFrameWithTexture(texture2, CCRectMake(0,0,w,h));
 	CCAnimate *animate = CCAnimate::create(animation);
-	CCSprite *magicBubble=CCSprite::create("image/ui/magic_bubble.png",CCRectMake(0,0,w,h));
+	CCSprite *magicBubble=CCSprite::create("image/ui/item_55.png",CCRectMake(0,0,w,h));
 	magicBubble->setScale(rankSprite->boundingBox().size.width/magicBubble->getContentSize().width*1.4);
 	magicBubble->runAction(CCRepeatForever::create(animate));
 	magicBubble->setPosition(ccp(rank->getPositionX(),size.height/128*45));
@@ -185,6 +187,8 @@ bool MainUIScene::init()
 	showEmotion(UserData::emotion);
 	emotion->setPosition(ccp(face->getPositionX()-face->boundingBox().size.width/4,face->getPositionY()+face->boundingBox().size.height/4));
 	this->addChild(emotion,3);
+
+
 	return true;
 }
 void MainUIScene::showAvatar(int num){

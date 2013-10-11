@@ -13,6 +13,7 @@ public :
 	static int magicBubbleNum;
 	static int emotion;
 	static int httpAns;
+	static int item[30];
 	static void fetchData();
 	static void regist();
 	static void login();
@@ -28,6 +29,7 @@ int UserData::rank=19;
 int UserData::magicBubbleNum=999;
 int UserData::emotion=3;
 int UserData::httpAns;
+int UserData::item[30];
 void UserData::fetchData(){
 	UserData::face=1;
 	UserData::rank=1;
