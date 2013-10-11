@@ -1,6 +1,7 @@
 #ifndef __USER_DATA__
 #define __USER_DATA__
 #include "curl/curl.h"
+#include "AniReader.hpp"
 class UserData{
 public :
 	static char server[20];
