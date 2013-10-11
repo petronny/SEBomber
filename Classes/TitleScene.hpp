@@ -20,12 +20,12 @@ public:
 	CCSize size;
 	CCSprite *bomb,*title,*touch;
 	static CCScene *titleScene;
+	void enableTouch();
     virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
     virtual void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
-
 };
 
 #include "TitleSceneLoginLayer.hpp"
@@ -61,7 +61,8 @@ bool TitleScene::init()
 	CCAction *moveback=CCEaseExponentialOut::create(CCMoveTo::create(2,ccp(size.width/2,size.height/2)));
 	CCFiniteTimeAction *showbackground=CCCallFuncN::create(this,callfuncN_selector(TitleScene::showBackground));
 	CCFiniteTimeAction *showtitle=CCCallFuncN::create(this,callfuncN_selector(TitleScene::showTitle));
-	CCAction *action=CCSequence::create(place,movein,showbackground,moveback,showtitle,NULL);
+	CCFiniteTimeAction *enabletouch=CCCallFuncN::create(this,callfuncN_selector(TitleScene::enableTouch));
+	CCAction *action=CCSequence::create(place,movein,showbackground,moveback,showtitle,enabletouch,NULL);
 	this->addChild(bomb,3);
 	bomb->runAction(action);
 	return true;
@@ -138,6 +139,8 @@ void TitleScene::showTitle(){
 	touch->runAction(fadein);
 	touch->runAction(CCRepeatForever::create(blink));
 	this->addChild(touch,4);
+}
+void TitleScene::enableTouch(){
 	this->setTouchEnabled(true);
 }
 void TitleScene::showLoginLayer(){

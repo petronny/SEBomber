@@ -1,12 +1,15 @@
 #ifndef __GREEN_BIRD__
 #define __GREEN_BIRD__
 #include "cocos2d.h"
-USING_NS_CC;
 #include "HeroClass.hpp"
-class GreenBird:public Hero{
+USING_NS_CC;
+class GreenBird:public CCNode,public Hero{
 public:
-	void moveto(CCPoint a);
 	GreenBird(CCPoint a);
+	void moveto(CCPoint a);
+	void clearMove();
+	CCSprite *sprite;
+	CCAction* action;
 };
 GreenBird::GreenBird(CCPoint a){
 	sprite = CCSprite::create();
@@ -20,12 +23,18 @@ GreenBird::GreenBird(CCPoint a){
 		animation->addSpriteFrameWithTexture(texture, CCRectMake(i * w, 0, w, h));
 	animate = CCAnimate::create(animation);
 	sprite->runAction(CCRepeatForever::create(animate));
-	move=NULL;
+	action=NULL;
 }
 void GreenBird::moveto(CCPoint ptNode){
-	if(move!=NULL)sprite->stopAction(move);
+	if(action!=NULL)return;
 	sprite->setFlipX(ptNode.x>sprite->getPosition().x);
-	move = CCMoveTo::create(ccpDistance(sprite->getPosition(),ptNode)/200, ptNode);
-	sprite->runAction(move);
+	CCMoveTo *move = CCMoveTo::create(ccpDistance(sprite->getPosition(),ptNode)/200, ptNode);
+	CCFiniteTimeAction *clearmove=CCCallFuncN::create(this,callfuncN_selector(GreenBird::clearMove));
+	action=CCSequence::create(move,clearmove,NULL);
+	sprite->runAction(action);
+}
+void GreenBird::clearMove(){
+	action=NULL;
+//	sprite->setVisible(false);
 }
 #endif

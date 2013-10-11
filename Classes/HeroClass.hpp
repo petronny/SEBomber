@@ -6,10 +6,9 @@ class Hero{
 public:
 	virtual ~Hero(){}
 	virtual void moveto(CCPoint a){}
-	CCSprite *sprite;
 	CCTexture2D* texture;
 	CCAnimate* animate;
 	CCAnimation* animation;
-	CCMoveTo* move;
+
 };
 #endif

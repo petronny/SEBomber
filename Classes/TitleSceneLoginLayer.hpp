@@ -3,7 +3,6 @@
 typedef unsigned int size_t;
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-#include "curl/curl.h"
 USING_NS_CC;
 class TitleSceneLoginLayer : public CCLayer ,public CCTextFieldDelegate
 {
@@ -150,6 +149,8 @@ void TitleSceneLoginLayer::loginButtonClicked(CCObject* pSender)
 		else
 			login();
 	}
+	else
+		showMessage("连接失败");
 }
 void TitleSceneLoginLayer::registButtonClicked(CCObject* pSender)
 {
@@ -163,6 +164,8 @@ void TitleSceneLoginLayer::registButtonClicked(CCObject* pSender)
 			login();
 		}
 	}
+	else
+		showMessage("连接失败");
 }
 void TitleSceneLoginLayer::showMessage(const char* st){
 	CCLayer* messageLayer=TitleSceneMessageLayer::create();

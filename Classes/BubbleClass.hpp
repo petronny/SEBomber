@@ -1,5 +1,5 @@
-#ifndef __BUBBLE_CLASS
-#define __BUBBLE_CLASS
+#ifndef __BUBBLE_CLASS__
+#define __BUBBLE_CLASS__
 #include "cocos2d.h"
 USING_NS_CC;
 using namespace CocosDenshion;
