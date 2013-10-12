@@ -191,8 +191,8 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
-		gbird->sprite->stopAction(gbird->action);
-		gbird->action=NULL;
+		gbird->clearMove();
+		gbird->stand();
 	}
 }
 void GameScene::registerWithTouchDispatcher()

@@ -11,7 +11,7 @@ public:
 	CCAnimation* animation;
 	CCFiniteTimeAction* action;
 	CCActionInterval* animate;
-	CCMoveTo* move;
+	//CCMoveTo* move;
 	float speed;
 	int num;
 	int direction;
