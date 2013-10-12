@@ -102,7 +102,7 @@ bool GameScene::init()
     }
     this->addChild(mapItemLayer,3);
     this->addChild(mapBackgroundLayer,0);
-    gbird=new GreenBird(ccp(map->getTileSize().width/2,map->getTileSize().height/2));
+    gbird=new GreenBird(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     this->addChild(gbird->sprite,2);
     doubleTouchCount=0;tripleTouchCount=0;
      return true;

@@ -6,17 +6,18 @@ USING_NS_CC;
 class GreenBird:public CCNode,public Hero{
 public:
 	CCAnimation* moveanimation(int);
-	GreenBird(CCPoint a);
+	GreenBird(CCPoint a,float);
 	void moveto(CCPoint a);
 	void clearMove();
 	void stand();
 	CCSprite *sprite;
 	CCAction* action;
 };
-GreenBird::GreenBird(CCPoint a){
+GreenBird::GreenBird(CCPoint a,float scale){
 	speed = 5;
 	direction = 5;
 	sprite = CCSprite::create();
+	sprite->setScale(scale);
 	sprite->setPosition(a);
 	AniReader::read("unit_bazzi.ani");
 	num = AniReader::num;
@@ -41,7 +42,6 @@ GreenBird::GreenBird(CCPoint a){
 =======
 	animation->addSpriteFrameWithTexture(texture,CCRectMake(0,0,w,h));*/
 	texture = CCTextureCache::sharedTextureCache()->addImage("image/unit/unit_bazzi.png");
-
 	/*animation[0] = CCAnimation::create();           //up
 	animation[0]->setDelayPerUnit(1.0/speed);
 	for(int i = 0; i < 4; i ++)
@@ -69,7 +69,7 @@ GreenBird::GreenBird(CCPoint a){
 	animation[5]->setDelayPerUnit(1.0);
 	animation[5]->addSpriteFrameWithTexture(texture, CCRectMake(list[44][0],list[44][1],list[44][2],list[44][3]));*/
 
-	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(1)));
+	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(4)));
 	sprite->runAction(animate);
 	action=NULL;
 }
@@ -137,9 +137,11 @@ void GreenBird::clearMove(){
 
 }
 void GreenBird::stand() {
+	if (direction == 5) return;
 	sprite->stopAction(animate);
 	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(direction+3)));
 	sprite->runAction(animate);
+	direction = 5;
 }
 
 #endif
