@@ -20,13 +20,15 @@ public:
     void menuCloseCallback(CCObject* pSender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
-    Hero* gbird;
+    GreenBird* gbird;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
+	CCPoint PositionToTileCoord(CCPoint cocosCoord);
+	CCPoint TileCoordToPosition(CCPoint tileCoord);
     CCTMXTiledMap *map;
     CCTMXLayer *mapBackgroundLayer,*mapItemLayer;
     static CCScene *gameScene;
@@ -92,7 +94,6 @@ bool GameScene::init()
                             origin.y + size.height - pLabel->getContentSize().height));
     this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
-    map->setPosition(CCPointZero);
     mapBackgroundLayer=map->layerNamed("background");
     mapItemLayer=map->layerNamed("item");
     if(map->getContentSize().height<size.height or map->getContentSize().width<size.width){
@@ -101,8 +102,8 @@ bool GameScene::init()
     }
     this->addChild(mapItemLayer,3);
     this->addChild(mapBackgroundLayer,0);
-    gbird=new GreenBird(ccp(size.width/2,size.height/2));
-    this->addChild(gbird->sprite, 2);
+    gbird=new GreenBird(ccp(map->getTileSize().width/2,map->getTileSize().height/2));
+    this->addChild(gbird->sprite,2);
     doubleTouchCount=0;tripleTouchCount=0;
      return true;
 }
@@ -121,6 +122,7 @@ void GameScene::menuCloseCallback(CCObject* pSender)
 	}
 	CCLayer* messageLayer=GameSceneMessageLayer::create();
 	gameScene->addChild(messageLayer,2);
+
 }
 void GameScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent){
 }
@@ -140,6 +142,19 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	if(pTouches->count()==3 and tripleTouchCount==0){
 		firstTripleTouchPoint=dynamic_cast<CCTouch*>(*pTouches->begin())->getLocationInView();
 		tripleTouchCount=3;
+	}
+	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
+	{
+		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
+		CCPoint aim=PositionToTileCoord(convertTouchToNodeSpace(touch));
+		CCPoint origin=PositionToTileCoord(gbird->sprite->getPosition());
+		if(aim.x==origin.x and aim.y==origin.y)return;
+		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
+			gbird->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
+		}
+		else{
+			gbird->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
+		}
 	}
 }
 void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
@@ -164,6 +179,8 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			}
 		}
 	}
+	if(doubleTouchCount>0)doubleTouchCount--;
+	if(tripleTouchCount>0)tripleTouchCount--;
 	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
 	{
 		if(statusLayer->getPositionY()!=size.height){
@@ -174,16 +191,24 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
-		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
-		CCPoint ptNode = convertTouchToNodeSpace(touch);
-		gbird->moveto(ptNode);
+		gbird->sprite->stopAction(gbird->action);
+		gbird->action=NULL;
 	}
-	if(doubleTouchCount>0)doubleTouchCount--;
-	if(tripleTouchCount>0)tripleTouchCount--;
 }
 void GameScene::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate(this, 0);
     CCLayer::registerWithTouchDispatcher();
+}
+CCPoint GameScene::PositionToTileCoord(CCPoint cocosCoord)
+{
+	int x=cocosCoord.x/mapBackgroundLayer->getScale()/mapBackgroundLayer->getMapTileSize().width;
+	int y=((mapBackgroundLayer->getLayerSize().height-cocosCoord.y)/mapBackgroundLayer->getScale()) / mapBackgroundLayer->getMapTileSize().height;
+	return ccp(x,y);
+}
+CCPoint GameScene::TileCoordToPosition(CCPoint tileCoord){
+	float x=mapBackgroundLayer->getMapTileSize().width*(0.5+tileCoord.x)*mapBackgroundLayer->getScale();
+	float y=mapBackgroundLayer->getLayerSize().height-mapBackgroundLayer->getMapTileSize().height*(0.5+tileCoord.y-1)*mapBackgroundLayer->getScale();
+	return ccp(x,y);
 }
 #endif
