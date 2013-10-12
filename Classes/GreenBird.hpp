@@ -9,6 +9,7 @@ public:
 	GreenBird(CCPoint a);
 	void moveto(CCPoint a);
 	void clearMove();
+	void stand();
 	CCSprite *sprite;
 	CCAction* action;
 };
@@ -70,7 +71,7 @@ GreenBird::GreenBird(CCPoint a){
 
 	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(1)));
 	sprite->runAction(animate);
-	move=NULL;
+	action=NULL;
 }
 CCAnimation* GreenBird::moveanimation(int dir)
 {
@@ -82,29 +83,42 @@ CCAnimation* GreenBird::moveanimation(int dir)
 		for(int i = dir * 4; i < dir * 4 + 4; i ++)
 			animation->addSpriteFrameWithTexture(texture, CCRectMake(list[i+9][0],list[i+9][1],list[i+9][2],list[i+9][3]));
 	} else {
-		animation->setDelayPerUnit(1.0);
+		animation->setDelayPerUnit(3.0);
 		animation->addSpriteFrameWithTexture(texture, CCRectMake(list[36+(dir-3)*4][0],list[36+(dir-3)*4][1],list[36+(dir-3)*4][2],list[36+(dir-3)*4][3]));
 	}
 	return animation;
 }
 void GreenBird::moveto(CCPoint ptNode){
 	if(action!=NULL)return;
-	sprite->setFlipX(ptNode.x>sprite->getPosition().x);
+	//sprite->setFlipX(ptNode.x>sprite->getPosition().x);
 	CCMoveTo *move = CCMoveTo::create(ccpDistance(sprite->getPosition(),ptNode)/200, ptNode);
 	CCFiniteTimeAction *clearmove=CCCallFuncN::create(this,callfuncN_selector(GreenBird::clearMove));
 	action=CCSequence::create(move,clearmove,NULL);
 	sprite->runAction(action);
 	sprite->setFlipX(ptNode.x<sprite->getPosition().x);
+	bool t = true;
 	if (ptNode.y < sprite->getPosition().y)
 	{
+		if (direction == 1)
+			t = false;
 		direction = 1;
 	} else if (ptNode.y > sprite->getPosition().y)
 	{
+		if (direction == 0)
+			t = false;
 		direction = 0;
-	} else direction = 2;
-	sprite->stopAction(animate);
-	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(direction)));
-	sprite->runAction(animate);
+	} else
+	{
+		if (direction == 2)
+			t = false;
+		direction = 2;
+	}
+	if (t)
+	{
+		sprite->stopAction(animate);
+		animate = CCRepeatForever::create(CCAnimate::create(moveanimation(direction)));
+		sprite->runAction(animate);
+	}
 	//animate->release();
 	//animate = CCAnimate::create(animation[direction]);
 	//animate->setAnimation(animation[direction]);
@@ -115,12 +129,17 @@ void GreenBird::moveto(CCPoint ptNode){
 	sprite->runAction(animate);*/
 }
 void GreenBird::clearMove(){
+	sprite->stopAction(action);
 	action=NULL;
-	if(move!=NULL)
-	{
-		//sprite->stopAction(action);
-		return;
-	}
+	/*sprite->stopAction(animate);
+	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(direction+3)));
+	sprite->runAction(animate);*/
+
+}
+void GreenBird::stand() {
+	sprite->stopAction(animate);
+	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(direction+3)));
+	sprite->runAction(animate);
 }
 
 #endif
