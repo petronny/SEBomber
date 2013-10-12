@@ -160,26 +160,32 @@ void MainUISceneStoreLayer::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 		blackboard->setPosition(ccp(size.width/2, size.height/2));
 		chooseLayer->addChild(blackboard,0,1);
 
+		CCSprite *blackboard2 = CCSprite::create("image/ui/black_blank.png");
+		blackboard2->setScaleX(size.width/2/blackboard->getContentSize().width);
+		blackboard2->setScaleY(size.height*9/20/blackboard->getContentSize().height);
+		blackboard2->setPosition(ccp(size.width/2, size.height*3/4));
+		chooseLayer->addChild(blackboard,1);
+
 		char itemSelect[80];
 		sprintf(itemSelect, "image/store/item_%d.png", n);
 		CCSprite* selectedItem = CCSprite::create(itemSelect);
 		selectedItem->setScale(blackboard->boundingBox().size.height/3/selectedItem->getContentSize().height);
 		selectedItem->setPosition(ccp(size.width/2,size.height/2+blackboard->boundingBox().size.height/5));
-		chooseLayer->addChild(selectedItem,1);
+		chooseLayer->addChild(selectedItem,2);
 
 		CCLabelTTF *message = CCLabelTTF::create("确定购买", "fonts/FZKaTong-M19T.ttf", 30);
 		message->setPosition(ccp(size.width/2, size.height/3));
 		message->setColor(ccYELLOW);
-		chooseLayer->addChild(message, 1);
+		chooseLayer->addChild(message, 2);
 
 		CCLabelTTF *numLabel = CCLabelTTF::create("x 1", "fonts/FZKaTong-M19T.ttf", 30);
 		numLabel->setPosition(ccp(size.width/2, size.height/2));
 		numLabel->setColor(ccYELLOW);
-		chooseLayer->addChild(numLabel,1);
+		chooseLayer->addChild(numLabel,2);
 
 		pMenu=CCMenu::create();
 		pMenu->setPosition( CCPointZero );
-		chooseLayer->addChild(pMenu,2);
+		chooseLayer->addChild(pMenu,4);
 		CCLabelTTF *isLabel = CCLabelTTF::create("是", "fonts/FZKaTong-M19T.ttf", 32);
 		//isSelected->setPosition(ccp(size.width/2-blackboard->boundingBox().size.width/4, size.height/5));
 		isLabel->setColor(ccYELLOW);
