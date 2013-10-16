@@ -71,7 +71,13 @@ bool MainUIScene::init()
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
-	backgroundLayer->addChild(background,-1);
+	backgroundLayer->addChild(background,-2);
+
+	CCSprite *blackBackground=CCSprite::create("image/ui/black_blank.png");
+	blackBackground->setScaleX(size.width/blackBackground->getContentSize().width);
+	blackBackground->setScaleY(size.height/blackBackground->getContentSize().height);
+	blackBackground->setPosition(ccp(size.width/2,size.height/2));
+	backgroundLayer->addChild(blackBackground,-1);
 
 	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);

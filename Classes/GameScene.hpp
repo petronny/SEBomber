@@ -158,18 +158,22 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
 		if(touch->getLocationInView().y-firstTripleTouchPoint.y>100){
 			if(chatLayer->getPositionY()!=-size.height){
+				chatLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 				chatLayer->runAction(move);
 			}else{
+				statusLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,0)));
 				statusLayer->runAction(move);
 			}
 		}
 		if(touch->getLocationInView().y-firstTripleTouchPoint.y<-100){
 			if(statusLayer->getPositionY()!=size.height){
+				statusLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
 				statusLayer->runAction(move);
 			}else{
+				chatLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,0)));
 				chatLayer->runAction(move);
 			}
@@ -180,10 +184,12 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
 	{
 		if(statusLayer->getPositionY()!=size.height){
+			statusLayer->stopAllActions();
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
 			statusLayer->runAction(move);
 		}
 		if(chatLayer->getPositionY()!=-size.height){
+			chatLayer->stopAllActions();
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}

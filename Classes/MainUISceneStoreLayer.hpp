@@ -44,12 +44,6 @@ bool MainUISceneStoreLayer::init()
 	ui_right =(CCSprite*) MainUIScene::mainUIScene->getChildByTag(10)->getChildByTag(10);
 	menuItem =(CCSprite*) MainUIScene::mainUIScene->getChildByTag(10)->getChildByTag(11);
 
-	CCSprite *background=CCSprite::create("image/ui/black_blank.png");
-	background->setScaleX(size.width/background->getContentSize().width);
-	background->setScaleY(size.height/background->getContentSize().height);
-	background->setPosition(ccp(size.width/2,size.height/2));
-	MainUIScene::mainUIScene->addChild(background,0);
-
 	n=-1;
 	itemNum=10;
 	char *itemName[itemNum], *itemValue[itemNum];
