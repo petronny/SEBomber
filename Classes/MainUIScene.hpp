@@ -20,11 +20,13 @@ public:
     void okButtonClicked();
     void showEmotion(int num);
     void showAvatar(int num);
+    void showCoinNum(int num);
     // implement the "static node()" method manually
     CREATE_FUNC(MainUIScene);
 	CCSize size;
 	CCSprite *buttonSurround,*emotion,*face;
 	CCMenuItemImage *multiplayerItem,*buddylistItem,*inventoryItem,*storeItem,*okButtonItem;
+	CCLabelTTF *coinLabel;
 	static CCScene *mainUIScene;
 };
 #include "TitleScene.hpp"
@@ -172,12 +174,7 @@ bool MainUIScene::init()
 	coin->runAction(CCRepeatForever::create(animate));
 	coin->setPosition(ccp(rank->getPositionX(),size.height/128*45));
 	this->addChild(coin,2);
-
-	char coinNum[80];
-	sprintf(coinNum,"%d",UserData::current->coinNum);
-	CCLabelTTF *coinLabel=CCLabelTTF::create(coinNum,"fonts/FZKaTong-M19T.ttf",25);
-	coinLabel->setPosition(ccp(rankLabel->getPositionX(),coin->getPositionY()));
-	this->addChild(coinLabel,2);
+	showCoinNum(UserData::current->coinNum);
 
 	okButtonItem=CCMenuItemImage::create("image/ui/ok_button_normal.png","image/ui/ok_button_selected.png","image/ui/ok_button_disabled.png",this,menu_selector(MainUIScene::okButtonClicked));
 	okButtonItem->setScale(size.height/ui_right->getContentSize().height);
@@ -212,6 +209,14 @@ void MainUIScene::showEmotion(int num){
 	CCAnimate *animate = CCAnimate::create(animation);
 	emotion->runAction(CCRepeatForever::create(animate));
 	emotion->setScale(face->boundingBox().size.height/2/emotion->boundingBox().size.height);
+}
+void MainUIScene::showCoinNum(int num){
+	char coinNum[80];
+	sprintf(coinNum,"%d",UserData::current->coinNum);
+	this->removeChild(coinLabel);
+	coinLabel=CCLabelTTF::create(coinNum,"fonts/FZKaTong-M19T.ttf",25);
+	coinLabel->setPosition(ccp(this->getChildByTag(10)->boundingBox().size.width/128*82,size.height/128*45));
+	this->addChild(coinLabel,2);
 }
 void MainUIScene::logout(){
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");

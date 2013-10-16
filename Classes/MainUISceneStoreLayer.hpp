@@ -217,6 +217,7 @@ void MainUISceneStoreLayer::isSelect()
 	UserData::current->item[n]++;
 	UserData::current->coinNum-=value[n];
 	MainUIScene::mainUIScene->removeChild(chooseLayer, true);
+	((MainUIScene *)MainUIScene::mainUIScene->getChildByTag(10))->showCoinNum(UserData::current->coinNum);
 	this->removeChildByTag(1111, true);
 	this->setTouchEnabled(true);
 }
