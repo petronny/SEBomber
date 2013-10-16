@@ -89,10 +89,6 @@ bool GameScene::init()
     CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
-    CCLabelTTF* pLabel = CCLabelTTF::create(UserData::username, "fonts/FZZYHandelGotD.ttf", 30);
-    pLabel->setPosition(ccp(origin.x + size.width/2,
-                            origin.y + size.height - pLabel->getContentSize().height));
-    this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
     mapBackgroundLayer=map->layerNamed("background");
     mapItemLayer=map->layerNamed("item");

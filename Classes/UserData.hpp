@@ -4,37 +4,37 @@
 #include "AniReader.hpp"
 class UserData{
 public :
-	static char server[20];
-	static char username[20];
-	static char passwd[20];
-	static int userid;
-	static int face;
-	static int rank;
-	static int magicBubbleNum;
-	static int emotion;
+	static UserData *current;
+	char server[20];
+	char username[20];
+	char passwd[20];
+	int userid;
+	int face;
+	int rank;
+	int coinNum;
+	int emotion;
 	static int httpAns;
-	static int item[30];
-	static void fetchData();
-	static void regist();
-	static void login();
-	static void checkName();
+	int item[30];
+	int buddylist[40];
+	void fetchBasicData();
+	void fetchExtraData();
+	void regist();
+	void login();
+	void checkName();
 	static size_t writehtml(uint8_t* ptr,size_t size,size_t number,void *stream);
 };
-char UserData::server[20];
-char UserData::passwd[20];
-char UserData::username[20]="ROOT";
-int UserData::userid=1;
-int UserData::face=2;
-int UserData::rank=19;
-int UserData::magicBubbleNum=999;
-int UserData::emotion=3;
+UserData *UserData::current=new UserData;
 int UserData::httpAns;
-int UserData::item[30];
-void UserData::fetchData(){
-	UserData::face=1;
-	UserData::rank=1;
-	UserData::magicBubbleNum=0;
-	UserData::emotion=1;
+void UserData::fetchExtraData(){
+}
+void UserData::fetchBasicData(){
+	sprintf(this->server,"59.66.132.177");
+	sprintf(this->username,"ROOT");
+	this->userid=1;
+	this->face=2;
+	this->rank=19;
+	this->coinNum=999;
+	this->emotion=3;
 }
 void UserData::checkName(){
 	CURL *curl;
@@ -58,7 +58,7 @@ void UserData::checkName(){
 		httpAns=-404;
 	}
 	else
-	    UserData::userid=httpAns;
+	    userid=httpAns;
     curl_easy_cleanup(curl);
 }
 void UserData::login(){
@@ -80,9 +80,9 @@ void UserData::login(){
 	}
     curl_easy_cleanup(curl);
     if(httpAns!=-1 and httpAns!=-404){
-    	sprintf(UserData::username,"%s",username);
     	UserData::userid=httpAns;
-    	UserData::fetchData();
+    	fetchBasicData();
+    	fetchExtraData();
     }
 }
 void UserData::regist(){

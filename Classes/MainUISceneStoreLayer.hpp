@@ -214,8 +214,8 @@ void MainUISceneStoreLayer::noSelect()
 }
 void MainUISceneStoreLayer::isSelect()
 {
-	UserData::item[n]++;
-	UserData::magicBubbleNum-=value[n];
+	UserData::current->item[n]++;
+	UserData::current->coinNum-=value[n];
 	MainUIScene::mainUIScene->removeChild(chooseLayer, true);
 	this->removeChildByTag(1111, true);
 	this->setTouchEnabled(true);
