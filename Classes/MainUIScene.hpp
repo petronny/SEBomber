@@ -20,11 +20,13 @@ public:
     void okButtonClicked();
     void showEmotion(int num);
     void showAvatar(int num);
+    void showCoinNum(int num);
     // implement the "static node()" method manually
     CREATE_FUNC(MainUIScene);
 	CCSize size;
 	CCSprite *buttonSurround,*emotion,*face;
 	CCMenuItemImage *multiplayerItem,*buddylistItem,*inventoryItem,*storeItem,*okButtonItem;
+	CCLabelTTF *coinLabel;
 	static CCScene *mainUIScene;
 };
 #include "TitleScene.hpp"
@@ -61,13 +63,21 @@ bool MainUIScene::init()
 	pMenu->setPosition( CCPointZero );
 	this->addChild(pMenu,2);
 
+	UserData::current->fetchBasicData();
+	UserData::current->fetchExtraData();
 	CCLayer *backgroundLayer = CCLayer::create();
 	mainUIScene->addChild(backgroundLayer,0);
 	CCSprite *background=CCSprite::create("image/ui/bg.jpg");
 	background->setPosition( ccp(size.width/2, size.height/2) );
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
-	backgroundLayer->addChild(background,-1);
+	backgroundLayer->addChild(background,-2);
+
+	CCSprite *blackBackground=CCSprite::create("image/ui/black_blank.png");
+	blackBackground->setScaleX(size.width/blackBackground->getContentSize().width);
+	blackBackground->setScaleY(size.height/blackBackground->getContentSize().height);
+	blackBackground->setPosition(ccp(size.width/2,size.height/2));
+	backgroundLayer->addChild(blackBackground,-1);
 
 	CCSprite *ui_right=CCSprite::create("image/ui/ui_right.png");
 	ui_right->setScale(size.height/ui_right->getContentSize().height);
@@ -81,12 +91,12 @@ bool MainUIScene::init()
 	pMenu->addChild(logoutItem);
 
 	face=CCSprite::create();
-	showAvatar(UserData::face);
+	showAvatar(UserData::current->face);
 	face->setScale(size.height/ui_right->getContentSize().height*1.12);
 	face->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*39));
 	this->addChild(face,2);
 
-	CCLabelTTF *usernameLabel=CCLabelTTF::create(UserData::username,"fonts/FZKaTong-M19T.ttf",30);
+	CCLabelTTF *usernameLabel=CCLabelTTF::create(UserData::current->username,"fonts/FZKaTong-M19T.ttf",30);
 	usernameLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*67,size.height/64*49));
 	usernameLabel->setColor(ccMAGENTA);
 	this->addChild(usernameLabel,2);
@@ -143,14 +153,14 @@ bool MainUIScene::init()
 	this->addChild(rankSprite,2);
 
 	char rankPath[80];
-	sprintf(rankPath,"image/rank/rank%d.png",UserData::rank);
+	sprintf(rankPath,"image/rank/rank%d.png",UserData::current->rank);
 	CCSprite *rank=CCSprite::create(rankPath);
 	rank->setScale(rankSprite->boundingBox().size.width/rank->getContentSize().width);
 	rank->setPosition(rankSprite->getPosition());
 	this->addChild(rank,3);
 
 	char rankMessage[20];
-	sprintf(rankMessage,"Lv.%d",UserData::rank);
+	sprintf(rankMessage,"Lv.%d",UserData::current->rank);
 	CCLabelTTF *rankLabel=CCLabelTTF::create(rankMessage,"fonts/FZKaTong-M19T.ttf",25);
 	rankLabel->setPosition(ccp(ui_right->boundingBox().size.width/128*82,rankSprite->getPositionY()));
 	this->addChild(rankLabel,3);
@@ -165,17 +175,12 @@ bool MainUIScene::init()
 	animation->addSpriteFrameWithTexture(texture, CCRectMake(0, 0, w, h));
 	animation->addSpriteFrameWithTexture(texture2, CCRectMake(0,0,w,h));
 	CCAnimate *animate = CCAnimate::create(animation);
-	CCSprite *magicBubble=CCSprite::create("image/ui/item_55.png",CCRectMake(0,0,w,h));
-	magicBubble->setScale(rankSprite->boundingBox().size.width/magicBubble->getContentSize().width*1.4);
-	magicBubble->runAction(CCRepeatForever::create(animate));
-	magicBubble->setPosition(ccp(rank->getPositionX(),size.height/128*45));
-	this->addChild(magicBubble,2);
-
-	char magicBubbleNum[80];
-	sprintf(magicBubbleNum,"%d",UserData::magicBubbleNum);
-	CCLabelTTF *magicBubbleLabel=CCLabelTTF::create(magicBubbleNum,"fonts/FZKaTong-M19T.ttf",25);
-	magicBubbleLabel->setPosition(ccp(rankLabel->getPositionX(),magicBubble->getPositionY()));
-	this->addChild(magicBubbleLabel,2);
+	CCSprite *coin=CCSprite::create("image/ui/item_55.png",CCRectMake(0,0,w,h));
+	coin->setScale(rankSprite->boundingBox().size.width/coin->getContentSize().width*1.4);
+	coin->runAction(CCRepeatForever::create(animate));
+	coin->setPosition(ccp(rank->getPositionX(),size.height/128*45));
+	this->addChild(coin,2);
+	showCoinNum(UserData::current->coinNum);
 
 	okButtonItem=CCMenuItemImage::create("image/ui/ok_button_normal.png","image/ui/ok_button_selected.png","image/ui/ok_button_disabled.png",this,menu_selector(MainUIScene::okButtonClicked));
 	okButtonItem->setScale(size.height/ui_right->getContentSize().height);
@@ -184,16 +189,15 @@ bool MainUIScene::init()
 	pMenu->addChild(okButtonItem);
 
 	emotion = CCSprite::create();
-	showEmotion(UserData::emotion);
+	showEmotion(UserData::current->emotion);
 	emotion->setPosition(ccp(face->getPositionX()-face->boundingBox().size.width/4,face->getPositionY()+face->boundingBox().size.height/4));
 	this->addChild(emotion,3);
-
 
 	return true;
 }
 void MainUIScene::showAvatar(int num){
 	char facePath[80];
-	sprintf(facePath,"image/face/face%d.png",UserData::face);
+	sprintf(facePath,"image/face/face%d.png",num);
 	face->initWithFile(facePath);
 }
 void MainUIScene::showEmotion(int num){
@@ -212,10 +216,18 @@ void MainUIScene::showEmotion(int num){
 	emotion->runAction(CCRepeatForever::create(animate));
 	emotion->setScale(face->boundingBox().size.height/2/emotion->boundingBox().size.height);
 }
+void MainUIScene::showCoinNum(int num){
+	char coinNum[80];
+	sprintf(coinNum,"%d",UserData::current->coinNum);
+	this->removeChild(coinLabel);
+	coinLabel=CCLabelTTF::create(coinNum,"fonts/FZKaTong-M19T.ttf",25);
+	coinLabel->setPosition(ccp(this->getChildByTag(10)->boundingBox().size.width/128*82,size.height/128*45));
+	this->addChild(coinLabel,2);
+}
 void MainUIScene::logout(){
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 	SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
-	UserData::userid=-1;
+	UserData::current->userid=-1;
 	CCScene *pScene =TitleScene::scene();
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));
 }

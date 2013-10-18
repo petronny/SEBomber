@@ -130,7 +130,7 @@ bool TitleSceneLoginLayer::onTextFieldDetachWithIME(CCTextFieldTTF *sender)
 	return false;
 }
 void TitleSceneLoginLayer::login(){
-	UserData::login();
+	UserData::current->login();
     if(UserData::httpAns==-1 or UserData::httpAns==-404){
     	showMessage("密码错误");
     }
@@ -142,9 +142,12 @@ void TitleSceneLoginLayer::login(){
 void TitleSceneLoginLayer::loginButtonClicked(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	UserData::checkName();
+	sprintf(UserData::current->server,"%s",serverField->getString());
+	sprintf(UserData::current->username,"%s",usernameField->getString());
+	sprintf(UserData::current->passwd,"%s",passwdField->getString());
+	UserData::current->checkName();
 	if(UserData::httpAns!=-404){
-		if(UserData::userid==-1)
+		if(UserData::current->userid==-1)
 			showMessage("用户名不存在");
 		else
 			login();
@@ -155,12 +158,15 @@ void TitleSceneLoginLayer::loginButtonClicked(CCObject* pSender)
 void TitleSceneLoginLayer::registButtonClicked(CCObject* pSender)
 {
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
-	UserData::checkName();
+	sprintf(UserData::current->server,"%s",serverField->getString());
+	sprintf(UserData::current->username,"%s",usernameField->getString());
+	sprintf(UserData::current->passwd,"%s",passwdField->getString());
+	UserData::current->checkName();
 	if(UserData::httpAns!=-404){
-		if(UserData::userid!=-1)
+		if(UserData::current->userid!=-1)
 			showMessage("该用户名已存在");
 		else{
-			UserData::regist();
+			UserData::current->regist();
 			login();
 		}
 	}

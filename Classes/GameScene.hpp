@@ -89,10 +89,6 @@ bool GameScene::init()
     CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
-    CCLabelTTF* pLabel = CCLabelTTF::create(UserData::username, "fonts/FZZYHandelGotD.ttf", 30);
-    pLabel->setPosition(ccp(origin.x + size.width/2,
-                            origin.y + size.height - pLabel->getContentSize().height));
-    this->addChild(pLabel, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
     mapBackgroundLayer=map->layerNamed("background");
     mapItemLayer=map->layerNamed("item");
@@ -102,7 +98,7 @@ bool GameScene::init()
     }
     this->addChild(mapItemLayer,3);
     this->addChild(mapBackgroundLayer,0);
-    gbird=new GreenBird(ccp(map->getTileSize().width/2,map->getTileSize().height/2));
+    gbird=new GreenBird(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     this->addChild(gbird->sprite,2);
     doubleTouchCount=0;tripleTouchCount=0;
      return true;
@@ -162,18 +158,22 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 		CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
 		if(touch->getLocationInView().y-firstTripleTouchPoint.y>100){
 			if(chatLayer->getPositionY()!=-size.height){
+				chatLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 				chatLayer->runAction(move);
 			}else{
+				statusLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,0)));
 				statusLayer->runAction(move);
 			}
 		}
 		if(touch->getLocationInView().y-firstTripleTouchPoint.y<-100){
 			if(statusLayer->getPositionY()!=size.height){
+				statusLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
 				statusLayer->runAction(move);
 			}else{
+				chatLayer->stopAllActions();
 				CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,0)));
 				chatLayer->runAction(move);
 			}
@@ -184,10 +184,12 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
 	{
 		if(statusLayer->getPositionY()!=size.height){
+			statusLayer->stopAllActions();
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
 			statusLayer->runAction(move);
 		}
 		if(chatLayer->getPositionY()!=-size.height){
+			chatLayer->stopAllActions();
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
