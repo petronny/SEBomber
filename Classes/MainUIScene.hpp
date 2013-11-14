@@ -139,7 +139,7 @@ bool MainUIScene::init()
 	CCLabelTTF *storeLabel=CCLabelTTF::create("道具商店","fonts/FZKaTong-M19T.ttf",25);
 	storeLabel->setPosition(storeItem->getPosition());
 	storeLabel->setColor(ccYELLOW);
-	this->addChild(storeLabel,3);
+	this->addChild(storeLabel,3,100);
 
 	buttonSurround=CCSprite::create("image/ui/button_surround.png");
 	buttonSurround->setScaleX(multiplayerItem->boundingBox().size.width/buttonSurround->getContentSize().width);

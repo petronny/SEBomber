@@ -2,7 +2,9 @@
 #define __MAINUI_SCENE_STORE_LAYER__
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
+#include "ItemData.h"
 USING_NS_CC;
+
 using namespace CocosDenshion;
 class MainUISceneStoreLayer : public CCLayer
 {
@@ -23,11 +25,14 @@ public:
 	CCSprite *ui_right, *menuItem;
 	CCLayer *chooseLayer;
 	CCMenu* pMenu;
-	int doubleTouchCount, itemNum,n, value[20];
+	int doubleTouchCount,n;
+	static int itemNum;
+
 	float w,h;
 };
 // onserverField "init" you need to initialize your instance
 #include "MainUISceneChooseLayer.hpp"
+int MainUISceneStoreLayer::itemNum;
 bool MainUISceneStoreLayer::init()
 {
 	if (!CCLayer::init()){
@@ -46,17 +51,6 @@ bool MainUISceneStoreLayer::init()
 
 	n=-1;
 	itemNum=10;
-	char *itemName[itemNum], *itemValue[itemNum];
-	itemName[0]="南瓜头";  itemValue[0]="￥ 5"; value[0]=5;
-	itemName[1]="彩色泡泡"; itemValue[1]="￥ 8"; value[1]=8;
-	itemName[2]="无敌盾"; itemValue[2]="￥ 15"; value[2]=15;
-	itemName[3]="极速鞋"; itemValue[3]="￥ 10"; value[3]=10;
-	itemName[4]="极速鞋"; itemValue[4]="￥ 10"; value[4]=10;
-	itemName[5]="极速鞋"; itemValue[5]="￥ 10"; value[5]=10;
-	itemName[6]="极速鞋"; itemValue[6]="￥ 10"; value[6]=10;
-	itemName[7]="极速鞋"; itemValue[7]="￥ 10"; value[7]=10;
-	itemName[8]="极速鞋"; itemValue[8]="￥ 10"; value[8]=10;
-	itemName[9]="极速鞋"; itemValue[9]="￥ 10"; value[9]=10;
 
 	w=(size.width-ui_right->boundingBox().size.width)/3;
 	h=w/8*5;
@@ -167,7 +161,7 @@ void MainUISceneStoreLayer::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 		selectedItem->setPosition(ccp(size.width/2,size.height/2+blackboard->boundingBox().size.height/5));
 		chooseLayer->addChild(selectedItem,2);
 
-		CCLabelTTF *message = CCLabelTTF::create("确定购买", "fonts/FZKaTong-M19T.ttf", 30);
+		CCLabelTTF *message = CCLabelTTF::create("确定购买？", "fonts/FZKaTong-M19T.ttf", 30);
 		message->setPosition(ccp(size.width/2, size.height/3));
 		message->setColor(ccYELLOW);
 		chooseLayer->addChild(message, 2);

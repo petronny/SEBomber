@@ -15,16 +15,23 @@ public :
 	int emotion;
 	static int httpAns;
 	int item[30];
+	bool itemSelect[30];
 	int buddylist[40];
 	void fetchBasicData();
 	void fetchExtraData();
 	void regist();
 	void login();
 	void checkName();
+	UserData();
 	static size_t writehtml(uint8_t* ptr,size_t size,size_t number,void *stream);
 };
 UserData *UserData::current=new UserData;
 int UserData::httpAns;
+UserData::UserData(){
+	coinNum=100;
+	memset(item, 0, sizeof(item));
+	memset(itemSelect, 0, sizeof(itemSelect));
+}
 void UserData::fetchExtraData(){
 }
 void UserData::fetchBasicData(){
