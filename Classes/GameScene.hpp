@@ -3,7 +3,11 @@
 
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-#include "GreenBird.hpp"
+#include "HeroBazzi.hpp"
+#include "HeroCappi.hpp"
+#include "HeroDao.hpp"
+#include "HeroMarid.hpp"
+#include "BubbleClass.hpp"
 #include "math.h"
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -20,13 +24,17 @@ public:
     void menuCloseCallback(CCObject* pSender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
-    GreenBird* gbird;
+    Hero* hero;
+    Bubble* bubble;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
+    void sendmessage();
+    void getcommand();
+    void test();
 	CCPoint PositionToTileCoord(CCPoint cocosCoord);
 	CCPoint TileCoordToPosition(CCPoint tileCoord);
     CCTMXTiledMap *map;
@@ -98,8 +106,11 @@ bool GameScene::init()
     }
     this->addChild(mapItemLayer,3);
     this->addChild(mapBackgroundLayer,0);
-    gbird=new GreenBird(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    this->addChild(gbird->sprite,2);
+    bubble = new Bubble(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale(),1,1);
+    hero = new HeroMarid();
+    hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    this->addChild(hero->sprite,2);
+    this->addChild(bubble->sprite,1);
     doubleTouchCount=0;tripleTouchCount=0;
      return true;
 }
@@ -143,13 +154,13 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	{
 		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
 		CCPoint aim=PositionToTileCoord(convertTouchToNodeSpace(touch));
-		CCPoint origin=PositionToTileCoord(gbird->sprite->getPosition());
+		CCPoint origin=PositionToTileCoord(hero->sprite->getPosition());
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
-			gbird->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
+			hero->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
 		}
 		else{
-			gbird->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
+			hero->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
 		}
 	}
 }
@@ -193,8 +204,8 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
-		gbird->clearMove();
-		gbird->stand();
+		hero->clearMove();
+		hero->stand();
 	}
 }
 void GameScene::registerWithTouchDispatcher()
