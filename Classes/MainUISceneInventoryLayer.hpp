@@ -19,13 +19,18 @@ public:
     virtual void registerWithTouchDispatcher();
     void isSelect();
     void noSelect();
+    void sellItemSelected();
+    void dressOnItemSelected();
+    void putOffItemSelected();
+    void select();
 
     CREATE_FUNC(MainUISceneInventoryLayer);
     CCSize size;
-    CCSprite *ui_right, *menuItem;
-    CCLayer *chooseLayer;
+    CCSprite *ui_right, *menuItem, *buttonSurround;
+    CCLayer *chooseLayer, *selectLayer;
     CCMenu* pMenu;
-    int itemNum,n, myNum,doubleTouchCount, selectItemNumber[MAX_NUM_ITEM];
+    CCMenuItemImage *dressOnItem, *putOffItem, *sellItem;
+    int itemNum,n, myNum,doubleTouchCount, selectItemNumber[MAX_NUM_ITEM], selectedNumber, sellEnable;
     float w, h;
 };
 // onserverField "init" you need to initialize your instance
@@ -71,7 +76,7 @@ bool MainUISceneInventoryLayer::init()
 			name->setPositionX(itemBackground->getPositionX()+h/3);
 			name->setPositionY(itemBackground->getPositionY()+h/4);
 			name->setColor(ccYELLOW);
-			this->addChild(name, 2);
+			this->addChild(name, 2, 100+myNum);
 
 			char num[5];
 			sprintf(num, "x %d", UserData::current->item[i]);
@@ -79,7 +84,7 @@ bool MainUISceneInventoryLayer::init()
 			value->setPositionX(itemBackground->getPositionX()+h/3);
 			value->setPositionY(itemBackground->getPositionY()-h/4);
 			value->setColor(ccYELLOW);
-			this->addChild(value,2);
+			this->addChild(value,2, 10000+myNum);
 
 			if(UserData::current->itemSelect[i]){
 				CCSprite *ok=CCSprite::create("image/ui/common_gate.png");
@@ -87,7 +92,7 @@ bool MainUISceneInventoryLayer::init()
 				ok->setScaleY(h*2/5/ok->getContentSize().height);
 				ok->setPositionX(itemBackground->getPositionX()-w/3);
 				ok->setPositionY(itemBackground->getPositionY()-h/3);
-				this->addChild(ok,2,10000+myNum);
+				this->addChild(ok,2,100000+myNum);
 			}
 
 			selectItemNumber[myNum]=i;
@@ -151,57 +156,65 @@ void MainUISceneInventoryLayer::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
 	if(pTouches->count()==1 and doubleTouchCount==0 and n!=-1 and n<myNum){
 		this->setTouchEnabled(false);
 		chooseLayer=MainUISceneChooseLayer::create();
-		MainUIScene::mainUIScene->addChild(chooseLayer,4);
-
-		CCSprite *blackboard = CCSprite::create("image/ui/black_blank.png");
-		blackboard->setScaleX(size.width/2/blackboard->getContentSize().width);
-		blackboard->setScaleY(size.height*9/10/blackboard->getContentSize().height);
-		blackboard->setPosition(ccp(size.width/2, size.height/2));
-		chooseLayer->addChild(blackboard,0,1);
-
-		CCSprite *blackboard2 = CCSprite::create("image/ui/black_blank.png");
-		blackboard2->setScaleX(size.width/2/blackboard->getContentSize().width);
-		blackboard2->setScaleY(size.height*9/20/blackboard->getContentSize().height);
-		blackboard2->setPosition(ccp(size.width/2, size.height*3/4));
-		chooseLayer->addChild(blackboard,1);
-
-		char itemSelect[80];
-		sprintf(itemSelect, "image/store/item_%d.png", selectItemNumber[n]);
-		CCSprite* selectedItem = CCSprite::create(itemSelect);
-		selectedItem->setScale(blackboard->boundingBox().size.height/3/selectedItem->getContentSize().height);
-		selectedItem->setPosition(ccp(size.width/2,size.height/2+blackboard->boundingBox().size.height/5));
-		chooseLayer->addChild(selectedItem,2);
-
-		CCLabelTTF *message;
-		if(UserData::current->itemSelect[selectItemNumber[n]])
-			message = CCLabelTTF::create("是否脱下装备？", "fonts/FZKaTong-M19T.ttf", 30);
-		else
-			message = CCLabelTTF::create("是否穿戴装备？", "fonts/FZKaTong-M19T.ttf", 30);
-		message->setPosition(ccp(size.width/2, size.height/3));
-		message->setColor(ccYELLOW);
-		chooseLayer->addChild(message, 2);
-
-		CCLabelTTF *numLabel = CCLabelTTF::create("x 1", "fonts/FZKaTong-M19T.ttf", 30);
-		numLabel->setPosition(ccp(size.width/2, size.height/2));
-		numLabel->setColor(ccYELLOW);
-		chooseLayer->addChild(numLabel,2);
+		this->addChild(chooseLayer,4);
 
 		pMenu=CCMenu::create();
 		pMenu->setPosition( CCPointZero );
-		chooseLayer->addChild(pMenu,4);
-		CCLabelTTF *isLabel = CCLabelTTF::create("是", "fonts/FZKaTong-M19T.ttf", 32);
-		//isSelected->setPosition(ccp(size.width/2-blackboard->boundingBox().size.width/4, size.height/5));
-		isLabel->setColor(ccYELLOW);
-		CCMenuItemLabel *isItem=CCMenuItemLabel::create(isLabel,this,menu_selector(MainUISceneInventoryLayer::isSelect));
-		isItem->setPosition(ccp(size.width/2-blackboard->boundingBox().size.width/4, size.height/6));
-		pMenu->addChild(isItem);
+		chooseLayer->addChild(pMenu,1,1);
 
-		CCLabelTTF *noLabel = CCLabelTTF::create("否", "fonts/FZKaTong-M19T.ttf", 32);
-		//noSelected->setPosition(ccp(size.width/2+blackboard->boundingBox().size.width/4, size.height/5));
-		noLabel->setColor(ccYELLOW);
-		CCMenuItemLabel *noItem=CCMenuItemLabel::create(noLabel,this,menu_selector(MainUISceneInventoryLayer::noSelect));
-		noItem->setPosition(ccp(size.width/2+blackboard->boundingBox().size.width/4, size.height/6));
-		pMenu->addChild(noItem);
+		sellItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUISceneInventoryLayer::sellItemSelected));
+		sellItem->setScaleX(size.width*2/5/sellItem->getContentSize().width);
+		sellItem->setScaleY(size.height/5/sellItem->getContentSize().height);
+		sellItem->setPosition(ccp(size.width/2, size.height/2+sellItem->boundingBox().size.height));
+		pMenu->addChild(sellItem);
+		CCLabelTTF *sellLabel=CCLabelTTF::create("出售道具","fonts/FZKaTong-M19T.ttf",25);
+		sellLabel->setPosition(sellItem->getPosition());
+		sellLabel->setColor(ccYELLOW);
+		chooseLayer->addChild(sellLabel,2);
+
+		dressOnItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUISceneInventoryLayer::dressOnItemSelected));
+		dressOnItem->setScaleX(size.width*2/5/dressOnItem->getContentSize().width);
+		dressOnItem->setScaleY(size.height/5/dressOnItem->getContentSize().height);
+		dressOnItem->setPosition(ccp(size.width/2, size.height/2));
+		pMenu->addChild(dressOnItem);
+		CCLabelTTF *dressLabel=CCLabelTTF::create("穿戴装备","fonts/FZKaTong-M19T.ttf",25);
+		dressLabel->setPosition(dressOnItem->getPosition());
+		dressLabel->setColor(ccYELLOW);
+		chooseLayer->addChild(dressLabel,2);
+
+		putOffItem=CCMenuItemImage::create("image/ui/button_normal.png","image/ui/button_selected.png",this,menu_selector(MainUISceneInventoryLayer::putOffItemSelected));
+		putOffItem->setScaleX(size.width*2/5/putOffItem->getContentSize().width);
+		putOffItem->setScaleY(size.height/5/dressOnItem->getContentSize().height);
+		putOffItem->setPosition(ccp(size.width/2, size.height/2-putOffItem->boundingBox().size.height));
+		pMenu->addChild(putOffItem);
+		CCLabelTTF *putLabel=CCLabelTTF::create("脱去装备","fonts/FZKaTong-M19T.ttf",25);
+		putLabel->setPosition(putOffItem->getPosition());
+		putLabel->setColor(ccYELLOW);
+		chooseLayer->addChild(putLabel,2);
+
+
+		CCSprite *blackboard = CCSprite::create("image/ui/black_blank.png");
+		blackboard->setScaleX(dressOnItem->boundingBox().size.width/blackboard->getContentSize().width);
+		blackboard->setScaleY(dressOnItem->boundingBox().size.height/blackboard->getContentSize().height);
+		if(UserData::current->itemSelect[selectItemNumber[n]]){
+			blackboard->setPosition(dressOnItem->getPosition());
+			chooseLayer->addChild(blackboard,3);
+		}
+		else{
+			blackboard->setPosition(putOffItem->getPosition());
+			chooseLayer->addChild(blackboard,3);
+		}
+
+		buttonSurround=CCSprite::create("image/ui/button_surround.png");
+		buttonSurround->setScaleX(sellItem->boundingBox().size.width/buttonSurround->getContentSize().width);
+		buttonSurround->setScaleY(sellItem->boundingBox().size.height/buttonSurround->getContentSize().height);
+		buttonSurround->stopAllActions();
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,sellItem->getPosition()));
+		buttonSurround->runAction(move);
+		chooseLayer->addChild(buttonSurround,3,111);
+		if(this->getChildByTag(1111)!=NULL)
+			this->removeChildByTag(1111, true);
+
 	}
 	else if(doubleTouchCount!=0){
 		doubleTouchCount--;
@@ -217,29 +230,153 @@ void MainUISceneInventoryLayer::registerWithTouchDispatcher()
 }
 void MainUISceneInventoryLayer::noSelect()
 {
-	MainUIScene::mainUIScene->removeChild(chooseLayer, true);
-	this->removeChildByTag(1111, true);
+	this->removeChild(selectLayer, true);
+	//this->removeChildByTag(1111, true);
 	this->setTouchEnabled(true);
 }
 void MainUISceneInventoryLayer::isSelect()
 {
-	if(UserData::current->itemSelect[selectItemNumber[n]]){
-		UserData::current->itemSelect[selectItemNumber[n]]=false;
-		this->removeChildByTag(10000+n);
+	if(selectedNumber==1){
+		if(sellEnable==1){
+			UserData::current->item[selectItemNumber[n]]--;
+			UserData::current->coinNum += value[selectItemNumber[n]]/2;
+			if(UserData::current->item[selectItemNumber[n]]==0){
+				this->removeChildByTag(n);
+				this->removeChildByTag(100+n);
+				this->removeChildByTag(1000+n);
+				this->removeChildByTag(10000+n);
+			}
+			else{
+				this->removeChildByTag(10000+n);
+				char num[5];
+				sprintf(num, "x %d", UserData::current->item[selectItemNumber[n]]);
+				CCLabelTTF *value=CCLabelTTF::create(num, "font/FZKaTong-M19T.ttf", 25);
+				value->setPositionX(this->getChildByTag(1000+n)->getPositionX()+h/3);
+				value->setPositionY(this->getChildByTag(1000+n)->getPositionY()-h/4);
+				value->setColor(ccYELLOW);
+				this->addChild(value,2, 10000+n);
+			}
+			((MainUIScene *)MainUIScene::mainUIScene->getChildByTag(10))->showCoinNum(UserData::current->coinNum);
+
+		}
 	}
-	else{
+	else if(selectedNumber==2){
 		UserData::current->itemSelect[selectItemNumber[n]]=true;
 		CCSprite *ok=CCSprite::create("image/ui/common_gate.png");
 		ok->setScaleX(h*2/5/ok->getContentSize().width);
 		ok->setScaleY(h*2/5/ok->getContentSize().height);
 		ok->setPositionX(this->getChildByTag(1000+n)->getPositionX()-w/3);
 		ok->setPositionY(this->getChildByTag(1000+n)->getPositionY()-h/3);
-		this->addChild(ok,2,10000+n);
-
+		this->addChild(ok,2,100000+n);
 	}
-	MainUIScene::mainUIScene->removeChild(chooseLayer, true);
+	else{
+		UserData::current->itemSelect[selectItemNumber[n]]=false;
+		this->removeChildByTag(100000+n);
+	}
+	this->removeChild(selectLayer, true);
 
-	this->removeChildByTag(1111, true);
+	//this->removeChildByTag(1111, true);
 	this->setTouchEnabled(true);
+}
+void MainUISceneInventoryLayer::sellItemSelected(){
+	//buttonSurround->stopAllActions();
+	//CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,sellItem->getPosition()));
+	//buttonSurround->runAction(move);
+
+	selectedNumber=1;
+	this->removeChild(chooseLayer, true);
+	select();
+}
+void MainUISceneInventoryLayer::dressOnItemSelected(){
+	buttonSurround->stopAllActions();
+	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,dressOnItem->getPosition()));
+	buttonSurround->runAction(move);
+
+	if(!UserData::current->itemSelect[selectItemNumber[n]]){
+		selectedNumber=2;
+		this->removeChild(chooseLayer, true);
+		select();
+	}
+	//this->removeChild(chooseLayer, true);
+}
+void MainUISceneInventoryLayer::putOffItemSelected(){
+	buttonSurround->stopAllActions();
+	CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,putOffItem->getPosition()));
+	buttonSurround->runAction(move);
+
+	if(UserData::current->itemSelect[selectItemNumber[n]]){
+		selectedNumber=3;
+		this->removeChild(chooseLayer, true);
+		select();
+	}
+	//this->removeChild(chooseLayer, true);
+}
+void MainUISceneInventoryLayer::select(){
+	selectLayer=MainUISceneChooseLayer::create();
+	this->addChild(selectLayer,4);
+	CCSprite *blackboard = CCSprite::create("image/ui/black_blank.png");
+	blackboard->setScaleX(size.width/2/blackboard->getContentSize().width);
+	blackboard->setScaleY(size.height*9/10/blackboard->getContentSize().height);
+	blackboard->setPosition(ccp(size.width/2, size.height/2));
+	selectLayer->addChild(blackboard,0,1);
+
+	CCSprite *blackboard2 = CCSprite::create("image/ui/black_blank.png");
+	blackboard2->setScaleX(size.width/2/blackboard->getContentSize().width);
+	blackboard2->setScaleY(size.height*9/20/blackboard->getContentSize().height);
+	blackboard2->setPosition(ccp(size.width/2, size.height*3/4));
+	selectLayer->addChild(blackboard,1,2);
+
+	char itemSelect[80];
+	sprintf(itemSelect, "image/store/item_%d.png", selectItemNumber[n]);
+	CCSprite* selectedItem = CCSprite::create(itemSelect);
+	selectedItem->setScale(blackboard->boundingBox().size.height/3/selectedItem->getContentSize().height);
+	selectedItem->setPosition(ccp(size.width/2,size.height/2+blackboard->boundingBox().size.height/5));
+	selectLayer->addChild(selectedItem,2);
+
+	CCLabelTTF *message;
+
+	if(selectedNumber==1){
+		if(UserData::current->item[selectItemNumber[n]]==1 && UserData::current->itemSelect[selectItemNumber[n]]){
+			message = CCLabelTTF::create("仅有一件 正在穿戴 \n    无法出售", "fonts/FZKaTong-M19T.ttf", 30);
+			sellEnable=0;
+		}
+		else{
+			message = CCLabelTTF::create("确认出售？", "fonts/FZKaTong-M19T.ttf", 30);
+			sellEnable=1;
+		}
+
+		char valuetmp[10];
+		sprintf(valuetmp, "￥ %d", int(value[selectItemNumber[n]]/2));
+		CCLabelTTF *numLabel = CCLabelTTF::create(valuetmp, "fonts/FZKaTong-M19T.ttf", 30);
+		numLabel->setPosition(ccp(size.width/2, size.height/2));
+		numLabel->setColor(ccYELLOW);
+		selectLayer->addChild(numLabel,2);
+	}
+	else if(selectedNumber==2){
+		message = CCLabelTTF::create("确认穿戴装备？", "fonts/FZKaTong-M19T.ttf", 30);
+	}
+	else
+		message = CCLabelTTF::create("确认脱下装备？", "fonts/FZKaTong-M19T.ttf", 30);
+	message->setPosition(ccp(size.width/2, size.height/3));
+	message->setColor(ccYELLOW);
+	selectLayer->addChild(message, 2);
+
+	CCMenu* Menu=CCMenu::create();
+	Menu->setPosition( CCPointZero );
+	selectLayer->addChild(Menu,4);
+	CCLabelTTF *isLabel = CCLabelTTF::create("确认", "fonts/FZKaTong-M19T.ttf", 32);
+	//isSelected->setPosition(ccp(size.width/2-blackboard->boundingBox().size.width/4, size.height/5));
+	isLabel->setColor(ccYELLOW);
+	CCMenuItemLabel *isItem=CCMenuItemLabel::create(isLabel,this,menu_selector(MainUISceneInventoryLayer::isSelect));
+	isItem->setPosition(ccp(size.width/2-blackboard->boundingBox().size.width/4, size.height/6));
+	Menu->addChild(isItem);
+
+	CCLabelTTF *noLabel = CCLabelTTF::create("取消", "fonts/FZKaTong-M19T.ttf", 32);
+	//noSelected->setPosition(ccp(size.width/2+blackboard->boundingBox().size.width/4, size.height/5));
+	noLabel->setColor(ccYELLOW);
+	CCMenuItemLabel *noItem=CCMenuItemLabel::create(noLabel,this,menu_selector(MainUISceneInventoryLayer::noSelect));
+	noItem->setPosition(ccp(size.width/2+blackboard->boundingBox().size.width/4, size.height/6));
+	Menu->addChild(noItem);
+
 }
 #endif

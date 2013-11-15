@@ -222,7 +222,7 @@ void MainUIScene::showCoinNum(int num){
 	this->removeChild(coinLabel);
 	coinLabel=CCLabelTTF::create(coinNum,"fonts/FZKaTong-M19T.ttf",25);
 	coinLabel->setPosition(ccp(this->getChildByTag(10)->boundingBox().size.width/128*82,size.height/128*45));
-	this->addChild(coinLabel,2);
+	this->addChild(coinLabel,2,10000);
 }
 void MainUIScene::logout(){
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");

@@ -76,7 +76,9 @@ bool MainUISceneStoreLayer::init()
 		name->setColor(ccYELLOW);
 		this->addChild(name, 2);
 
-		CCLabelTTF *value=CCLabelTTF::create(itemValue[i], "font/FZKaTong-M19T.ttf", 25);
+		char itemValue[10];
+		sprintf(itemValue, "￥ %d", value[i]);
+		CCLabelTTF *value=CCLabelTTF::create(itemValue, "font/FZKaTong-M19T.ttf", 25);
 		value->setPositionX(itemBackground->getPositionX()+h/3);
 		value->setPositionY(itemBackground->getPositionY()-h/4);
 		value->setColor(ccYELLOW);
