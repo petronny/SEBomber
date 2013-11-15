@@ -9,8 +9,13 @@ class GameSceneChatLayer : public CCLayer
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
-    // a selector callback
-    // implement the "static node()" method manually
+    virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
+    virtual void registerWithTouchDispatcher();
+    void showChat(char* chatContent);
+    void showInfo();
     CREATE_FUNC(GameSceneChatLayer);
 	CCSize size;
 };
@@ -32,5 +37,26 @@ bool GameSceneChatLayer::init()
 	background->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(background,0);
 	return true;
+}
+void GameSceneChatLayer::ccTouchesBegan(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneChatLayer::ccTouchesMoved(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneChatLayer::ccTouchesEnded(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneChatLayer::ccTouchesCancelled(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneChatLayer::registerWithTouchDispatcher(){
+
+}
+void GameSceneChatLayer::showChat(char* chatContent){
+
+}
+void GameSceneChatLayer::showInfo(){
+
 }
 #endif

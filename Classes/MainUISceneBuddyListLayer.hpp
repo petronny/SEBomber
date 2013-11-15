@@ -2,6 +2,7 @@
 #define __MAINUI_SCENE_BUDDYLIST_LAYER__
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
+
 USING_NS_CC;
 using namespace CocosDenshion;
 class MainUISceneBuddyListLayer : public CCLayer
@@ -9,6 +10,14 @@ class MainUISceneBuddyListLayer : public CCLayer
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
+    virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
+    virtual void registerWithTouchDispatcher();
+    void deletefriend();//删除好友，完成好友列表的更新
+    void giftItem(); //赠送好友道具，显示玩家物品所有东西
+    void chooseGift(); //选择物品，进行赠送，修改玩家道具相应属性
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneBuddyListLayer);
@@ -29,5 +38,29 @@ bool MainUISceneBuddyListLayer::init()
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(implentmenting);
 	return true;
+}
+void MainUISceneBuddyListLayer::ccTouchesBegan(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneBuddyListLayer::ccTouchesMoved(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneBuddyListLayer::ccTouchesEnded(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneBuddyListLayer::ccTouchesCancelled(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneBuddyListLayer::registerWithTouchDispatcher(){
+
+}
+void MainUISceneBuddyListLayer::deletefriend(){
+
+}
+void MainUISceneBuddyListLayer::giftItem(){
+
+}
+void MainUISceneBuddyListLayer::chooseGift(){
+
 }
 #endif

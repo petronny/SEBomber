@@ -9,6 +9,12 @@ class GameSceneStatusLayer : public CCLayer
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
+    virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
+    virtual void registerWithTouchDispatcher();
+    void showAllStatus();
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(GameSceneStatusLayer);
@@ -32,5 +38,23 @@ bool GameSceneStatusLayer::init()
 	background->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(background,0);
 	return true;
+}
+void GameSceneStatusLayer::ccTouchesBegan(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneStatusLayer::ccTouchesMoved(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneStatusLayer::ccTouchesEnded(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneStatusLayer::ccTouchesCancelled(CCSet* touches, CCEvent* pEvent){
+
+}
+void GameSceneStatusLayer::registerWithTouchDispatcher(){
+
+}
+void GameSceneStatusLayer::showAllStatus(){
+
 }
 #endif

@@ -9,6 +9,16 @@ class MainUISceneMultiplayerLayer : public CCLayer
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
+    virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
+    virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
+    virtual void registerWithTouchDispatcher();
+    void houseShow(int number);//参数，房间号
+    void changeCharactor();//改变自己的角色
+    void ready();// 玩家准备
+    void leave();//离开房间
+    void infoShow(int number);//用来显示第number号房间信息，例如某玩家加入
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneMultiplayerLayer);
@@ -35,5 +45,35 @@ bool MainUISceneMultiplayerLayer::init()
 	implentmenting->setPosition(ccp(size.width/2,size.height/2));
 	this->addChild(implentmenting);
 	return true;
+}
+void MainUISceneMultiplayerLayer::ccTouchesBegan(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneMultiplayerLayer::ccTouchesMoved(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneMultiplayerLayer::ccTouchesEnded(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneMultiplayerLayer::ccTouchesCancelled(CCSet* touches, CCEvent* pEvent){
+
+}
+void MainUISceneMultiplayerLayer::registerWithTouchDispatcher(){
+
+}
+void MainUISceneMultiplayerLayer::houseShow(int number){
+
+}
+void MainUISceneMultiplayerLayer::changeCharactor(){
+
+}
+void MainUISceneMultiplayerLayer::ready(){
+
+}
+void MainUISceneMultiplayerLayer::leave(){
+
+}
+void MainUISceneMultiplayerLayer::infoShow(int number){
+
 }
 #endif

@@ -20,6 +20,7 @@ public:
     void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
     void registerWithTouchDispatcher();
     void enableTouch();
+    void showResult();
 };
 // onserverField "init" you need to initialize your instance
 bool GameSceneMessageLayer::init()
@@ -61,5 +62,8 @@ void GameSceneMessageLayer::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
     CCLayer::registerWithTouchDispatcher();
+}
+void GameSceneMessageLayer::showResult(){
+
 }
 #endif
