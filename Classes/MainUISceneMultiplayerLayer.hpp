@@ -19,6 +19,8 @@ public:
     void ready();// 玩家准备
     void leave();//离开房间
     void infoShow(int number);//用来显示第number号房间信息，例如某玩家加入
+    void isSelect();
+    void noSelect();
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneMultiplayerLayer);
