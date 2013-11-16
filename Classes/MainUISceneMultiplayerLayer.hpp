@@ -8,7 +8,8 @@ class MainUISceneMultiplayerLayer : public CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
+    virtual bool init();  //初始化函数
+    //  //触摸响应相关函数
     virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
@@ -19,8 +20,8 @@ public:
     void ready();// 玩家准备
     void leave();//离开房间
     void infoShow(int number);//用来显示第number号房间信息，例如某玩家加入
-    void isSelect();
-    void noSelect();
+    void isSelect();//对话框确定选项
+    void noSelect();//对话框取消选项
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneMultiplayerLayer);

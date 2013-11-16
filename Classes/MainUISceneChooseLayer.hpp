@@ -12,8 +12,6 @@ public:
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneChooseLayer);
-    int isYes, isNo;
-	CCSize size;
 };
 // onserverField "init" you need to initialize your instance
 bool MainUISceneChooseLayer::init()
@@ -22,8 +20,6 @@ bool MainUISceneChooseLayer::init()
 		return false;
 	}
 	//this->setTouchEnabled(true);
-	size=CCDirector::sharedDirector()->getWinSize();
-	isYes=0; isNo=0;
 	return true;
 }
 #endif

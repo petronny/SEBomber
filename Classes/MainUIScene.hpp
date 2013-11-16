@@ -12,15 +12,15 @@ public:
     // there's no 'id' in cpp, so we recommand to return the exactly class pointer
     static CCScene* scene();
     // a selector callback
-    void logout();
-    void multiplayerSelected();
-    void buddylistSelected();
-    void inventorySelected();
-    void storeSelected();
-    void okButtonClicked();
-    void showEmotion(int num);
-    void showAvatar(int num);
-    void showCoinNum(int num);
+    void logout();   //登出
+    void multiplayerSelected();//多人模式
+    void buddylistSelected(); //好友列表
+    void inventorySelected();//我的物品
+    void storeSelected();//道具商店
+    void okButtonClicked();//游戏开始按钮
+    void showEmotion(int num);//显示表情
+    void showAvatar(int num);//显示角色
+    void showCoinNum(int num);//显示金币
     // implement the "static node()" method manually
     CREATE_FUNC(MainUIScene);
 	CCSize size;

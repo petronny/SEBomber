@@ -11,17 +11,20 @@ class MainUISceneBuddyListLayer : public CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
+    virtual bool init();//初始化函数
+    //触摸响应相关函数
     virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
+
+
     void deletefriend();//删除好友，完成好友列表的更新
     void giftItem(); //赠送好友道具，显示玩家物品所有东西
     void chooseGift(); //选择物品，进行赠送，修改玩家道具相应属性
-    void isSelect();
-    void noSelect();
+    void isSelect();  //对话框确定选项
+    void noSelect(); //对话框取消选项
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneBuddyListLayer);

@@ -11,18 +11,20 @@ class MainUISceneInventoryLayer : public CCLayer
 {
 public:
 
-    virtual bool init();
+    virtual bool init(); //初始化函数
+    //触摸响应相关函数
     virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
     virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
     virtual void registerWithTouchDispatcher();
-    void isSelect();
-    void noSelect();
-    void sellItemSelected();
-    void dressOnItemSelected();
-    void putOffItemSelected();
-    void select();
+
+    void isSelect();//对话框确定选项
+    void noSelect();//对话框取消选项
+    void sellItemSelected(); //出售商品
+    void dressOnItemSelected();//穿戴道具
+    void putOffItemSelected(); //脱下道具
+    void select();//对应不同选择，设置不同selectNumber
 
     CREATE_FUNC(MainUISceneInventoryLayer);
     CCSize size;
