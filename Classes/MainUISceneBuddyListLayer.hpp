@@ -2,6 +2,8 @@
 #define __MAINUI_SCENE_BUDDYLIST_LAYER__
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
+#include "MainUISceneChooseLayer.hpp"
+#include "ItemData.h"
 
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -18,10 +20,13 @@ public:
     void deletefriend();//删除好友，完成好友列表的更新
     void giftItem(); //赠送好友道具，显示玩家物品所有东西
     void chooseGift(); //选择物品，进行赠送，修改玩家道具相应属性
+    void isSelect();
+    void noSelect();
     // a selector callback
     // implement the "static node()" method manually
     CREATE_FUNC(MainUISceneBuddyListLayer);
 	CCSize size;
+	int selectNumber;
 };
 // onserverField "init" you need to initialize your instance
 bool MainUISceneBuddyListLayer::init()
