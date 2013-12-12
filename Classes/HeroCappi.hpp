@@ -11,6 +11,7 @@ public:
 void HeroCappi::createhero(CCPoint a,float scale,int id){
 	speed = 5;
 	direction = 5;
+	sca = scale;
 	bubble_range = 3;
 	bubble_num = 3;
 	idx = id;

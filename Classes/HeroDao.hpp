@@ -12,6 +12,7 @@ void HeroDao::createhero(CCPoint a,float scale,int id){
 	speed = 5;
 	direction = 5;
 	bubble_range = 3;
+	sca = scale;
 	bubble_num = 3;
 	islive = true;
 	isfree = true;
