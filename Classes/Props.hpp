@@ -9,10 +9,12 @@ public:
 	virtual ~Props() {}
 	virtual void create(CCPoint a,float scale) {}
 	void remove();
+	bool isdelay;
 };
 
 void Props::remove()
 {
+	isdelay = false;
 	sprite->getParent()->removeChild(sprite);
 }
 #endif

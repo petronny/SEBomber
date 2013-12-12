@@ -5,7 +5,7 @@ USING_NS_CC;
 using namespace CocosDenshion;
 class Bubble : public CCNode{
 public:
-	Bubble(CCPoint a,float scale,int id,int r);
+	Bubble(CCPoint a,float scale,int id,int r,int he);
 	CCSprite *sprite;
 	CCSprite *ups[10];
 	CCSprite *downs[10];
@@ -20,6 +20,8 @@ public:
 	int num;
 	int list[100][4];
 	int range;
+	int heroid;
+	bool isdelay;
 	void bomb(int up,int down,int left, int right);
 	CCAnimation* waitanimation();
 	CCAnimation* edgeanimation(int dir);
@@ -77,7 +79,7 @@ CCAnimation* Bubble::waitanimation()
 	return animation;
 
 }
-Bubble::Bubble(CCPoint a,float scale,int id,int r){
+Bubble::Bubble(CCPoint a,float scale,int id,int r,int he){
 
 	sprite=CCSprite::create();
 	layer=CCLayer::create();
@@ -85,6 +87,8 @@ Bubble::Bubble(CCPoint a,float scale,int id,int r){
 	sprite->setScale(scale);
 	idx = id;
 	range = r;
+	heroid = he;
+	isdelay = true;
 	AniReader::read("unit_bombwater.ani");
 	num = AniReader::num;
 	for (int i = 0; i < 100; i++)
@@ -157,6 +161,7 @@ void Bubble::remove()
 }
 void Bubble::bomb(int up,int down,int left, int right)
 {
+	isdelay = false;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(centeranimation());
 	CCFiniteTimeAction* destroy = CCCallFuncN::create(this,callfuncN_selector(Bubble::remove));
@@ -199,8 +204,6 @@ void Bubble::bomb(int up,int down,int left, int right)
 				a = CCAnimate::create(edgeanimation(1));
 			rights[i]->runAction(a);
 		}
-
-
 	//animat
 }
 #endif

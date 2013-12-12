@@ -10,6 +10,7 @@ public:
 
 void PropsBubbleNum::create(CCPoint a,float scale)
 {
+	isdelay = true;
 	sprite = CCSprite::create("image/unit/item_BubbleNum.png");
 	sprite->setScale(scale);
 	sprite->setPosition(a);

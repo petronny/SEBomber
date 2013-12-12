@@ -10,6 +10,7 @@ public:
 
 void PropsSilver::create(CCPoint a,float scale)
 {
+	isdelay = true;
 	sprite = CCSprite::create("image/unit/item_Silver.png");
 	sprite->setScale(scale);
 	sprite->setPosition(a);
