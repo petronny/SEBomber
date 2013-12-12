@@ -7,7 +7,15 @@
 #include "HeroCappi.hpp"
 #include "HeroDao.hpp"
 #include "HeroMarid.hpp"
+#include "AniReader.hpp"
 #include "BubbleClass.hpp"
+
+#include "PropsRange.hpp"
+#include "PropsSilver.hpp"
+#include "PropsSpeed.hpp"
+#include "PropsGold.hpp"
+#include "PropsBubbleNum.hpp"
+
 #include "math.h"
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -20,12 +28,15 @@ public:
     static cocos2d::CCScene* scene();
     
     // a selector callback    	map->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
-
+    void menuButtonCallback(CCObject* pSender);
     void menuCloseCallback(CCObject* pSender);
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
     Hero* hero;
-    Bubble* bubble;
+    Bubble* bubble[85];
+    int fg;
+    int bhead;
+    int btail;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
@@ -34,10 +45,12 @@ public:
     virtual void registerWithTouchDispatcher();
     void sendmessage();
     void getcommand();
+    void BubbleBomb(CCNode* obj,void* id);
     void test();
 	CCPoint PositionToTileCoord(CCPoint cocosCoord);
 	CCPoint TileCoordToPosition(CCPoint tileCoord);
     CCTMXTiledMap *map;
+    //static
     CCTMXLayer *mapBackgroundLayer,*mapItemLayer;
     static CCScene *gameScene;
     CCLayer *statusLayer,*chatLayer;
@@ -49,6 +62,7 @@ public:
 #include "GameSceneMessageLayer.hpp"
 #include "GameSceneStatusLayer.hpp"
 CCScene *GameScene::gameScene;
+//CCTMXLayer *GameScene::mapBackgroundLayer,*GameScene::mapItemLayer;
 CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
@@ -67,6 +81,9 @@ bool GameScene::init()
 {
     //////////////////////////////
     // 1. super init first
+	bhead = 0;
+	btail = 0;
+	fg = 2;
     if ( !CCLayer::init() )
     {
         return false;
@@ -93,8 +110,13 @@ bool GameScene::init()
 	pCloseItem->setPosition(ccp(size.width - pCloseItem->getContentSize().width/2 ,
                                 pCloseItem->getContentSize().height/2));
 
-    // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
+
+	CCMenuItemImage *pButtonItem = CCMenuItemImage::create("image/ui/item_BB.png","image/ui/item_BB.png",this,menu_selector(GameScene::menuButtonCallback));
+	pButtonItem->setScale(2.0);
+	pButtonItem->setPosition(ccp(size.width/10*9 - pButtonItem->getContentSize().width/2 ,
+	                                size.height/2+ pButtonItem->getContentSize().height/2));
+	// create menu, it's an autorelease object
+    CCMenu* pMenu = CCMenu::create(pCloseItem, pButtonItem,NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
     map=CCTMXTiledMap::create("map/map_fact.tmx");
@@ -106,11 +128,19 @@ bool GameScene::init()
     }
     this->addChild(mapItemLayer,3);
     this->addChild(mapBackgroundLayer,0);
-    bubble = new Bubble(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale(),1,1);
-    hero = new HeroMarid();
+    AniReader::mapw = mapBackgroundLayer->getMapTileSize().width*mapBackgroundLayer->getScale();
+    AniReader::maph = mapBackgroundLayer->getMapTileSize().height*mapBackgroundLayer->getScale();
+    //Bubble* bubble;
+    //bubble = new Bubble(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale(),1,1);
+    Props* pp = new PropsSpeed();
+    pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
+    this->addChild(pp->sprite,3);
+    hero = new HeroBazzi();
     hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    this->addChild(hero->sprite,2);
-    this->addChild(bubble->sprite,1);
+    this->addChild(hero->sprite,11);
+    //this->addChild(bubble->layer,10);
+    //this->addChild(bubble->ups[1],1);
+    //bubble->bomb(3,3,3,3);
     doubleTouchCount=0;tripleTouchCount=0;
      return true;
 }
@@ -131,6 +161,7 @@ void GameScene::menuCloseCallback(CCObject* pSender)
 	gameScene->addChild(messageLayer,2);
 
 }
+
 void GameScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent){
 }
 void GameScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent){
@@ -206,7 +237,9 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 		}
 		hero->clearMove();
 		hero->stand();
+		//hero->encase();
 	}
+
 }
 void GameScene::registerWithTouchDispatcher()
 {
@@ -221,7 +254,52 @@ CCPoint GameScene::PositionToTileCoord(CCPoint cocosCoord)
 }
 CCPoint GameScene::TileCoordToPosition(CCPoint tileCoord){
 	float x=mapBackgroundLayer->getMapTileSize().width*(0.5+tileCoord.x)*mapBackgroundLayer->getScale();
-	float y=mapBackgroundLayer->getLayerSize().height-mapBackgroundLayer->getMapTileSize().height*(0.5+tileCoord.y-1)*mapBackgroundLayer->getScale();
+	float y=(mapBackgroundLayer->getLayerSize().height-mapBackgroundLayer->getMapTileSize().height*(0.5+tileCoord.y-0.75))*mapBackgroundLayer->getScale();
 	return ccp(x,y);
 }
+void GameScene::menuButtonCallback(CCObject* pSender)
+{
+	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
+	if (bubble[btail] != NULL)
+	{
+		delete bubble[btail];
+	}
+	bubble[btail] = new Bubble(TileCoordToPosition(PositionToTileCoord(hero->sprite->getPosition())),mapBackgroundLayer->getScale(),btail,hero->bubble_range);
+	CCFiniteTimeAction *delay;
+	delay = CCDelayTime::create(1.5);
+	CCCallFuncND * bomb = CCCallFuncND::create(this,callfuncND_selector(GameScene::BubbleBomb),(void*)&bubble[btail]->idx);
+	CCAction *action;
+	action = CCSequence::create(delay,bomb,NULL);
+	bubble[btail]->sprite->runAction(action);
+	this->addChild(bubble[btail]->layer,10);
+	btail++;
+	if (btail > 80)
+	{
+		btail -= 80;
+	}
+}
+
+void GameScene::BubbleBomb(CCNode* obj,void* id) {
+	int idx = *((int*)id);
+	if (bubble[idx] != NULL)
+	{
+		int r = bubble[idx]->range;
+		bubble[idx]->bomb(r,r,r,r);
+	}
+/*	if (bhead != btail)
+	{
+//		bubble[bhead]->range;
+//		bubble[bhead]->sprite;
+//		mapItemLayer->tileAt(ccp(PositionToTileCoord(bubble[bhead]->sprite->getPosition()).x,PositionToTileCoord(bubble[bhead]->sprite->getPosition()).y+1));
+		bubble[bhead]->bomb(f,f,f,f);
+		bhead++;
+		if (bhead > 80)
+			bhead -= 80;
+//		for(i=0;i<80;i++)
+//			if buble[i]
+//			    buble->getp
+
+	}*/
+}
 #endif
+

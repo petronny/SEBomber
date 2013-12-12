@@ -11,6 +11,7 @@ public:
 void HeroBazzi::createhero(CCPoint a,float scale){
 	speed = 5;
 	direction = 5;
+	bubble_range = 3;
 	sprite = CCSprite::create();
 	sprite->setScale(scale);
 	sprite->setPosition(a);

@@ -19,9 +19,15 @@ public:
 	virtual ~Hero() {}
 	virtual void createhero(CCPoint a,float scale) {}
 	CCAnimation* moveanimation(int);
+	CCAnimation* liveanimation();
+	CCAnimation* dieanimation();
+	CCAnimation* encaseanimation();
 	void moveto(CCPoint a);
 	void clearMove();
 	void stand();
+	void encase();	//包住动画
+	void die();		//挂掉动画
+	void live();  //解救动画
 };
 
 CCAnimation* Hero::moveanimation(int dir)
@@ -37,6 +43,40 @@ CCAnimation* Hero::moveanimation(int dir)
 		animation->addSpriteFrameWithTexture(texture, CCRectMake(list[36+(dir-3)*4][0],list[36+(dir-3)*4][1],list[36+(dir-3)*4][2],list[36+(dir-3)*4][3]));
 	}
 	return animation;
+}
+
+CCAnimation* Hero::encaseanimation()
+{
+	animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.5f);
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[21][0],list[21][1],list[21][2],list[21][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[22][0],list[22][1],list[22][2],list[22][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[21][0],list[21][1],list[21][2],list[21][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[22][0],list[22][1],list[22][2],list[22][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[25][0],list[25][1],list[25][2],list[25][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[26][0],list[26][1],list[26][2],list[26][3]));
+	return animation;
+}
+
+CCAnimation* Hero::dieanimation()
+{
+	animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.33f);
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[31][0],list[31][1],list[31][2],list[31][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[34][0],list[34][1],list[34][2],list[34][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[35][0],list[35][1],list[35][2],list[35][3]));
+	return animation;
+
+}
+
+CCAnimation* Hero::liveanimation()
+{
+	animation = CCAnimation::create();
+	animation->setDelayPerUnit(0.5f);
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[27][0],list[27][1],list[27][2],list[27][3]));
+	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[40][0],list[40][1],list[40][2],list[40][3]));
+	return animation;
+
 }
 
 void Hero::moveto(CCPoint ptNode){
@@ -83,5 +123,23 @@ void Hero::stand() {
 	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(direction+3)));
 	sprite->runAction(animate);
 	direction = 5;
+}
+
+void Hero::encase() {
+	sprite->stopAction(animate);
+	animate = CCAnimate::create(encaseanimation());
+	sprite->runAction(animate);
+}
+
+void Hero::die() {
+	sprite->stopAction(animate);
+	animate = CCAnimate::create(dieanimation());
+	sprite->runAction(animate);
+}
+
+void Hero::live() {
+	sprite->stopAction(animate);
+	animate = CCAnimate::create(liveanimation());
+	sprite->runAction(animate);
 }
 #endif
