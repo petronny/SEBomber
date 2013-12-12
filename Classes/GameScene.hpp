@@ -15,7 +15,7 @@
 #include "PropsBubbleNum.hpp"
 #include "PropsGold.hpp"
 #include "PropsSilver.hpp"
-
+#include "Client.hpp"
 #include "math.h"
 USING_NS_CC;
 using namespace CocosDenshion;
@@ -63,6 +63,8 @@ public:
     CCLayer *statusLayer,*chatLayer;
     int doubleTouchCount,tripleTouchCount;
     CCPoint firstTripleTouchPoint;
+    char sMsg[255], rMsg[255];
+    void sendMoveMsg();
 };
 #include "UserData.hpp"
 #include "GameSceneChatLayer.hpp"
@@ -91,12 +93,14 @@ bool GameScene::init()
 	bhead = 0;
 	btail = 0;
 	heronum = 0;
-	myheroid = 0;
+	myheroid = 1;
 	propsnum = 0;
     if ( !CCLayer::init() )
     {
         return false;
     }
+    memset(sMsg, 0,sizeof(sMsg));
+    memset(rMsg, 0,sizeof(rMsg));
     this->setTouchEnabled(true);
     SimpleAudioEngine::sharedEngine()->stopBackgroundMusic(true);
 	SimpleAudioEngine::sharedEngine()->preloadBackgroundMusic("audio/bg_1.ogg");
@@ -146,6 +150,7 @@ bool GameScene::init()
     this->addChild(pp->sprite,3);*/
     createprops(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    createhero(2,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //hero = new HeroBazzi();
     //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //this->addChild(hero[myheroid]->sprite,11);
@@ -175,7 +180,7 @@ void GameScene::createhero(int type,CCPoint a,float s)
 		hero[heronum] = new HeroMarid();
 	}
 	hero[heronum]->createhero(a,s);
-	this->addChild(hero[myheroid]->sprite,11);
+	this->addChild(hero[heronum]->sprite,11);
 	heronum++;
 }
 
@@ -270,10 +275,14 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		CCPoint origin=PositionToTileCoord(hero[myheroid]->sprite->getPosition());
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
-			hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
+			sprintf(sMsg, "%f %f", origin.x, origin.y+(aim.y-origin.y)/abs(aim.y-origin.y));
+			//hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
+			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.02f);
 		}
 		else{
-			hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
+			sprintf(sMsg,"%f %f",origin.x+(aim.x-origin.x)/abs(aim.x-origin.x), origin.y );
+			//hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
+			scheduleOnce(schedule_selector(GameScene::sendMoveMsg),0.02f);
 		}
 	}
 }
@@ -317,8 +326,8 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
-		hero[myheroid]->clearMove();
-		hero[myheroid]->stand();
+		//hero[myheroid]->clearMove();
+		//hero[myheroid]->stand();
 		//hero->encase();
 	}
 
@@ -347,23 +356,6 @@ void GameScene::menuButtonCallback(CCObject* pSender)
 		SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 		createbubble(TileCoordToPosition(PositionToTileCoord(hero[myheroid]->sprite->getPosition())),mapBackgroundLayer->getScale(),hero[myheroid]->bubble_range,myheroid);
 	}
-	/*if (bubble[btail] != NULL)
-	{
-		delete bubble[btail];
-	}
-	bubble[btail] = new Bubble(TileCoordToPosition(PositionToTileCoord(hero[myheroid]->sprite->getPosition())),mapBackgroundLayer->getScale(),btail,hero->bubble_range,0);
-	CCFiniteTimeAction *delay;
-	delay = CCDelayTime::create(1.5);
-	CCCallFuncND * bomb = CCCallFuncND::create(this,callfuncND_selector(GameScene::BubbleBomb),(void*)&bubble[btail]->idx);
-	CCAction *action;
-	action = CCSequence::create(delay,bomb,NULL);
-	bubble[btail]->sprite->runAction(action);
-	this->addChild(bubble[btail]->layer,10);
-	btail++;
-	if (btail > 80)
-	{
-		btail -= 80;
-	}*/
 }
 
 void  GameScene::BubbleBomb(int idx)
@@ -431,12 +423,6 @@ void  GameScene::BubbleBomb(int idx)
 				}
 			}
 		}
-		/*for (int i = 1; i <= r; i++)
-		{
-			mapItemLayer->tileGIDAt(ccp(x,y+i));
-		}*/
-
-		//mapItemLayer->tileGIDAt(ccp(,PositionToTileCoord(bubble[bhead]->sprite->getPosition()).y));
 		for (int i = 0; i <= 80; i++)
 		{
 			if (i != idx && bubble[i] != NULL && bubble[i]->isdelay)
@@ -471,20 +457,13 @@ void GameScene::BombCallback(CCNode* obj,void* id) {
 	int idx = *((int*)id);
 	BubbleBomb(idx);
 
-/*	if (bhead != btail)
-	{
-//		bubble[bhead]->range;
-//		bubble[bhead]->sprite;
-//		mapItemLayer->tileAt();
-		bubble[bhead]->bomb(f,f,f,f);
-		bhead++;
-		if (bhead > 80)
-			bhead -= 80;
-//		for(i=0;i<80;i++)
-//			if buble[i]
-//			    buble->getp
-
-	}*/
+}
+void GameScene::sendMoveMsg(){
+	float x, y;
+	send(Client::client->sockfd,sMsg, sizeof(sMsg),0);
+	recv(Client::client->sockfd,rMsg, sizeof(rMsg),0);
+	sscanf(rMsg, "%f %f", &x, &y);
+	hero[myheroid]->moveto(TileCoordToPosition(ccp(x, y)));
 }
 #endif
 

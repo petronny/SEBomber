@@ -2,81 +2,186 @@
 #define __MAINUI_SCENE_MULTIPLAYER_LAYER__
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
+#include "UserData.hpp"
 USING_NS_CC;
 using namespace CocosDenshion;
+/**
+@brief
+*/
 class MainUISceneMultiplayerLayer : public CCLayer
 {
-public:
-    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  //初始化函数
-    //  //触摸响应相关函数
-    virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
-    virtual void ccTouchesMoved(CCSet* touches, CCEvent* pEvent);
-    virtual void ccTouchesEnded(CCSet* touches, CCEvent* pEvent);
-    virtual void ccTouchesCancelled(CCSet* touches, CCEvent* pEvent);
-    virtual void registerWithTouchDispatcher();
-    void houseShow(int number);//参数，房间号
-    void changeCharactor();//改变自己的角色
-    void ready();// 玩家准备
-    void leave();//离开房间
-    void infoShow(int number);//用来显示第number号房间信息，例如某玩家加入
-    void isSelect();//对话框确定选项
-    void noSelect();//对话框取消选项
-    // a selector callback
-    // implement the "static node()" method manually
-    CREATE_FUNC(MainUISceneMultiplayerLayer);
-	CCSize size;
+	public:
+		// Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
+	/**
+	@brief 初始化函数
+	*/
+		virtual bool init();  //
+		//  //
+		/**
+		@brief 触摸响应相关函数
+		*/
+		virtual void ccTouchesBegan (CCSet* touches, CCEvent* pEvent);
+		/**
+		@brief
+		*/
+		virtual void ccTouchesMoved (CCSet* touches, CCEvent* pEvent);
+		/**
+		@brief
+		*/
+		virtual void ccTouchesEnded (CCSet* touches, CCEvent* pEvent);
+		/**
+		@brief
+		*/
+		virtual void ccTouchesCancelled (CCSet* touches, CCEvent* pEvent);
+		/**
+		@brief
+		*/
+		virtual void registerWithTouchDispatcher();
+		/**
+		@brief //参数，房间号
+		*/
+		void houseShow (int number);
+		/**
+		@brief 改变自己的角色
+		*/
+		void changeCharactor();//
+		/**
+		@brief 玩家准备
+		*/
+		void ready();//
+		/**
+		@brief 离开房间
+		*/
+		void leave();//
+		/**
+		@brief 用来显示第number号房间信息，例如某玩家加入
+		*/
+		void Show (); //
+		/**
+		@brief 对话框确定选项
+		*/
+		void select(CCObject*);//
+		/**
+		@brief implement the "static node()" method manually
+		*/
+		// a selector callback
+		//
+		CREATE_FUNC (MainUISceneMultiplayerLayer);
+		/**
+		@brief
+		*/
+		CCSize size;
+		/**
+		@brief
+		*/
+		CCSprite *ui_right, *menuItem;
+		/**
+		@brief
+		*/
+		float w, h;
+		/**
+		@brief
+		*/
+		CCMenu *pMenu;
+
+		CCMenuItemImage *characterItem;
+		int beforePosition;
 };
 // onserverField "init" you need to initialize your instance
 bool MainUISceneMultiplayerLayer::init()
 {
-	//目标：双指上下滑动可以翻滚列表
-	//一开始禁用okbutton
-	//首先显示房间列表
-	//点击一个房间显示房间内的页面，激活okbutton
-	//房间内的页面包含8个格，显示每个玩家的头像，等级，名称，以及打算使用的角色
-	//点击自己那个格子里的角色可以更换角色，弹出一个新的层显示4种角色，以及4个角色各自赢过多少场
-	//不同位置的玩家使用的角色色调需要有变化
-	//okbutton实际上相当于准备按钮，点下okbutton后显示准备
-	//点击okbutton后不能再切换到其他页面,除非从房间中退出否则不能切换到其他页面
-	//可以使用一个新的层来处理提示信息
-	if (!CCLayer::init()){
-		return false;
-	}
+
+	if (!CCLayer::init() )
+		{
+			return false;
+		}
+	//this->setTouchEnabled (true);
 	size = CCDirector::sharedDirector()->getWinSize();
-	CCLabelTTF *implentmenting=CCLabelTTF::create("Multiplayer施工中","fonts/FZKaTong-M19T.ttf",25);
-	implentmenting->setPosition(ccp(size.width/2,size.height/2));
-	this->addChild(implentmenting);
+	ui_right = CCSprite::create ("image/ui/ui_right.png");
+	ui_right->setScale (size.height / ui_right->getContentSize().height);
+	menuItem = CCSprite::create ("image/ui/button_normal.png");
+	menuItem->setScaleY (size.height / 8 / menuItem->getContentSize().height);
+
+	w = (size.width-ui_right->boundingBox().size.width - 15)/4;
+	h = (size.height-menuItem->boundingBox().size.height)/2-5;
+
+	pMenu = CCMenu::create();
+	pMenu->setPosition(CCPointZero);
+	this->addChild(pMenu,1);
+	for(int i=0; i<8; i++){
+		characterItem = CCMenuItemImage::create ("image/ui/itemBackground.png", "image/ui/itemSelected.png", this, menu_selector(MainUISceneMultiplayerLayer::select));
+		characterItem->setScaleX(w/characterItem->getContentSize().width);
+		characterItem->setScaleY(h/characterItem->getContentSize().height);
+		characterItem->setPositionX(ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2);
+		characterItem->setPositionY(size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h/2);
+		pMenu->addChild(characterItem,0,i);
+	}
+	beforePosition=-1;
+	scheduleOnce(schedule_selector(MainUISceneMultiplayerLayer::Show), 0.5f);
 	return true;
 }
-void MainUISceneMultiplayerLayer::ccTouchesBegan(CCSet* touches, CCEvent* pEvent){
-
+void MainUISceneMultiplayerLayer::ccTouchesBegan (CCSet* touches, CCEvent* pEvent)
+{
 }
-void MainUISceneMultiplayerLayer::ccTouchesMoved(CCSet* touches, CCEvent* pEvent){
-
+void MainUISceneMultiplayerLayer::ccTouchesMoved (CCSet* touches, CCEvent* pEvent)
+{
 }
-void MainUISceneMultiplayerLayer::ccTouchesEnded(CCSet* touches, CCEvent* pEvent){
-
+void MainUISceneMultiplayerLayer::ccTouchesEnded (CCSet* touches, CCEvent* pEvent)
+{
 }
-void MainUISceneMultiplayerLayer::ccTouchesCancelled(CCSet* touches, CCEvent* pEvent){
-
+void MainUISceneMultiplayerLayer::ccTouchesCancelled (CCSet* touches, CCEvent* pEvent)
+{
 }
-void MainUISceneMultiplayerLayer::registerWithTouchDispatcher(){
-
+void MainUISceneMultiplayerLayer::registerWithTouchDispatcher()
+{
+	CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate (this, 0);
+	CCLayer::registerWithTouchDispatcher();
 }
-void MainUISceneMultiplayerLayer::houseShow(int number){
-
+void MainUISceneMultiplayerLayer::houseShow (int number)
+{
 }
-void MainUISceneMultiplayerLayer::changeCharactor(){
-
+void MainUISceneMultiplayerLayer::changeCharactor()
+{
 }
-void MainUISceneMultiplayerLayer::ready(){
-
+void MainUISceneMultiplayerLayer::ready()
+{
 }
-void MainUISceneMultiplayerLayer::leave(){
-
+void MainUISceneMultiplayerLayer::leave()
+{
 }
-void MainUISceneMultiplayerLayer::infoShow(int number){
-
+void MainUISceneMultiplayerLayer::Show ()
+{
+	UserData::current->fetchExtraData();
+	for(int i=0; i<8; i++){
+		if(UserData::current->roomlist[i]>0){
+			UserData* user = new UserData(UserData::current->roomlist[i]);
+			user->fetchBasicData();
+			char facePath[40];
+			sprintf (facePath, "image/face/face%d.png", user->face);
+			CCSprite*face = CCSprite::create(facePath);
+			if(this->getChildByTag(i)!=NULL){
+				this->removeChildByTag(i);
+			}
+			face->setPosition(pMenu->getChildByTag(i)->getPosition());
+			this->addChild(face, 2, i);
+			if(UserData::current->roomlist[i]==UserData::current->userid){
+				beforePosition=i;
+			}
+		}
+	}
+}
+void MainUISceneMultiplayerLayer::select(CCObject* pSender){
+	CCMenuItem *m = (CCMenuItem*)(pSender);
+	if(this->getChildByTag(m->getTag())== NULL){
+		char facePath[40];
+		sprintf (facePath, "image/face/face%d.png", UserData::current->face);
+		CCSprite*face = CCSprite::create(facePath);
+		face->setPosition(m->getPosition());
+		this->addChild(face,2, m->getTag());
+		if(beforePosition!=-1){
+			this->removeChildByTag(beforePosition);
+		}
+		beforePosition=m->getTag();
+	}
 }
 #endif
