@@ -14,6 +14,8 @@ public:
 	//char *filename;
     static int list[100][4];
     static int num;
+    static int mapw;
+    static int maph;
     static void read(char* filename)
     {
     	//FILE *inFp;
@@ -65,4 +67,7 @@ public:
 
 int AniReader::list[100][4];
 int AniReader::num;
+int AniReader::mapw;
+int AniReader::maph;
+
 #endif
