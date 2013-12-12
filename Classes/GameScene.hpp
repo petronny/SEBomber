@@ -156,7 +156,7 @@ bool GameScene::init()
     /*Props* pp = new PropsSpeed();
     pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     this->addChild(pp->sprite,3);*/
-    createprops(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
+    createprops(2,TileCoordToPosition(PositionToTileCoord(ccp(size.width/4,size.height/2))),mapBackgroundLayer->getScale());
     createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //hero = new HeroBazzi();
     //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
@@ -244,9 +244,39 @@ void GameScene::heromove(CCPoint a,int heroid)
 {
 	if (hero[heroid]->isfree && hero[heroid]->islive)
 	{
+		bool t = true;
+		int x = PositionToTileCoord(a).x;
+		int y = PositionToTileCoord(a).y;
 		int gid=mapItemLayer->tileGIDAt(PositionToTileCoord(a));
-		if(gid==0 or !mapItemLayer->tileAt(PositionToTileCoord(a))->isVisible())
+		if (!(gid==0 or !mapItemLayer->tileAt(PositionToTileCoord(a))->isVisible()))
+			t = false;
+		for (int i = 0; i <= 80; i++)
+		if (bubble[i] != NULL && bubble[i]->isdelay)
+		{
+			int x1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).x;
+			int y1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).y;
+			if (x1 == x && y == y1)
+			{
+				t = false;
+				break;
+			}
+		}
+		if (t)
+		{
+			for (int i = 0; i < propsnum; i++)
+			if (props[i]->isdelay)
+			{
+				int x1 = PositionToTileCoord(props[i]->sprite->getPosition()).x;
+				int y1 = PositionToTileCoord(props[i]->sprite->getPosition()).y;
+				if (x1 == x && y == y1)
+				{
+					herogetprops(heroid,props[i]->type);
+					props[i]->remove();
+					break;
+				}
+			}
 			hero[heroid]->moveto(a);
+		}
 	}
 }
 
@@ -374,9 +404,12 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
-		hero[myheroid]->clearMove();
-		hero[myheroid]->stand();
-		//hero->encase();
+		if (hero[myheroid]->isfree && hero[myheroid]->islive)
+		{
+			hero[myheroid]->clearMove();
+			hero[myheroid]->stand();
+			//hero->encase();
+		}
 	}
 
 }
