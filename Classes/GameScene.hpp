@@ -51,6 +51,11 @@ public:
     void createhero(int type,CCPoint a,float scale);
     void createprops(int type,CCPoint a,float scale);
     void createbubble(CCPoint a,float scale,int range,int heroid);
+    void heromove(CCPoint a,int heroid);
+    void heroencase(int heroid);
+    void herolive(int heroid);
+    void herodie(int heroid);
+    void herogetprops(int heroid,int type);
     void BombCallback(CCNode* obj,void* id);
     void BubbleBomb(int idx);
     void test();
@@ -227,6 +232,20 @@ void GameScene::createprops(int type,CCPoint a,float scale)
 	  this->addChild(props[propsnum]->sprite,9);
 	  propsnum++;
 }
+
+void GameScene::heromove(CCPoint a,int heroid)
+{
+	if (hero[heroid]->isfree && hero[heroid]->islive)
+	{
+		hero[heroid]->moveto(a);
+
+	}
+}
+
+void GameScene::heroencase(int heroid)
+{
+	hero[heroid]->encase();
+}
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
 	this->setTouchEnabled(false);
@@ -270,10 +289,10 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		CCPoint origin=PositionToTileCoord(hero[myheroid]->sprite->getPosition());
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
-			hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
+			heromove(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))),myheroid);
 		}
 		else{
-			hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
+			heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid);
 		}
 	}
 }
@@ -383,6 +402,7 @@ void  GameScene::BubbleBomb(int idx)
 		x = PositionToTileCoord(bubble[idx]->sprite->getPosition()).x;
 		y = PositionToTileCoord(bubble[idx]->sprite->getPosition()).y;
 		for (int i = 0; i < heronum; i++)
+		if (hero[i]->isfree && hero[i]->islive)
 		{
 			int x1 = PositionToTileCoord(hero[i]->sprite->getPosition()).x;
 			int y1 = PositionToTileCoord(hero[i]->sprite->getPosition()).y;
@@ -390,19 +410,19 @@ void  GameScene::BubbleBomb(int idx)
 			{
 				if (x1 == (x+j) && y == y1)
 				{
-					hero[i]->encase();
+					heroencase(i);
 				}
 				else if (x1 == (x-j) && y == y1)
 				{
-					hero[i]->encase();
+					heroencase(i);
 				}
 				else if (x1 == x && (y+j) == y1)
 				{
-					hero[i]->encase();
+					heroencase(i);
 				}
 				else if (x1 == x && (y-j) == y1)
 				{
-					hero[i]->encase();
+					heroencase(i);
 				}
 			}
 		}

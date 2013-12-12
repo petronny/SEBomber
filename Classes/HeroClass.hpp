@@ -10,6 +10,8 @@ public:
 	CCAction* action;
 	CCActionInterval* animate;
 	CCSprite *sprite;
+	bool isfree;
+	bool islive;
 	float speed;
 	int bubble_num;
 	int bubble_range;
@@ -126,18 +128,22 @@ void Hero::stand() {
 }
 
 void Hero::encase() {
+	isfree = false;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(encaseanimation());
 	sprite->runAction(animate);
+
 }
 
 void Hero::die() {
+	islive = false;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(dieanimation());
 	sprite->runAction(animate);
 }
 
 void Hero::live() {
+	isfree = true;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(liveanimation());
 	sprite->runAction(animate);
