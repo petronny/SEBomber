@@ -242,8 +242,9 @@ void GameScene::heromove(CCPoint a,int heroid)
 {
 	if (hero[heroid]->isfree && hero[heroid]->islive)
 	{
-		hero[heroid]->moveto(a);
-
+		int gid=mapItemLayer->tileGIDAt(PositionToTileCoord(a));
+		if(gid==0 or !mapItemLayer->tileAt(PositionToTileCoord(a))->isVisible())
+			hero[heroid]->moveto(a);
 	}
 }
 
