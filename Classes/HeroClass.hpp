@@ -90,6 +90,7 @@ void Hero::moveto(CCPoint ptNode){
 	CCFiniteTimeAction *clearmove=CCCallFuncN::create(this,callfuncN_selector(Hero::clearMove));
 	action=CCSequence::create(move,clearmove,NULL);
 	sprite->runAction(action);
+	if(ptNode.x==sprite->getPosition().x and ptNode.y == sprite->getPosition().y)return;
 	sprite->setFlipX(ptNode.x<sprite->getPosition().x);
 	bool t = true;
 	if (ptNode.y < sprite->getPosition().y)

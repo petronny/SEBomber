@@ -51,7 +51,7 @@ public:
     void createhero(int type,CCPoint a,float scale);
     void createprops(int type,CCPoint a,float scale);
     void createbubble(CCPoint a,float scale,int range,int heroid);
-    void heromove(CCPoint a,int heroid);
+    void heromove(CCPoint a,int heroid,CCPoint orig);
     void heroencase(int heroid);
     void herolive(int heroid);
     void herodie(int heroid);
@@ -239,7 +239,7 @@ void GameScene::createprops(int type,CCPoint a,float scale)
 	  propsnum++;
 }
 
-void GameScene::heromove(CCPoint a,int heroid)
+void GameScene::heromove(CCPoint a,int heroid,CCPoint orig)
 {
 	if (hero[heroid]->isfree && hero[heroid]->islive)
 	{
@@ -275,6 +275,9 @@ void GameScene::heromove(CCPoint a,int heroid)
 				}
 			}
 			hero[heroid]->moveto(a);
+		}
+		else{
+			hero[heroid]->moveto(TileCoordToPosition(orig));
 		}
 	}
 }
@@ -358,10 +361,10 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		CCPoint origin=PositionToTileCoord(hero[myheroid]->sprite->getPosition());
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
-			heromove(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))),myheroid);
+			heromove(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))),myheroid,origin);
 		}
 		else{
-			heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid);
+			heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid,origin);
 		}
 		}
 	}
