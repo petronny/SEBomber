@@ -38,7 +38,7 @@ public:
     Bubble* bubble[85];
     int bhead;
     int btail;
-    Props* props[85];
+    Props* props[600];
     int propsnum;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
@@ -51,7 +51,7 @@ public:
     void createhero(int type,CCPoint a,float scale);
     void createprops(int type,CCPoint a,float scale);
     void createbubble(CCPoint a,float scale,int range,int heroid);
-    void heromove(CCPoint a,int heroid);
+    void heromove(CCPoint a,int heroid,CCPoint orig);
     void heroencase(int heroid);
     void herolive(int heroid);
     void herodie(int heroid);
@@ -73,6 +73,7 @@ public:
     void getMoveMsg();
     void sendMoveMsg();
     CCLabelTTF * message;
+    bool *fbomb;
 };
 #include "UserData.hpp"
 #include "GameSceneChatLayer.hpp"
@@ -160,9 +161,9 @@ bool GameScene::init()
     /*Props* pp = new PropsSpeed();
     pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     this->addChild(pp->sprite,3);*/
-    createprops(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     createhero(2,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    createhero(3,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //hero = new HeroBazzi();
     //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //this->addChild(hero[myheroid]->sprite,11);
@@ -246,13 +247,46 @@ void GameScene::createprops(int type,CCPoint a,float scale)
 	  propsnum++;
 }
 
-void GameScene::heromove(CCPoint a,int heroid)
+void GameScene::heromove(CCPoint a,int heroid,CCPoint orig)
 {
 	if (hero[heroid]->isfree && hero[heroid]->islive)
 	{
+		bool t = true;
+		int x = PositionToTileCoord(a).x;
+		int y = PositionToTileCoord(a).y;
 		int gid=mapItemLayer->tileGIDAt(PositionToTileCoord(a));
-		if(gid==0 or !mapItemLayer->tileAt(PositionToTileCoord(a))->isVisible())
+		if (!(gid==0 or !mapItemLayer->tileAt(PositionToTileCoord(a))->isVisible()))
+			t = false;
+		for (int i = 0; i <= 80; i++)
+		if (bubble[i] != NULL && bubble[i]->isdelay)
+		{
+			int x1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).x;
+			int y1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).y;
+			if (x1 == x && y == y1)
+			{
+				t = false;
+				break;
+			}
+		}
+		if (t)
+		{
+			for (int i = 0; i < propsnum; i++)
+			if (props[i]->isdelay)
+			{
+				int x1 = PositionToTileCoord(props[i]->sprite->getPosition()).x;
+				int y1 = PositionToTileCoord(props[i]->sprite->getPosition()).y;
+				if (x1 == x && y == y1)
+				{
+					herogetprops(heroid,props[i]->type);
+					props[i]->remove();
+					break;
+				}
+			}
 			hero[heroid]->moveto(a);
+		}
+		else{
+			hero[heroid]->moveto(TileCoordToPosition(orig));
+		}
 	}
 }
 
@@ -260,14 +294,17 @@ void GameScene::herogetprops(int heroid,int type)
 {
 	if (type == 1)
 	{
+		if (hero[heroid]->speed < 10)
 		hero[heroid]->speed++;
 	}
 	else if (type == 2)
 	{
+		if (hero[heroid]->bubble_range < 10)
 		hero[heroid]->bubble_range++;
 	}
 	else if (type == 3)
 	{
+		if (hero[heroid]->bubble_num < 10)
 		hero[heroid]->bubble_num++;
 	}
 }
@@ -332,27 +369,23 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		CCPoint origin=PositionToTileCoord(hero[myheroid]->sprite->getPosition());
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
-			sprintf(sMsg, "%d %f %f",myheroid, origin.x, origin.y+(aim.y-origin.y)/abs(aim.y-origin.y));
+			sprintf(sMsg, "%d %f %f %f %f",myheroid, origin.x, origin.y+(aim.y-origin.y)/abs(aim.y-origin.y), origin.x, origin.y);
 			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.035f);
 			//send(Client::client->sockfd, sMsg, sizeof(sMsg), 0);
 			//hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
 			schedule(schedule_selector(GameScene::getMoveMsg));
 		}
 		else{
-			sprintf(sMsg,"%d %f %f",myheroid, origin.x+(aim.x-origin.x)/abs(aim.x-origin.x), origin.y );
+			sprintf(sMsg,"%d %f %f %f %f",myheroid, origin.x+(aim.x-origin.x)/abs(aim.x-origin.x), origin.y, origin.x, origin.y );
 			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.035f);
 			//send(Client::client->sockfd, sMsg, sizeof(sMsg), 0);
 			//hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
 			schedule(schedule_selector(GameScene::getMoveMsg));
 		}
-/*=======
-			heromove(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))),myheroid);
-		}
-		else{
-			heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid);
-		}
->>>>>>> 4b55bd574802551382d09871d6ca664cf795553d*/
-		}
+	}
+
+			//heromove(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))),myheroid,origin);
+			//heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid,origin);
 	}
 }
 void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
@@ -395,9 +428,12 @@ void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 			CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
 			chatLayer->runAction(move);
 		}
-		//hero[myheroid]->clearMove();
-		//hero[myheroid]->stand();
-		//hero->encase();
+		if (hero[myheroid]->isfree && hero[myheroid]->islive)
+		{
+			//hero[myheroid]->clearMove();
+			//hero[myheroid]->stand();
+			//hero->encase();
+		}
 	}
 
 }
@@ -449,14 +485,18 @@ void  GameScene::BubbleBomb(int idx)
 		x = PositionToTileCoord(bubble[idx]->sprite->getPosition()).x;
 		y = PositionToTileCoord(bubble[idx]->sprite->getPosition()).y;
 		int range[4]={0,0,0,0};
-		while(range[0]<r and(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==0 or !mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible()))range[0]++;
-		while(range[1]<r and(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==0 or !mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible()))range[1]++;
-		while(range[2]<r and(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==0 or !mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible()))range[2]++;
-		while(range[3]<r and(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==0 or !mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible()))range[3]++;
-		if(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==25)range[0]--;
-		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
-		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
-		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
+		while(y-range[0]>0 and range[0]<r and(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==0 or !mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible()))range[0]++;
+		while(y+range[1]<map->getMapSize().height and range[1]<r and(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==0 or !mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible()))range[1]++;
+		while(x-range[2]>0 and range[2]<r and(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==0 or !mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible()))range[2]++;
+		while(x+range[3]<map->getMapSize().width and range[3]<r and(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==0 or !mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible()))range[3]++;
+		if(y-range[0]>0 and mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==25)range[0]--;
+		if(y+range[1]<map->getMapSize().height and mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
+		if(x-range[2]>0 and mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
+		if(x+range[3]<map->getMapSize().width and mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
+		if(y-range[0]>0 and mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==23 and mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible())fbomb[int(x+map->getMapSize().width*(y-range[0]))]=true;
+		if(y+range[1]<map->getMapSize().height and mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==23 and mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible())fbomb[int(x+(int)map->getMapSize().width*(y+range[1]))]=true;
+		if(x-range[2]>0 and mapItemLayer->tileGIDAt(ccp(x-range[2],y))==23 and mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible())fbomb[int(x-range[2]+(int)map->getMapSize().width*y)]=true;
+		if(x+range[3]<map->getMapSize().width and mapItemLayer->tileGIDAt(ccp(x+range[3],y))==23 and mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible())fbomb[int(x+range[3]+(int)map->getMapSize().width*y)]=true;
 		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
 		char st[80];
 		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
@@ -466,24 +506,43 @@ void  GameScene::BubbleBomb(int idx)
 		{
 			int x1 = PositionToTileCoord(hero[i]->sprite->getPosition()).x;
 			int y1 = PositionToTileCoord(hero[i]->sprite->getPosition()).y;
-			for (int j = 0; j <= r; j++)
+			bool t = false;
+			if (x1 == x && y == y1)
 			{
+				t = true;
+			}
+			if (!t)
+			for (int j = 1; j <= range[0]; j++)
+				if (x1 == x && (y+j) == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[1]; j++)
+				if (x1 == x && (y-j) == y1)
+				{
+					t = true;
+					break;
+
+				}
+			if (!t)
+			for (int j = 1; j <= range[2]; j++)
+				if (x1 == (x-j) && y == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[3]; j++)
 				if (x1 == (x+j) && y == y1)
 				{
-					heroencase(i);
+					t = true;
+					break;
 				}
-				else if (x1 == (x-j) && y == y1)
-				{
-					heroencase(i);
-				}
-				else if (x1 == x && (y+j) == y1)
-				{
-					heroencase(i);
-				}
-				else if (x1 == x && (y-j) == y1)
-				{
-					heroencase(i);
-				}
+			if (t)
+			{
+				heroencase(i);
 			}
 		}
 		for (int i = 0; i < propsnum; i++)
@@ -491,24 +550,43 @@ void  GameScene::BubbleBomb(int idx)
 		{
 			int x1 = PositionToTileCoord(props[i]->sprite->getPosition()).x;
 			int y1 = PositionToTileCoord(props[i]->sprite->getPosition()).y;
-			for (int j = 0; j <= r; j++)
+			bool t = false;
+			if (x1 == x && y == y1)
 			{
+				t = true;
+			}
+			if (!t)
+			for (int j = 1; j <= range[0]; j++)
+				if (x1 == x && (y+j) == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[1]; j++)
+				if (x1 == x && (y-j) == y1)
+				{
+					t = true;
+					break;
+
+				}
+			if (!t)
+			for (int j = 1; j <= range[2]; j++)
+				if (x1 == (x-j) && y == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[3]; j++)
 				if (x1 == (x+j) && y == y1)
 				{
-					props[i]->remove();
+					t = true;
+					break;
 				}
-				else if (x1 == (x-j) && y == y1)
-				{
-					props[i]->remove();
-				}
-				else if (x1 == x && (y+j) == y1)
-				{
-					props[i]->remove();
-				}
-				else if (x1 == x && (y-j) == y1)
-				{
-					props[i]->remove();
-				}
+			if (t)
+			{
+				props[i]->remove();
 			}
 		}
 		for (int i = 0; i <= 80; i++)
@@ -517,37 +595,65 @@ void  GameScene::BubbleBomb(int idx)
 			{
 				int x1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).x;
 				int y1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).y;
-				for (int j = 1; j <= r; j++)
+				bool t = false;
+				if (x1 == x && y == y1)
 				{
+					t = true;
+				}
+				if (!t)
+				for (int j = 1; j <= range[0]; j++)
+					if (x1 == x && (y+j) == y1)
+					{
+						t = true;
+						break;
+					}
+				if (!t)
+				for (int j = 1; j <= range[1]; j++)
+					if (x1 == x && (y-j) == y1)
+					{
+						t = true;
+						break;
+
+					}
+				if (!t)
+				for (int j = 1; j <= range[2]; j++)
+					if (x1 == (x-j) && y == y1)
+					{
+						t = true;
+						break;
+					}
+				if (!t)
+				for (int j = 1; j <= range[3]; j++)
 					if (x1 == (x+j) && y == y1)
 					{
-						BubbleBomb(i);
+						t = true;
+						break;
 					}
-					else if (x1 == (x-j) && y == y1)
-					{
-						BubbleBomb(i);
-					}
-					else if (x1 == x && (y+j) == y1)
-					{
-						BubbleBomb(i);
-					}
-					else if (x1 == x && (y-j) == y1)
-					{
-						BubbleBomb(i);
-					}
+				if (t)
+				{
+					BubbleBomb(i);
 				}
 			}
 		}
-
 	}
 }
 void GameScene::BombCallback(CCNode* obj,void* id) {
 	int idx = *((int*)id);
+	fbomb=new bool[int(map->getMapSize().height*map->getMapSize().width)];
+	for(int i=0;i<map->getMapSize().height*map->getMapSize().width;i++)
+		fbomb[i]=false;
 	BubbleBomb(idx);
 
+	for(int x=0;x<map->getMapSize().width;x++)
+		for(int y=0;y<map->getMapSize().height;y++)
+			if(fbomb[x+y*(int)map->getMapSize().width]){
+				mapItemLayer->tileAt(ccp(x,y))->setVisible(false);
+				if(rand()%2)
+					createprops(rand()%3+1,TileCoordToPosition(ccp(x,y)),mapBackgroundLayer->getScale());
+			}
 }
 void GameScene::getMoveMsg(){
-	float x, y;
+	float x, y, ox,oy;
 	int id;
 	fd_set fdr;
 	int sockfd=Client::client->sockfd;
@@ -564,8 +670,8 @@ void GameScene::getMoveMsg(){
 			if(FD_ISSET(sockfd, &fdr)){
 				int r= recv(sockfd, rMsg, sizeof(rMsg), 0);
 				if(r>=0){
-					sscanf(rMsg, "%d %f %f",&id, &x, &y);
-					heromove(TileCoordToPosition(ccp(x, y)),id);
+					sscanf(rMsg, "%d %f %f %f %f",&id, &x, &y, &ox, &oy);
+					heromove(TileCoordToPosition(ccp(x, y)),id,ccp(ox, oy));
 				}
 
 			}

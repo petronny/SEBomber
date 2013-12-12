@@ -13,6 +13,7 @@ void HeroBazzi::createhero(CCPoint a,float scale,int id){
 	direction = 5;
 	bubble_range = 3;
 	bubble_num = 3;
+	sca = scale;
 	idx = id;
 	islive = true;
 	isfree = true;

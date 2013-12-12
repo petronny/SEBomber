@@ -16,6 +16,7 @@ public:
 	int bubble_num;
 	int bubble_range;
 	int num;
+	float sca;
 	int idx;
 	int direction;
 	int list[100][4];
@@ -85,10 +86,11 @@ CCAnimation* Hero::liveanimation()
 
 void Hero::moveto(CCPoint ptNode){
 	if(action!=NULL)return;
-	CCMoveTo *move = CCMoveTo::create(ccpDistance(sprite->getPosition(),ptNode)/200, ptNode);
+	CCMoveTo *move = CCMoveTo::create(ccpDistance(sprite->getPosition(),ptNode)/(speed*40)/sca, ptNode);
 	CCFiniteTimeAction *clearmove=CCCallFuncN::create(this,callfuncN_selector(Hero::clearMove));
 	action=CCSequence::create(move,clearmove,NULL);
 	sprite->runAction(action);
+	if(ptNode.x==sprite->getPosition().x and ptNode.y == sprite->getPosition().y)return;
 	sprite->setFlipX(ptNode.x<sprite->getPosition().x);
 	bool t = true;
 	if (ptNode.y < sprite->getPosition().y)
