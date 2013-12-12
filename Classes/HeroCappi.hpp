@@ -11,6 +11,10 @@ public:
 void HeroCappi::createhero(CCPoint a,float scale){
 	speed = 5;
 	direction = 5;
+	bubble_range = 3;
+	bubble_num = 3;
+	islive = true;
+	isfree = true;
 	sprite = CCSprite::create();
 	sprite->setScale(scale);
 	sprite->setPosition(a);
