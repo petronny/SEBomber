@@ -70,6 +70,7 @@ public:
     int doubleTouchCount,tripleTouchCount;
     CCPoint firstTripleTouchPoint;
     CCLabelTTF * message;
+    bool *fbomb;
 };
 #include "UserData.hpp"
 #include "GameSceneChatLayer.hpp"
@@ -452,6 +453,10 @@ void  GameScene::BubbleBomb(int idx)
 		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
 		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
 		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
+		if(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==23)fbomb[int(x+map->getMapSize().width*(y-range[0]))]=true;
+		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==23)fbomb[int(x+(int)map->getMapSize().width*(y+range[1]))]=true;
+		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==23)fbomb[int(x-range[2]+(int)map->getMapSize().width*y)]=true;
+		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==23)fbomb[int(x+range[3]+(int)map->getMapSize().width*y)]=true;
 		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
 		char st[80];
 		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
@@ -544,8 +549,14 @@ void  GameScene::BubbleBomb(int idx)
 }
 void GameScene::BombCallback(CCNode* obj,void* id) {
 	int idx = *((int*)id);
+	fbomb=new bool[int(map->getMapSize().height*map->getMapSize().width)];
+	for(int i=0;i<map->getMapSize().height*map->getMapSize().width;i++)
+		fbomb[i]=false;
 	BubbleBomb(idx);
-
+	for(int x=0;x<map->getMapSize().width;x++)
+		for(int y=0;y<map->getMapSize().height;y++)
+			if(fbomb[x+y*(int)map->getMapSize().width])
+				mapItemLayer->tileAt(ccp(x,y))->setVisible(false);
 /*	if (bhead != btail)
 	{
 //		bubble[bhead]->range;
