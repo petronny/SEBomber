@@ -8,7 +8,6 @@ USING_NS_CC;
 //#include<string.h>
 //using namespace std;
 class AniReader{
-
 public:
 
 	//char *filename;

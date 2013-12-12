@@ -63,6 +63,7 @@ public:
     CCLayer *statusLayer,*chatLayer;
     int doubleTouchCount,tripleTouchCount;
     CCPoint firstTripleTouchPoint;
+    CCLabelTTF * message;
 };
 #include "UserData.hpp"
 #include "GameSceneChatLayer.hpp"
@@ -107,7 +108,9 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
     size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-
+    message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
+    message->setPosition(ccp(size.width/2,size.height/2));
+    gameScene->addChild(message,20);
     statusLayer=GameSceneStatusLayer::create();
     statusLayer->setPosition(ccp(0,size.height));
     chatLayer=GameSceneChatLayer::create();
@@ -131,6 +134,8 @@ bool GameScene::init()
     map=CCTMXTiledMap::create("map/map_fact.tmx");
     mapBackgroundLayer=map->layerNamed("background");
     mapItemLayer=map->layerNamed("item");
+    gameScene->addChild(map,-20);
+    map->setVisible(false);
     if(map->getContentSize().height<size.height or map->getContentSize().width<size.width){
     	mapBackgroundLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
     	mapItemLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
@@ -271,9 +276,17 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
 			hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
+			char st[80];
+			int gid=mapItemLayer->tileGIDAt(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y)));
+			sprintf(st,"%f %f %d",origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y),gid);
+			message->setString(st);
 		}
 		else{
 			hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
+			char st[80];
+			int gid=mapItemLayer->tileGIDAt(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y));
+			sprintf(st,"%f %f %d",origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y,gid);
+			message->setString(st);
 		}
 	}
 }
@@ -330,13 +343,16 @@ void GameScene::registerWithTouchDispatcher()
 }
 CCPoint GameScene::PositionToTileCoord(CCPoint cocosCoord)
 {
-	int x=cocosCoord.x/mapBackgroundLayer->getScale()/mapBackgroundLayer->getMapTileSize().width;
-	int y=((mapBackgroundLayer->getLayerSize().height-cocosCoord.y)/mapBackgroundLayer->getScale()) / mapBackgroundLayer->getMapTileSize().height;
+	int x=cocosCoord.x/mapBackgroundLayer->getScale()/map->getTileSize().width;
+	int y=((mapBackgroundLayer->getLayerSize().height-cocosCoord.y)/mapBackgroundLayer->getScale()) / map->getTileSize().height;
+	y=y+map->getMapSize().height-1;
 	return ccp(x,y);
+
 }
 CCPoint GameScene::TileCoordToPosition(CCPoint tileCoord){
-	float x=mapBackgroundLayer->getMapTileSize().width*(0.5+tileCoord.x)*mapBackgroundLayer->getScale();
-	float y=(mapBackgroundLayer->getLayerSize().height-mapBackgroundLayer->getMapTileSize().height*(0.5+tileCoord.y-0.9))*mapBackgroundLayer->getScale();
+	tileCoord.y-=map->getMapSize().height-1;
+	float x=map->getTileSize().width*(0.5+tileCoord.x)*mapBackgroundLayer->getScale();
+	float y=(mapBackgroundLayer->getLayerSize().height-map->getTileSize().height*(0.5+tileCoord.y-1))*mapBackgroundLayer->getScale();
 	return ccp(x,y);
 }
 void GameScene::menuButtonCallback(CCObject* pSender)
