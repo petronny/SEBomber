@@ -406,10 +406,22 @@ void  GameScene::BubbleBomb(int idx)
 		{
 			bubble[idx]->sprite->stopAction(action);
 		}
-		bubble[idx]->bomb(r,r,r,r);
-		int x,y;
+		float x,y;
 		x = PositionToTileCoord(bubble[idx]->sprite->getPosition()).x;
 		y = PositionToTileCoord(bubble[idx]->sprite->getPosition()).y;
+		int range[4]={0,0,0,0};
+		while(range[0]<r and(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==0 or !mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible()))range[0]++;
+		while(range[1]<r and(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==0 or !mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible()))range[1]++;
+		while(range[2]<r and(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==0 or !mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible()))range[2]++;
+		while(range[3]<r and(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==0 or !mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible()))range[3]++;
+		if(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==25)range[0]--;
+		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
+		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
+		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
+		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
+		char st[80];
+		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
+		message->setString(st);
 		for (int i = 0; i < heronum; i++)
 		if (hero[i]->isfree && hero[i]->islive)
 		{
