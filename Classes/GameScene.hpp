@@ -461,24 +461,43 @@ void  GameScene::BubbleBomb(int idx)
 		{
 			int x1 = PositionToTileCoord(hero[i]->sprite->getPosition()).x;
 			int y1 = PositionToTileCoord(hero[i]->sprite->getPosition()).y;
-			for (int j = 0; j <= r; j++)
+			bool t = false;
+			if (x1 == x && y == y1)
 			{
+				t = true;
+			}
+			if (!t)
+			for (int j = 1; j <= range[0]; j++)
+				if (x1 == x && (y+j) == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[1]; j++)
+				if (x1 == x && (y-j) == y1)
+				{
+					t = true;
+					break;
+
+				}
+			if (!t)
+			for (int j = 1; j <= range[2]; j++)
+				if (x1 == (x-j) && y == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[3]; j++)
 				if (x1 == (x+j) && y == y1)
 				{
-					heroencase(i);
+					t = true;
+					break;
 				}
-				else if (x1 == (x-j) && y == y1)
-				{
-					heroencase(i);
-				}
-				else if (x1 == x && (y+j) == y1)
-				{
-					heroencase(i);
-				}
-				else if (x1 == x && (y-j) == y1)
-				{
-					heroencase(i);
-				}
+			if (t)
+			{
+				heroencase(i);
 			}
 		}
 		for (int i = 0; i < propsnum; i++)
@@ -486,24 +505,43 @@ void  GameScene::BubbleBomb(int idx)
 		{
 			int x1 = PositionToTileCoord(props[i]->sprite->getPosition()).x;
 			int y1 = PositionToTileCoord(props[i]->sprite->getPosition()).y;
-			for (int j = 0; j <= r; j++)
+			bool t = false;
+			if (x1 == x && y == y1)
 			{
+				t = true;
+			}
+			if (!t)
+			for (int j = 1; j <= range[0]; j++)
+				if (x1 == x && (y+j) == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[1]; j++)
+				if (x1 == x && (y-j) == y1)
+				{
+					t = true;
+					break;
+
+				}
+			if (!t)
+			for (int j = 1; j <= range[2]; j++)
+				if (x1 == (x-j) && y == y1)
+				{
+					t = true;
+					break;
+				}
+			if (!t)
+			for (int j = 1; j <= range[3]; j++)
 				if (x1 == (x+j) && y == y1)
 				{
-					props[i]->remove();
+					t = true;
+					break;
 				}
-				else if (x1 == (x-j) && y == y1)
-				{
-					props[i]->remove();
-				}
-				else if (x1 == x && (y+j) == y1)
-				{
-					props[i]->remove();
-				}
-				else if (x1 == x && (y-j) == y1)
-				{
-					props[i]->remove();
-				}
+			if (t)
+			{
+				props[i]->remove();
 			}
 		}
 		/*for (int i = 1; i <= r; i++)
@@ -518,28 +556,46 @@ void  GameScene::BubbleBomb(int idx)
 			{
 				int x1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).x;
 				int y1 = PositionToTileCoord(bubble[i]->sprite->getPosition()).y;
-				for (int j = 1; j <= r; j++)
+				bool t = false;
+				if (x1 == x && y == y1)
 				{
+					t = true;
+				}
+				if (!t)
+				for (int j = 1; j <= range[0]; j++)
+					if (x1 == x && (y+j) == y1)
+					{
+						t = true;
+						break;
+					}
+				if (!t)
+				for (int j = 1; j <= range[1]; j++)
+					if (x1 == x && (y-j) == y1)
+					{
+						t = true;
+						break;
+
+					}
+				if (!t)
+				for (int j = 1; j <= range[2]; j++)
+					if (x1 == (x-j) && y == y1)
+					{
+						t = true;
+						break;
+					}
+				if (!t)
+				for (int j = 1; j <= range[3]; j++)
 					if (x1 == (x+j) && y == y1)
 					{
-						BubbleBomb(i);
+						t = true;
+						break;
 					}
-					else if (x1 == (x-j) && y == y1)
-					{
-						BubbleBomb(i);
-					}
-					else if (x1 == x && (y+j) == y1)
-					{
-						BubbleBomb(i);
-					}
-					else if (x1 == x && (y-j) == y1)
-					{
-						BubbleBomb(i);
-					}
+				if (t)
+				{
+					BubbleBomb(i);
 				}
 			}
 		}
-
 	}
 }
 void GameScene::BombCallback(CCNode* obj,void* id) {
