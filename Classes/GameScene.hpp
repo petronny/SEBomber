@@ -69,6 +69,7 @@ public:
     CCLayer *statusLayer,*chatLayer;
     int doubleTouchCount,tripleTouchCount;
     CCPoint firstTripleTouchPoint;
+    CCLabelTTF * message;
 };
 #include "UserData.hpp"
 #include "GameSceneChatLayer.hpp"
@@ -113,7 +114,9 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
     size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-
+    message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
+    message->setPosition(ccp(size.width/2,size.height/2));
+    gameScene->addChild(message,20);
     statusLayer=GameSceneStatusLayer::create();
     statusLayer->setPosition(ccp(0,size.height));
     chatLayer=GameSceneChatLayer::create();
@@ -137,6 +140,8 @@ bool GameScene::init()
     map=CCTMXTiledMap::create("map/map_fact.tmx");
     mapBackgroundLayer=map->layerNamed("background");
     mapItemLayer=map->layerNamed("item");
+    gameScene->addChild(map,-20);
+    map->setVisible(false);
     if(map->getContentSize().height<size.height or map->getContentSize().width<size.width){
     	mapBackgroundLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
     	mapItemLayer->setScale(MAX(size.height/map->getContentSize().height,size.width/map->getContentSize().width));
@@ -238,7 +243,9 @@ void GameScene::heromove(CCPoint a,int heroid)
 {
 	if (hero[heroid]->isfree && hero[heroid]->islive)
 	{
-		hero[heroid]->moveto(a);
+		int gid=mapItemLayer->tileGIDAt(PositionToTileCoord(a));
+		if(gid==0 or !mapItemLayer->tileAt(PositionToTileCoord(a))->isVisible())
+			hero[heroid]->moveto(a);
 	}
 }
 
@@ -379,13 +386,16 @@ void GameScene::registerWithTouchDispatcher()
 }
 CCPoint GameScene::PositionToTileCoord(CCPoint cocosCoord)
 {
-	int x=cocosCoord.x/mapBackgroundLayer->getScale()/mapBackgroundLayer->getMapTileSize().width;
-	int y=((mapBackgroundLayer->getLayerSize().height-cocosCoord.y)/mapBackgroundLayer->getScale()) / mapBackgroundLayer->getMapTileSize().height;
+	int x=cocosCoord.x/mapBackgroundLayer->getScale()/map->getTileSize().width;
+	int y=((mapBackgroundLayer->getLayerSize().height-cocosCoord.y)/mapBackgroundLayer->getScale()) / map->getTileSize().height;
+	y=y+map->getMapSize().height-1;
 	return ccp(x,y);
+
 }
 CCPoint GameScene::TileCoordToPosition(CCPoint tileCoord){
-	float x=mapBackgroundLayer->getMapTileSize().width*(0.5+tileCoord.x)*mapBackgroundLayer->getScale();
-	float y=(mapBackgroundLayer->getLayerSize().height-mapBackgroundLayer->getMapTileSize().height*(0.5+tileCoord.y-0.9))*mapBackgroundLayer->getScale();
+	tileCoord.y-=map->getMapSize().height-1;
+	float x=map->getTileSize().width*(0.5+tileCoord.x)*mapBackgroundLayer->getScale();
+	float y=(mapBackgroundLayer->getLayerSize().height-map->getTileSize().height*(0.5+tileCoord.y-1))*mapBackgroundLayer->getScale();
 	return ccp(x,y);
 }
 void GameScene::menuButtonCallback(CCObject* pSender)
@@ -430,10 +440,22 @@ void  GameScene::BubbleBomb(int idx)
 		{
 			bubble[idx]->sprite->stopAction(action);
 		}
-		bubble[idx]->bomb(r,r,r,r);
-		int x,y;
+		float x,y;
 		x = PositionToTileCoord(bubble[idx]->sprite->getPosition()).x;
 		y = PositionToTileCoord(bubble[idx]->sprite->getPosition()).y;
+		int range[4]={0,0,0,0};
+		while(range[0]<r and(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==0 or !mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible()))range[0]++;
+		while(range[1]<r and(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==0 or !mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible()))range[1]++;
+		while(range[2]<r and(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==0 or !mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible()))range[2]++;
+		while(range[3]<r and(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==0 or !mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible()))range[3]++;
+		if(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==25)range[0]--;
+		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
+		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
+		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
+		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
+		char st[80];
+		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
+		message->setString(st);
 		for (int i = 0; i < heronum; i++)
 		if (hero[i]->isfree && hero[i]->islive)
 		{
