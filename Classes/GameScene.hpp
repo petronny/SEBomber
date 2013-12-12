@@ -57,6 +57,7 @@ public:
     void herodie(int heroid);
     void herogetprops(int heroid,int type);
     void BombCallback(CCNode* obj,void* id);
+    void DieCallback(CCNode* obj,void* id);
     void BubbleBomb(int idx);
     void test();
 	CCPoint PositionToTileCoord(CCPoint cocosCoord);
@@ -179,8 +180,8 @@ void GameScene::createhero(int type,CCPoint a,float s)
 	{
 		hero[heronum] = new HeroMarid();
 	}
-	hero[heronum]->createhero(a,s);
-	this->addChild(hero[myheroid]->sprite,11);
+	hero[heronum]->createhero(a,s,heronum);
+	this->addChild(hero[heronum]->sprite,11);
 	heronum++;
 }
 
@@ -238,13 +239,39 @@ void GameScene::heromove(CCPoint a,int heroid)
 	if (hero[heroid]->isfree && hero[heroid]->islive)
 	{
 		hero[heroid]->moveto(a);
-
 	}
 }
 
+void GameScene::herogetprops(int heroid,int type)
+{
+	if (type == 1)
+	{
+		hero[heroid]->speed++;
+	}
+	else if (type == 2)
+	{
+		hero[heroid]->bubble_range++;
+	}
+	else if (type == 3)
+	{
+		hero[heroid]->bubble_num++;
+	}
+}
 void GameScene::heroencase(int heroid)
 {
 	hero[heroid]->encase();
+	CCFiniteTimeAction *delay;
+	delay = CCDelayTime::create(3);
+	CCCallFuncND * die = CCCallFuncND::create(this,callfuncND_selector(GameScene::DieCallback),(void*)&hero[heroid]->idx);
+	CCAction *action;
+	action = CCSequence::create(delay,die,NULL);
+	action->setTag(0);
+	hero[heroid]->sprite->runAction(action);
+}
+
+void GameScene::herodie(int heroid)
+{
+	hero[heroid]->die();
 }
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
@@ -284,6 +311,8 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	}
 	if(pTouches->count()==1 and doubleTouchCount==0 and tripleTouchCount==0)
 	{
+		if (hero[myheroid]->isfree && hero[myheroid]->islive)
+		{
 		CCTouch* touch=dynamic_cast<CCTouch*>(pTouches->anyObject());
 		CCPoint aim=PositionToTileCoord(convertTouchToNodeSpace(touch));
 		CCPoint origin=PositionToTileCoord(hero[myheroid]->sprite->getPosition());
@@ -293,6 +322,7 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		}
 		else{
 			heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid);
+		}
 		}
 	}
 }
@@ -360,11 +390,14 @@ CCPoint GameScene::TileCoordToPosition(CCPoint tileCoord){
 }
 void GameScene::menuButtonCallback(CCObject* pSender)
 {
+	if (hero[myheroid]->isfree && hero[myheroid]->islive)
+	{
 	if (hero[myheroid]->bubble_num > 0)
 	{
 		hero[myheroid]->bubble_num--;
 		SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_0.ogg");
 		createbubble(TileCoordToPosition(PositionToTileCoord(hero[myheroid]->sprite->getPosition())),mapBackgroundLayer->getScale(),hero[myheroid]->bubble_range,myheroid);
+	}
 	}
 	/*if (bubble[btail] != NULL)
 	{
@@ -505,6 +538,11 @@ void GameScene::BombCallback(CCNode* obj,void* id) {
 //			    buble->getp
 
 	}*/
+}
+
+void GameScene::DieCallback(CCNode* obj,void* id) {
+	int idx = *((int*)id);
+	herodie(idx);
 }
 #endif
 

@@ -5,16 +5,17 @@
 USING_NS_CC;
 class HeroMarid: public Hero{
 public:
-	void createhero(CCPoint a,float scale);
+	void createhero(CCPoint a,float scale,int id);
 };
 
-void HeroMarid::createhero(CCPoint a,float scale){
+void HeroMarid::createhero(CCPoint a,float scale,int id){
 	speed = 5;
 	direction = 5;
 	bubble_range = 3;
 	bubble_num = 3;
 	islive = true;
 	isfree = true;
+	idx = id;
 	sprite = CCSprite::create();
 	sprite->setScale(scale);
 	sprite->setPosition(a);

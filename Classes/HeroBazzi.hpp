@@ -5,14 +5,15 @@
 USING_NS_CC;
 class HeroBazzi: public Hero{
 public:
-	void createhero(CCPoint a,float scale);
+	void createhero(CCPoint a,float scale,int id);
 };
 
-void HeroBazzi::createhero(CCPoint a,float scale){
+void HeroBazzi::createhero(CCPoint a,float scale,int id){
 	speed = 5;
 	direction = 5;
 	bubble_range = 3;
 	bubble_num = 3;
+	idx = id;
 	islive = true;
 	isfree = true;
 	sprite = CCSprite::create();
