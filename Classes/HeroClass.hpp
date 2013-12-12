@@ -10,14 +10,17 @@ public:
 	CCAction* action;
 	CCActionInterval* animate;
 	CCSprite *sprite;
+	bool isfree;
+	bool islive;
 	float speed;
 	int bubble_num;
 	int bubble_range;
 	int num;
+	int idx;
 	int direction;
 	int list[100][4];
 	virtual ~Hero() {}
-	virtual void createhero(CCPoint a,float scale) {}
+	virtual void createhero(CCPoint a,float scale,int id) {}
 	CCAnimation* moveanimation(int);
 	CCAnimation* liveanimation();
 	CCAnimation* dieanimation();
@@ -25,6 +28,7 @@ public:
 	void moveto(CCPoint a);
 	void clearMove();
 	void stand();
+	void remove();
 	void encase();	//包住动画
 	void die();		//挂掉动画
 	void live();  //解救动画
@@ -61,7 +65,7 @@ CCAnimation* Hero::encaseanimation()
 CCAnimation* Hero::dieanimation()
 {
 	animation = CCAnimation::create();
-	animation->setDelayPerUnit(0.33f);
+	animation->setDelayPerUnit(0.4f);
 	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[31][0],list[31][1],list[31][2],list[31][3]));
 	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[34][0],list[34][1],list[34][2],list[34][3]));
 	animation->addSpriteFrameWithTexture(texture, CCRectMake(list[35][0],list[35][1],list[35][2],list[35][3]));
@@ -126,18 +130,27 @@ void Hero::stand() {
 }
 
 void Hero::encase() {
+	isfree = false;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(encaseanimation());
 	sprite->runAction(animate);
+
 }
 
 void Hero::die() {
+	islive = false;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(dieanimation());
-	sprite->runAction(animate);
+	CCFiniteTimeAction* destroy = CCCallFuncN::create(this,callfuncN_selector(Hero::remove));
+	CCAction * a = CCSequence::create(animate,destroy);
+	sprite->runAction(a);
+	//sprite->runAction(animate);
 }
-
+void Hero::remove() {
+	sprite->getParent()->removeChild(sprite);
+}
 void Hero::live() {
+	isfree = true;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(liveanimation());
 	sprite->runAction(animate);

@@ -16,10 +16,12 @@ public:
 	CCActionInterval* animate;
 	CCLayer *layer;
 	CCAction *action;
+	CCPoint position;
 	int idx;
 	int num;
 	int list[100][4];
 	int range;
+	int r[4];
 	int heroid;
 	bool isdelay;
 	void bomb(int up,int down,int left, int right);
@@ -88,6 +90,7 @@ Bubble::Bubble(CCPoint a,float scale,int id,int r,int he){
 	idx = id;
 	range = r;
 	heroid = he;
+	position = a;
 	isdelay = true;
 	AniReader::read("unit_bombwater.ani");
 	num = AniReader::num;
@@ -161,6 +164,10 @@ void Bubble::remove()
 }
 void Bubble::bomb(int up,int down,int left, int right)
 {
+	r[0] = up;
+	r[1] = down;
+	r[2] = left;
+	r[3] = right;
 	isdelay = false;
 	sprite->stopAction(animate);
 	animate = CCAnimate::create(centeranimation());

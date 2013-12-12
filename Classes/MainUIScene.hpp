@@ -233,7 +233,7 @@ bool MainUIScene::init()
 	emotion->setPosition (ccp (face->getPositionX() - face->boundingBox().size.width / 4, face->getPositionY() + face->boundingBox().size.height / 4) );
 	this->addChild (emotion, 3);
 	multiplayerSelected();
-	schedule(schedule_selector(MainUIScene::okButton));
+	this->schedule(schedule_selector(MainUIScene::okButton));
 	return true;
 }
 void MainUIScene::showAvatar (int num)
@@ -324,45 +324,6 @@ void MainUIScene::okButtonClicked()
 	memset(msg,0,sizeof(msg));
 	sprintf(msg, "%s","ok");
 	send(Client::client->sockfd,msg, sizeof(msg),0);
-	/*char rMsg[255];
-	fd_set fdr;
-	Client::client->sockfd;
-	struct timeval timeout={0,0};
-	bool flag=false;
-	FD_ZERO(&fdr);
-	FD_ZERO(&fdw);
-		FD_SET(sockfd, &fdr);
-		FD_SET(sockfd, &fdw);
-		switch(select(sockfd+1, &fdr, &fdw, NULL, &timeout)){
-			case -1:
-				exit(-1);
-				break;
-			case 0:
-				break;
-			default:
-				if(FD_ISSET(sockfd, &fdr)){
-					int r= recv(sockfd, rMsg, sizeof(rMsg), 0);
-					if(r<0)
-						exit(0);
-					else
-						if(strcmp(rMsg,"ok")==0){
-							flag=true;
-							break;
-						}
-				}
-				if(FD_ISSET(sockfd, &fdw)){
-					int sdf = send(sockfd, msg, strlen(msg), 0);
-					break;
-				}
-		}
-		if(flag) break;
-	}
-		recv(Client::client->sockfd,rMsg, sizeof(rMsg),0);
-		if(strcmp(rMsg, "ok")==0){
-			CCScene *pScene = GameScene::scene();
-			CCDirector::sharedDirector()->replaceScene (CCTransitionFlipY::create (0.5f, pScene));
-		}
-	//}*/
 }
 void MainUIScene::okButton(){
 	char rMsg[255];
@@ -379,10 +340,9 @@ void MainUIScene::okButton(){
 		default:
 			if(FD_ISSET(Client::client->sockfd, &fdr)){
 				int r= recv(Client::client->sockfd, rMsg, sizeof(rMsg), 0);
-				if(r<0)
-					exit(0);
-				else
+				if(r>=0)
 					if(strcmp(rMsg,"ok")==0){
+						this->unschedule(schedule_selector(MainUIScene::okButton));
 						CCScene *pScene = GameScene::scene();
 						CCDirector::sharedDirector()->replaceScene (CCTransitionFlipY::create (0.5f, pScene));
 						break;
