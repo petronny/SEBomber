@@ -38,7 +38,7 @@ public:
     Bubble* bubble[85];
     int bhead;
     int btail;
-    Props* props[85];
+    Props* props[600];
     int propsnum;
 	CCSize size;
 	virtual void ccTouchesBegan(CCSet* touches, CCEvent* pEvent);
@@ -156,7 +156,6 @@ bool GameScene::init()
     /*Props* pp = new PropsSpeed();
     pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     this->addChild(pp->sprite,3);*/
-    createprops(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //hero = new HeroBazzi();
     //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
@@ -445,18 +444,18 @@ void  GameScene::BubbleBomb(int idx)
 		x = PositionToTileCoord(bubble[idx]->sprite->getPosition()).x;
 		y = PositionToTileCoord(bubble[idx]->sprite->getPosition()).y;
 		int range[4]={0,0,0,0};
-		while(range[0]<r and(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==0 or !mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible()))range[0]++;
-		while(range[1]<r and(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==0 or !mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible()))range[1]++;
-		while(range[2]<r and(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==0 or !mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible()))range[2]++;
-		while(range[3]<r and(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==0 or !mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible()))range[3]++;
-		if(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==25)range[0]--;
-		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
-		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
-		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
-		if(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==23)fbomb[int(x+map->getMapSize().width*(y-range[0]))]=true;
-		if(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==23)fbomb[int(x+(int)map->getMapSize().width*(y+range[1]))]=true;
-		if(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==23)fbomb[int(x-range[2]+(int)map->getMapSize().width*y)]=true;
-		if(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==23)fbomb[int(x+range[3]+(int)map->getMapSize().width*y)]=true;
+		while(y-range[0]>0 and range[0]<r and(mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==0 or !mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible()))range[0]++;
+		while(y+range[1]<map->getMapSize().height and range[1]<r and(mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==0 or !mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible()))range[1]++;
+		while(x-range[2]>0 and range[2]<r and(mapItemLayer->tileGIDAt(ccp(x-range[2],y))==0 or !mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible()))range[2]++;
+		while(x+range[3]<map->getMapSize().width and range[3]<r and(mapItemLayer->tileGIDAt(ccp(x+range[3],y))==0 or !mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible()))range[3]++;
+		if(y-range[0]>0 and mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==25)range[0]--;
+		if(y+range[1]<map->getMapSize().height and mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==25)range[1]--;
+		if(x-range[2]>0 and mapItemLayer->tileGIDAt(ccp(x-range[2],y))==25)range[2]--;
+		if(x+range[3]<map->getMapSize().width and mapItemLayer->tileGIDAt(ccp(x+range[3],y))==25)range[3]--;
+		if(y-range[0]>0 and mapItemLayer->tileGIDAt(ccp(x,y-range[0]))==23 and mapItemLayer->tileAt(ccp(x,y-range[0]))->isVisible())fbomb[int(x+map->getMapSize().width*(y-range[0]))]=true;
+		if(y+range[1]<map->getMapSize().height and mapItemLayer->tileGIDAt(ccp(x,y+range[1]))==23 and mapItemLayer->tileAt(ccp(x,y+range[1]))->isVisible())fbomb[int(x+(int)map->getMapSize().width*(y+range[1]))]=true;
+		if(x-range[2]>0 and mapItemLayer->tileGIDAt(ccp(x-range[2],y))==23 and mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible())fbomb[int(x-range[2]+(int)map->getMapSize().width*y)]=true;
+		if(x+range[3]<map->getMapSize().width and mapItemLayer->tileGIDAt(ccp(x+range[3],y))==23 and mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible())fbomb[int(x+range[3]+(int)map->getMapSize().width*y)]=true;
 		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
 		char st[80];
 		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
@@ -555,22 +554,11 @@ void GameScene::BombCallback(CCNode* obj,void* id) {
 	BubbleBomb(idx);
 	for(int x=0;x<map->getMapSize().width;x++)
 		for(int y=0;y<map->getMapSize().height;y++)
-			if(fbomb[x+y*(int)map->getMapSize().width])
+			if(fbomb[x+y*(int)map->getMapSize().width]){
 				mapItemLayer->tileAt(ccp(x,y))->setVisible(false);
-/*	if (bhead != btail)
-	{
-//		bubble[bhead]->range;
-//		bubble[bhead]->sprite;
-//		mapItemLayer->tileAt();
-		bubble[bhead]->bomb(f,f,f,f);
-		bhead++;
-		if (bhead > 80)
-			bhead -= 80;
-//		for(i=0;i<80;i++)
-//			if buble[i]
-//			    buble->getp
-
-	}*/
+				if(rand()%2)
+					createprops(rand()%3+1,TileCoordToPosition(ccp(x,y)),mapBackgroundLayer->getScale());
+			}
 }
 
 void GameScene::DieCallback(CCNode* obj,void* id) {
