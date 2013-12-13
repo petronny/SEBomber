@@ -35,7 +35,7 @@ void Client::connectRemote(){
 
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(8080);
-	server_addr.sin_addr.s_addr = inet_addr("192.168.1.134");
+	server_addr.sin_addr.s_addr = inet_addr("192.168.1.103");
 	bzero(&(server_addr.sin_zero), 8);
 
 	server_addr_length =sizeof(server_addr);
