@@ -33,14 +33,11 @@ UserData::UserData(){
 	memset(itemSelect, 0, sizeof(itemSelect));
 }
 void UserData::fetchExtraData(){
+	this->coinNum=999;
 }
 void UserData::fetchBasicData(){
-	sprintf(this->server,"59.66.132.177");
-	sprintf(this->username,"ROOT");
-	this->userid=1;
 	this->face=2;
 	this->rank=19;
-	this->coinNum=999;
 	this->emotion=3;
 }
 void UserData::checkName(){
@@ -114,7 +111,7 @@ void UserData::regist(){
 size_t UserData::writehtml(uint8_t* ptr,size_t size,size_t number,void *stream){
 	char ans[4];
 	ans[0]=*(ptr+12);	ans[1]=*(ptr+13);	ans[2]=*(ptr+14);	ans[3]=*(ptr+15);
-	UserData::httpAns=atoi(ans);
+	sscanf(ans,"%d",&UserData::httpAns);
 	return size*number;
 }
 #endif
