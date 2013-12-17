@@ -26,13 +26,11 @@ public:
 	CCLayer *chooseLayer;
 	CCMenu* pMenu;
 	int doubleTouchCount,n;
-	static int itemNum;
 
 	float w,h;
 };
 // onserverField "init" you need to initialize your instance
 #include "MainUISceneChooseLayer.hpp"
-int MainUISceneStoreLayer::itemNum;
 bool MainUISceneStoreLayer::init()
 {
 	if (!CCLayer::init()){
@@ -50,11 +48,10 @@ bool MainUISceneStoreLayer::init()
 	menuItem =(CCSprite*) MainUIScene::mainUIScene->getChildByTag(10)->getChildByTag(11);
 
 	n=-1;
-	itemNum=10;
 
 	w=(size.width-ui_right->boundingBox().size.width)/3;
 	h=w/8*5;
-	for(int i=0; i<itemNum; i++)
+	for(int i=0; i<MAX_NUM_ITEM; i++)
 	{
 	    CCSprite *itemBackground=CCSprite::create("image/ui/itemBackground.png");
 		itemBackground->setScaleX(w/itemBackground->getContentSize().width);
@@ -91,7 +88,7 @@ void MainUISceneStoreLayer::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent){
 		CCPoint position=convertTouchToNodeSpace(touch);
 		if(position.x-ui_right->boundingBox().size.width>0 && position.y+menuItem->boundingBox().size.height-size.height<0){
 			n=(int)(position.x-ui_right->boundingBox().size.width)/w+int((size.height-menuItem->boundingBox().size.height-position.y)/h)*3;
-			if(n<itemNum and this->getChildByTag(1111)==NULL){
+			if(n<MAX_NUM_ITEM and this->getChildByTag(1111)==NULL){
 			    CCSprite *itemBackground=CCSprite::create("image/ui/itemSelected.png");
 				itemBackground->setScaleX(w/itemBackground->getContentSize().width);
 				itemBackground->setScaleY(h/itemBackground->getContentSize().height);
@@ -108,10 +105,10 @@ void MainUISceneStoreLayer::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		if(this->getChildByTag(1111)!=NULL){
 			this->removeChildByTag(1111, true);
 		}
-			if(h*((itemNum+2)/3)+menuItem->boundingBox().size.height > size.height){
+			if(h*((MAX_NUM_ITEM+2)/3)+menuItem->boundingBox().size.height > size.height){
 				CCTouch* touch=dynamic_cast<CCTouch*>(*pTouches->begin());
 				float y=ccpAdd(this->getPosition(),touch->getDelta()).y;
-				if(y>(h*((itemNum+2)/3)+menuItem->boundingBox().size.height)-size.height) y=(h*((itemNum+2)/3)+menuItem->boundingBox().size.height)-size.height;
+				if(y>(h*((MAX_NUM_ITEM+2)/3)+menuItem->boundingBox().size.height)-size.height) y=(h*((MAX_NUM_ITEM+2)/3)+menuItem->boundingBox().size.height)-size.height;
 				if(y<0) y=0;
 				this->setPositionY(y);
 			}
@@ -122,7 +119,7 @@ void MainUISceneStoreLayer::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		CCPoint position=convertTouchToNodeSpace(touch);
 		if(position.x-ui_right->boundingBox().size.width>0 && position.y+menuItem->boundingBox().size.height-size.height<0){
 			n=(int)(position.x-ui_right->boundingBox().size.width)/w+int((size.height-menuItem->boundingBox().size.height-position.y)/h)*3;
-			if(n<itemNum){
+			if(n<MAX_NUM_ITEM){
 				this->getChildByTag(1111)->setPosition(ccp(ui_right->boundingBox().size.width+(n%3)*w+w/2, size.height-menuItem->boundingBox().size.height-(n/3)*h-h/2));
 			}
 			else{
@@ -137,7 +134,7 @@ void MainUISceneStoreLayer::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	}
 }
 void MainUISceneStoreLayer::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
-	if(pTouches->count()==1 and doubleTouchCount==0 and n!=-1 and n<itemNum){
+	if(pTouches->count()==1 and doubleTouchCount==0 and n!=-1 and n<MAX_NUM_ITEM){
 		this->setTouchEnabled(false);
 		chooseLayer=MainUISceneChooseLayer::create();
 		MainUIScene::mainUIScene->addChild(chooseLayer,4);
@@ -210,9 +207,11 @@ void MainUISceneStoreLayer::isSelect()
 {
 	UserData::current->item[n]++;
 	UserData::current->coinNum-=value[n];
+	UserData::current->updateMoney();
 	MainUIScene::mainUIScene->removeChild(chooseLayer, true);
 	((MainUIScene *)MainUIScene::mainUIScene->getChildByTag(10))->showCoinNum(UserData::current->coinNum);
 	this->removeChildByTag(1111, true);
 	this->setTouchEnabled(true);
+
 }
 #endif

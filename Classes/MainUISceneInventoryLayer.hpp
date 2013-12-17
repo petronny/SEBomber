@@ -45,7 +45,7 @@ bool MainUISceneInventoryLayer::init()
 
 	w=(size.width-ui_right->boundingBox().size.width)/3;
 	h=w/8*5;
-	itemNum=MainUISceneStoreLayer::itemNum;
+	itemNum=MAX_NUM_ITEM;
 	n=-1;
 
 
