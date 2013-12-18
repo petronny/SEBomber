@@ -60,7 +60,8 @@ class MainUISceneMultiplayerLayer : public CCLayer
 		/**
 		@brief 对话框确定选项
 		*/
-		void select(CCObject*);//
+		void characterSelect(CCObject*);//
+		void groupSelect();
 		/**
 		@brief implement the "static node()" method manually
 		*/
@@ -82,10 +83,11 @@ class MainUISceneMultiplayerLayer : public CCLayer
 		/**
 		@brief
 		*/
-		CCMenu *pMenu;
+		CCMenu *pMenu, *pMenu2;
 
 		CCMenuItemImage *characterItem;
 		int beforePosition;
+		int userid[8];
 };
 // onserverField "init" you need to initialize your instance
 bool MainUISceneMultiplayerLayer::init()
@@ -97,6 +99,7 @@ bool MainUISceneMultiplayerLayer::init()
 		}
 	//this->setTouchEnabled (true);
 	size = CCDirector::sharedDirector()->getWinSize();
+	memset(userid, 0, sizeof(userid));
 	ui_right = CCSprite::create ("image/ui/ui_right.png");
 	ui_right->setScale (size.height / ui_right->getContentSize().height);
 	menuItem = CCSprite::create ("image/ui/button_normal.png");
@@ -108,16 +111,25 @@ bool MainUISceneMultiplayerLayer::init()
 	pMenu = CCMenu::create();
 	pMenu->setPosition(CCPointZero);
 	this->addChild(pMenu,1);
+	pMenu2 = CCMenu::create();
+	pMenu2->setPosition(CCPointZero);
+	this->addChild(pMenu2,1);
 	for(int i=0; i<8; i++){
-		characterItem = CCMenuItemImage::create ("image/ui/itemBackground.png", "image/ui/itemSelected.png", this, menu_selector(MainUISceneMultiplayerLayer::select));
+		characterItem = CCMenuItemImage::create ("image/ui/itemBackground.png", "image/ui/itemSelected.png", this, menu_selector(MainUISceneMultiplayerLayer::characterSelect));
 		characterItem->setScaleX(w/characterItem->getContentSize().width);
-		characterItem->setScaleY(h/characterItem->getContentSize().height);
+		characterItem->setScaleY(h/characterItem->getContentSize().height*4/5);
 		characterItem->setPositionX(ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2);
-		characterItem->setPositionY(size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h/2);
+		characterItem->setPositionY(size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h*2/5);
 		pMenu->addChild(characterItem,0,i);
+
+		CCLabelTTF *groupLabel = CCLabelTTF::create ("队\t伍", "fonts/FZKaTong-M19T.ttf", 25);
+		//logoutLabel->setColor (ccYELLOW);
+		CCMenuItemLabel *groupItem = CCMenuItemLabel::create (groupLabel, this, menu_selector (MainUISceneMultiplayerLayer::groupSelect) );
+		groupItem->setPosition (ccp (ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2, size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h*2/5-h/2) );
+		pMenu2->addChild (groupItem, 0);
 	}
 	beforePosition=-1;
-	scheduleOnce(schedule_selector(MainUISceneMultiplayerLayer::Show), 0.5f);
+	schedule(schedule_selector(MainUISceneMultiplayerLayer::Show),2.0f);
 	return true;
 }
 void MainUISceneMultiplayerLayer::ccTouchesBegan (CCSet* touches, CCEvent* pEvent)
@@ -151,29 +163,36 @@ void MainUISceneMultiplayerLayer::leave()
 }
 void MainUISceneMultiplayerLayer::Show ()
 {
-	UserData::current->fetchExtraData();
+	UserData::current->fetchRoomData();
 	for(int i=0; i<8; i++){
 		if(UserData::current->roomlist[i]>0){
-			UserData* user = new UserData(UserData::current->roomlist[i]);
-			user->fetchBasicData();
-			char facePath[40];
-			sprintf (facePath, "image/face/face%d.png", user->face);
-			CCSprite*face = CCSprite::create(facePath);
+			if(userid[i]!=UserData::current->roomlist[i]){
+				userid[i]=UserData::current->roomlist[i];
+				UserData* user = new UserData(UserData::current->roomlist[i]);
+				sprintf(user->server, "%s", UserData::current->server);
+				user->fetchBasicData();
+				char facePath[40];
+				sprintf (facePath, "image/face/face%d.png", user->face);
+				CCSprite*face = CCSprite::create(facePath);
+				if(this->getChildByTag(i)!=NULL){
+					this->removeChildByTag(i);
+				}
+				face->setPosition(pMenu->getChildByTag(i)->getPosition());
+				this->addChild(face, 2, i);
+				delete user;
+			}
+		}
+		else{
 			if(this->getChildByTag(i)!=NULL){
 				this->removeChildByTag(i);
-			}
-			face->setPosition(pMenu->getChildByTag(i)->getPosition());
-			this->addChild(face, 2, i);
-			if(UserData::current->roomlist[i]==UserData::current->userid){
-				beforePosition=i;
 			}
 		}
 	}
 }
-void MainUISceneMultiplayerLayer::select(CCObject* pSender){
+void MainUISceneMultiplayerLayer::characterSelect(CCObject* pSender){
 	CCMenuItem *m = (CCMenuItem*)(pSender);
 	if(this->getChildByTag(m->getTag())== NULL){
-		char facePath[40];
+		/*char facePath[40];
 		sprintf (facePath, "image/face/face%d.png", UserData::current->face);
 		CCSprite*face = CCSprite::create(facePath);
 		face->setPosition(m->getPosition());
@@ -181,7 +200,11 @@ void MainUISceneMultiplayerLayer::select(CCObject* pSender){
 		if(beforePosition!=-1){
 			this->removeChildByTag(beforePosition);
 		}
-		beforePosition=m->getTag();
+		beforePosition=m->getTag();*/
+		//UserData::current->sendRoomData(m->getTag());
 	}
+}
+void MainUISceneMultiplayerLayer::groupSelect(){
+
 }
 #endif

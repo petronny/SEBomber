@@ -53,7 +53,7 @@ bool TitleSceneLoginLayer::init()
 	serverLabel->setPosition(ccp(size.width/2,menuBackground->boundingBox().size.height/32*27+size.height/64*7));
 	this->addChild(serverLabel,1);
 	serverField = CCTextFieldTTF::textFieldWithPlaceHolder("", "fonts/FZKaTong-M19T.ttf", 25);
-	serverField->setString("192.168.1.135");
+	serverField->setString("192.168.0.100");
 	serverField->setPosition(ccp(size.width/2, menuBackground->boundingBox().size.height/8*6+size.height/64*7));
 	serverField->setDelegate(this);
 	this->addChild(serverField,1);

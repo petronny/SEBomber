@@ -5,6 +5,7 @@
 class UserData{
 public :
 	static UserData *current;
+	static UserData *user[8];
 	char server[20];
 	char username[20];
 	char passwd[20];
@@ -31,6 +32,8 @@ public :
 	void login();
 	void checkName();
 	UserData();
+	UserData(int id);
+	//~UserData();
 	void updateMoney();
 	void updateEmotion();
 	void updateAvatar();
@@ -49,12 +52,23 @@ int UserData::http_emotion;
 int UserData::http_coinNum;
 char UserData::http_item[80];
 int UserData::http_roomlist[8];
+UserData *UserData::user[8];
 UserData::UserData(){
 	coinNum=100;
 	roomid=1;
 	memset(item, 0, sizeof(item));
 	memset(itemSelect, 0, sizeof(itemSelect));
+	//CURLcode code = curl_global_init(CURL_GLOBAL_ALL);
 }
+UserData::UserData(int id){
+	coinNum=100;
+	roomid=1;
+	memset(item, 0, sizeof(item));
+	memset(itemSelect, 0, sizeof(itemSelect));
+	this->userid=id;
+//	CURLcode code = curl_global_init(CURL_GLOBAL_ALL);
+}
+
 void UserData::fetchExtraData(){
 	CURL *curl;
 	CURLcode res;
@@ -90,7 +104,7 @@ void UserData::fetchBasicData(){
 		sprintf(url,"http://%s:8080/Server/fetchBasicData.jsp",server);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"userid=%d",userid);
+		sprintf(postField,"userid=%d",this->userid);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
 	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getBasicData); //处理的函数
@@ -278,7 +292,7 @@ void UserData::fetchRoomData(){
 	}
 	curl_easy_cleanup(curl);
 	for(int i=0; i<8; i++){
-		roomlist[i]=UserData::http_roomlist[i];
+		this->roomlist[i]=UserData::http_roomlist[i];
 	}
 }
 size_t UserData::getRoomData(uint8_t* ptr,size_t size,size_t number,void *stream){

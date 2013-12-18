@@ -92,7 +92,7 @@ class MainUISceneInventoryLayer : public CCLayer
 		/**
 		@brief
 		*/
-		int itemNum, n, myNum, doubleTouchCount, selectItemNumber[MAX_NUM_ITEM], selectedNumber, sellEnable;
+		int n, myNum, doubleTouchCount, selectItemNumber[MAX_NUM_ITEM], selectedNumber, sellEnable;
 		/**
 		@brief
 		*/
@@ -116,11 +116,10 @@ bool MainUISceneInventoryLayer::init()
 	menuItem = (CCSprite*) MainUIScene::mainUIScene->getChildByTag (10)->getChildByTag (11);
 	w = (size.width - ui_right->boundingBox().size.width) / 3;
 	h = w / 8 * 5;
-	itemNum = MainUISceneStoreLayer::itemNum;
 	n = -1;
 	myNum = 0;
 
-	for (int i = 0; i < itemNum; i++)
+	for (int i = 0; i < MAX_NUM_ITEM; i++)
 		{
 			if (UserData::current->item[i] > 0)
 				{
@@ -224,7 +223,7 @@ void MainUISceneInventoryLayer::ccTouchesMoved (CCSet *pTouches, CCEvent *pEvent
 				{
 					n = (int) (position.x - ui_right->boundingBox().size.width) / w + int ( (size.height - menuItem->boundingBox().size.height - position.y) / h) * 3;
 
-					if (n < itemNum)
+					if (n < MAX_NUM_ITEM)
 						{
 							this->getChildByTag (1111)->setPosition (ccp (ui_right->boundingBox().size.width + (n % 3) *w + w / 2, size.height - menuItem->boundingBox().size.height - (n / 3) *h - h / 2) );
 						}
