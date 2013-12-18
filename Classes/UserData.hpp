@@ -8,6 +8,7 @@ public :
 	static UserData *user[8];
 	char server[20];
 	char username[20];
+	static char http_username[20];
 	char passwd[20];
 	int userid;
 	int roomid;
@@ -53,6 +54,7 @@ int UserData::http_coinNum;
 char UserData::http_item[80];
 int UserData::http_roomlist[8];
 UserData *UserData::user[8];
+char UserData::http_username[20];
 UserData::UserData(){
 	coinNum=100;
 	roomid=1;
@@ -115,6 +117,7 @@ void UserData::fetchBasicData(){
 	this->face=UserData::http_face;
 	this->rank=UserData::http_rank;
 	this->emotion=UserData::http_emotion;
+	sprintf(this->username, "%s", UserData::http_username);
 }
 void UserData::checkName(){
 	CURL *curl;
@@ -198,7 +201,7 @@ size_t UserData::getBasicData(uint8_t* ptr,size_t size,size_t number,void *strea
 		i++;
 	}
 	ans[i-12]=*(ptr+i);
-	sscanf(ans,"%d %d %d", &UserData::http_face, &UserData::http_rank, &UserData::http_emotion);
+	sscanf(ans,"%d %d %d %s", &UserData::http_face, &UserData::http_rank, &UserData::http_emotion, UserData::http_username);
 	return size*number;
 }
 size_t UserData::getExtraData(uint8_t* ptr,size_t size,size_t number,void *stream){

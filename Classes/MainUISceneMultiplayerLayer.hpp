@@ -122,11 +122,13 @@ bool MainUISceneMultiplayerLayer::init()
 		characterItem->setPositionY(size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h*2/5);
 		pMenu->addChild(characterItem,0,i);
 
-		CCLabelTTF *groupLabel = CCLabelTTF::create ("队\t伍", "fonts/FZKaTong-M19T.ttf", 25);
+		CCLabelTTF *groupLabel = CCLabelTTF::create ("队\t\t伍", "fonts/FZKaTong-M19T.ttf", 32);
 		//logoutLabel->setColor (ccYELLOW);
 		CCMenuItemLabel *groupItem = CCMenuItemLabel::create (groupLabel, this, menu_selector (MainUISceneMultiplayerLayer::groupSelect) );
 		groupItem->setPosition (ccp (ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2, size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h*2/5-h/2) );
-		pMenu2->addChild (groupItem, 0);
+		pMenu2->addChild (groupItem, 0, i);
+
+
 	}
 	beforePosition=-1;
 	schedule(schedule_selector(MainUISceneMultiplayerLayer::Show),2.0f);
@@ -176,9 +178,18 @@ void MainUISceneMultiplayerLayer::Show ()
 				CCSprite*face = CCSprite::create(facePath);
 				if(this->getChildByTag(i)!=NULL){
 					this->removeChildByTag(i);
+					this->removeChildByTag(100+i);
+					this->removeChildByTag(1000+i);
+					this->removeChildByTag(10000+i);
 				}
-				face->setPosition(pMenu->getChildByTag(i)->getPosition());
+				face->setPositionX(pMenu->getChildByTag(i)->getPosition().x);
+				face->setPositionY(pMenu->getChildByTag(i)->getPosition().y-pMenu->getChildByTag(i)->boundingBox().size.height/5);
 				this->addChild(face, 2, i);
+
+				CCLabelTTF *nameLabel = CCLabelTTF::create (user->username, "fonts/FZKaTong-M19T.ttf", 25);
+				nameLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x);
+				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/6);
+				this->addChild(nameLabel, 2, 100+i);
 				delete user;
 			}
 		}
