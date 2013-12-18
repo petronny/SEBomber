@@ -27,6 +27,8 @@ public :
 	int buddylist[40];
 	int roomlist[8];
 	int character[8];
+	int myPosition;
+	static int http_myPosition;
 	static int http_character[8];
 	static int http_roomlist[8];
 	void fetchBasicData();
@@ -41,6 +43,8 @@ public :
 	void updateEmotion();
 	void updateAvatar();
 	void fetchRoomData();
+	void sendCharacterData();
+	void sendRoomData(int prePosition, int desPosition);
 	static size_t getUserID(uint8_t* ptr,size_t size,size_t number,void *stream);
 	static size_t getBasicData(uint8_t* ptr,size_t size,size_t number,void *stream);
 	static size_t getExtraData(uint8_t* ptr,size_t size,size_t number,void *stream);
@@ -58,6 +62,7 @@ int UserData::http_roomlist[8];
 UserData *UserData::user[8];
 char UserData::http_username[20];
 int UserData::http_character[8];
+int UserData::http_myPosition;
 UserData::UserData(){
 	coinNum=100;
 	roomid=1;
@@ -314,5 +319,43 @@ size_t UserData::getRoomData(uint8_t* ptr,size_t size,size_t number,void *stream
 			&UserData::http_roomlist[5], &UserData::http_roomlist[6], &UserData::http_roomlist[7], &UserData::http_character[0], &UserData::http_character[1], &UserData::http_character[2],
 			&UserData::http_character[3], &UserData::http_character[4], &UserData::http_character[5], &UserData::http_character[6], &UserData::http_character[7]);
 	return size*number;
+}
+void UserData::sendRoomData(int prePosition, int desPosition){
+	CURL *curl;
+	CURLcode res;
+	char buffer[10];
+	curl = curl_easy_init();
+	char postField[80],writeData[80],url[80];
+	if (curl){
+		sprintf(url,"http://%s:8080/Server/updateAvatar.jsp",server);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		sprintf(postField,"userid=%d&avatar=%d",userid,face);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
+	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
+		res = curl_easy_perform(curl);
+	}
+	curl_easy_cleanup(curl);
+}
+void UserData::sendCharacterData(){
+	CURL *curl;
+	CURLcode res;
+	char buffer[10];
+	curl = curl_easy_init();
+	char postField[80],writeData[80],url[80];
+	if (curl){
+		sprintf(url,"http://%s:8080/Server/updateAvatar.jsp",server);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		sprintf(postField,"userid=%d&avatar=%d",userid,face);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
+	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
+		res = curl_easy_perform(curl);
+	}
+	curl_easy_cleanup(curl);
 }
 #endif

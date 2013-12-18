@@ -45,10 +45,7 @@ class MainUISceneMultiplayerLayer : public CCLayer
 		@brief 改变自己的角色
 		*/
 		void changeCharactor();//
-		/**
-		@brief 玩家准备
-		*/
-		void ready();//
+
 		/**
 		@brief 离开房间
 		*/
@@ -88,6 +85,7 @@ class MainUISceneMultiplayerLayer : public CCLayer
 		CCMenuItemImage *characterItem;
 		int beforePosition;
 		int userid[8];
+		int position;
 };
 // onserverField "init" you need to initialize your instance
 bool MainUISceneMultiplayerLayer::init()
@@ -98,6 +96,7 @@ bool MainUISceneMultiplayerLayer::init()
 			return false;
 		}
 	//this->setTouchEnabled (true);
+	position=-1;
 	size = CCDirector::sharedDirector()->getWinSize();
 	memset(userid, 0, sizeof(userid));
 	ui_right = CCSprite::create ("image/ui/ui_right.png");
@@ -164,9 +163,7 @@ void MainUISceneMultiplayerLayer::houseShow (int number)
 void MainUISceneMultiplayerLayer::changeCharactor()
 {
 }
-void MainUISceneMultiplayerLayer::ready()
-{
-}
+
 void MainUISceneMultiplayerLayer::leave()
 {
 }
@@ -177,6 +174,9 @@ void MainUISceneMultiplayerLayer::Show ()
 		if(UserData::current->roomlist[i]>0){
 			if(userid[i]!=UserData::current->roomlist[i]){
 				userid[i]=UserData::current->roomlist[i];
+				if(userid[i]==UserData::current->userid){
+					position=i;
+				}
 				UserData* user = new UserData(UserData::current->roomlist[i]);
 				sprintf(user->server, "%s", UserData::current->server);
 				user->fetchBasicData();
@@ -187,7 +187,6 @@ void MainUISceneMultiplayerLayer::Show ()
 					this->removeChildByTag(i);
 					this->removeChildByTag(100+i);
 					this->removeChildByTag(1000+i);
-					this->removeChildByTag(10000+i);
 				}
 				face->setPositionX(pMenu->getChildByTag(i)->getPosition().x);
 				face->setPositionY(pMenu->getChildByTag(i)->getPosition().y-pMenu->getChildByTag(i)->boundingBox().size.height/5);
@@ -195,23 +194,36 @@ void MainUISceneMultiplayerLayer::Show ()
 
 				CCLabelTTF *nameLabel = CCLabelTTF::create (user->username, "fonts/FZKaTong-M19T.ttf", 25);
 				nameLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x+pMenu->getChildByTag(i)->boundingBox().size.width/4);
-				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/5);
+				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/3);
 				this->addChild(nameLabel, 2, 100+i);
 
 				char temp[30];
 				sprintf(temp, "level %d", user->rank);
 				CCLabelTTF *levelLabel = CCLabelTTF::create (temp, "fonts/FZKaTong-M19T.ttf", 25);
-				nameLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x+pMenu->getChildByTag(i)->boundingBox().size.width/4);
-				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/6);
+				levelLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x+pMenu->getChildByTag(i)->boundingBox().size.width/4);
+				levelLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/6);
 				this->addChild(levelLabel, 2, 1000+i);
 
 				delete user;
 			}
+			if(this->getChildByTag(10000+i)!=NULL){
+				this->removeChildByTag(10000+i);
+			}
+			char temp[80];
+			sprintf(temp, "image/friend/friend_%d.png", UserData::current->character[i]);
+			CCSprite* character=CCSprite::create(temp);
+			character->setScale(w/4/character->getContentSize().width);
+			character->setPositionX(pMenu->getChildByTag(i)->getPosition().x-pMenu->getChildByTag(i)->boundingBox().size.width/4);
+			character->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/5);
+			this->addChild(character, 2, 10000+i);
 
 		}
 		else{
 			if(this->getChildByTag(i)!=NULL){
 				this->removeChildByTag(i);
+				this->removeChildByTag(100+i);
+				this->removeChildByTag(1000+i);
+				this->removeChildByTag(10000+i);
 			}
 		}
 	}
@@ -219,16 +231,12 @@ void MainUISceneMultiplayerLayer::Show ()
 void MainUISceneMultiplayerLayer::characterSelect(CCObject* pSender){
 	CCMenuItem *m = (CCMenuItem*)(pSender);
 	if(this->getChildByTag(m->getTag())== NULL){
-		/*char facePath[40];
-		sprintf (facePath, "image/face/face%d.png", UserData::current->face);
-		CCSprite*face = CCSprite::create(facePath);
-		face->setPosition(m->getPosition());
-		this->addChild(face,2, m->getTag());
-		if(beforePosition!=-1){
-			this->removeChildByTag(beforePosition);
-		}
-		beforePosition=m->getTag();*/
-		//UserData::current->sendRoomData(m->getTag());
+		UserData::current->sendRoomData(position,m->getTag());
+	}
+	else{
+		 if(UserData::current->myPosition==m->getTag()){
+			 UserData::current->sendCharacterData();
+		 }
 	}
 }
 void MainUISceneMultiplayerLayer::groupSelect(){
