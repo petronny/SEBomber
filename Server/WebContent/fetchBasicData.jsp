@@ -29,7 +29,7 @@ int numColumns=rmeta.getColumnCount();
 // 输出每一个数据值 
 String ans="";
 if(rs.next()) {
-	ans+=rs.getString("avatar")+" "+rs.getString("exp")+" "+rs.getString("emotion");
+	ans+=rs.getString("avatar")+" "+rs.getString("exp")+" "+rs.getString("emotion")+" "+rs.getString("username");
 } 
 else{ 
 	out.print(-1);
