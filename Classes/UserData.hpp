@@ -26,6 +26,8 @@ public :
 	bool itemSelect[30];
 	int buddylist[40];
 	int roomlist[8];
+	int character[8];
+	static int http_character[8];
 	static int http_roomlist[8];
 	void fetchBasicData();
 	void fetchExtraData();
@@ -55,6 +57,7 @@ char UserData::http_item[80];
 int UserData::http_roomlist[8];
 UserData *UserData::user[8];
 char UserData::http_username[20];
+int UserData::http_character[8];
 UserData::UserData(){
 	coinNum=100;
 	roomid=1;
@@ -296,6 +299,7 @@ void UserData::fetchRoomData(){
 	curl_easy_cleanup(curl);
 	for(int i=0; i<8; i++){
 		this->roomlist[i]=UserData::http_roomlist[i];
+		this->character[i]= UserData::http_character[i];
 	}
 }
 size_t UserData::getRoomData(uint8_t* ptr,size_t size,size_t number,void *stream){
@@ -306,8 +310,9 @@ size_t UserData::getRoomData(uint8_t* ptr,size_t size,size_t number,void *stream
 		i++;
 	}
 	ans[i-12]=*(ptr+i);
-	sscanf(ans,"%d %d %d %d %d %d %d %d", &UserData::http_roomlist[0], &UserData::http_roomlist[1], &UserData::http_roomlist[2], &UserData::http_roomlist[3], &UserData::http_roomlist[4],
-			&UserData::http_roomlist[5], &UserData::http_roomlist[6], &UserData::http_roomlist[7]);
+	sscanf(ans,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &UserData::http_roomlist[0], &UserData::http_roomlist[1], &UserData::http_roomlist[2], &UserData::http_roomlist[3], &UserData::http_roomlist[4],
+			&UserData::http_roomlist[5], &UserData::http_roomlist[6], &UserData::http_roomlist[7], &UserData::http_character[0], &UserData::http_character[1], &UserData::http_character[2],
+			&UserData::http_character[3], &UserData::http_character[4], &UserData::http_character[5], &UserData::http_character[6], &UserData::http_character[7]);
 	return size*number;
 }
 #endif

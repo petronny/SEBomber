@@ -128,7 +128,14 @@ bool MainUISceneMultiplayerLayer::init()
 		groupItem->setPosition (ccp (ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2, size.height - menuItem->boundingBox().size.height-(h+5)*(i/4)-h*2/5-h/2) );
 		pMenu2->addChild (groupItem, 0, i);
 
-
+		char temp[80];
+		sprintf(temp, "image/ui/teamBackground_%d.png", i);
+		CCSprite* groupColor=CCSprite::create(temp);
+		groupColor->setScaleX(w/groupColor->getContentSize().width);
+		groupColor->setScaleY(h/characterItem->getContentSize().height/5);
+		groupColor->setPositionX(ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2);
+		groupColor->setPositionY(groupItem->getPositionY());
+		this->addChild(groupColor, 0, 5000+i);
 	}
 	beforePosition=-1;
 	schedule(schedule_selector(MainUISceneMultiplayerLayer::Show),2.0f);
@@ -187,11 +194,20 @@ void MainUISceneMultiplayerLayer::Show ()
 				this->addChild(face, 2, i);
 
 				CCLabelTTF *nameLabel = CCLabelTTF::create (user->username, "fonts/FZKaTong-M19T.ttf", 25);
-				nameLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x);
-				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/6);
+				nameLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x+pMenu->getChildByTag(i)->boundingBox().size.width/4);
+				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/5);
 				this->addChild(nameLabel, 2, 100+i);
+
+				char temp[30];
+				sprintf(temp, "level %d", user->rank);
+				CCLabelTTF *levelLabel = CCLabelTTF::create (temp, "fonts/FZKaTong-M19T.ttf", 25);
+				nameLabel->setPositionX(pMenu->getChildByTag(i)->getPosition().x+pMenu->getChildByTag(i)->boundingBox().size.width/4);
+				nameLabel->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/6);
+				this->addChild(levelLabel, 2, 1000+i);
+
 				delete user;
 			}
+
 		}
 		else{
 			if(this->getChildByTag(i)!=NULL){
