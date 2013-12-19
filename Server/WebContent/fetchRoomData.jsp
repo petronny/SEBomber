@@ -29,9 +29,11 @@ int numColumns=rmeta.getColumnCount();
 // 输出每一个数据值 
 String ans="";
 if(rs.next()) {
-	ans+=rs.getString("pos_1")+" "+rs.getString("pos_2")+" "+rs.getString("pos_3")+" "+rs.getString("pos_4")+" "+rs.getString("pos_5")+" "+rs.getString("pos_6")+" "+rs.getString("pos_7")+" "+rs.getString("pos_8");
+	ans+=""+(char)(rs.getInt("pos_1")+'a')+(char)(rs.getInt("pos_2")+'a')+(char)(rs.getInt("pos_3")+'a')+(char)(rs.getInt("pos_4")+'a')+(char)(rs.getInt("pos_5")+'a')+(char)(rs.getInt("pos_6")+'a')+(char)(rs.getInt("pos_7")+'a')+(char)(rs.getInt("pos_8")+'a');
+	ans+=""+(char)(rs.getInt("hero_1")+'a')+(char)(rs.getInt("hero_2")+'a')+(char)(rs.getInt("hero_3")+'a')+(char)(rs.getInt("hero_4")+'a')+(char)(rs.getInt("hero_5")+'a')+(char)(rs.getInt("hero_6")+'a')+(char)(rs.getInt("hero_7")+'a')+(char)(rs.getInt("hero_8")+'a');
+	ans+=""+(char)(rs.getInt("team_1")+'a')+(char)(rs.getInt("team_2")+'a')+(char)(rs.getInt("team_3")+'a')+(char)(rs.getInt("team_4")+'a')+(char)(rs.getInt("team_5")+'a')+(char)(rs.getInt("team_6")+'a')+(char)(rs.getInt("team_7")+'a')+(char)(rs.getInt("team_8")+'a');
 } 
-else{ 
+else{
 	out.print(-1);
 }
 out.print(ans);
