@@ -372,6 +372,15 @@ void MainUISceneInventoryLayer::isSelect()
 			ok->setPositionY (this->getChildByTag (1000 + n)->getPositionY() - h / 3);
 			this->addChild (ok, 2, 100000 + n);
 			UserData::current->updateAvatar(selectItemNumber[n]+1);
+			if(MainUIScene::mainUIScene->getChildByTag (10)->getChildByTag(999)!=NULL){
+				MainUIScene::mainUIScene->getChildByTag (10)->removeChildByTag(999);
+			}
+			char facePath[80];
+			sprintf (facePath, "image/face/face%d.png", selectItemNumber[n]+1);
+			CCSprite*face = CCSprite::create(facePath);
+			face->setScale (size.height / ui_right->getContentSize().height * 1.12);
+			face->setPosition (ccp (ui_right->boundingBox().size.width / 128 * 67, size.height / 64 * 39) );
+			MainUIScene::mainUIScene->getChildByTag (10)->addChild (face, 2, 999);
 		}
 
 	else
@@ -381,7 +390,6 @@ void MainUISceneInventoryLayer::isSelect()
 		}
 
 	this->removeChild (selectLayer, true);
-	//this->removeChildByTag(1111, true);
 	this->setTouchEnabled (true);
 }
 void MainUISceneInventoryLayer::sellItemSelected()

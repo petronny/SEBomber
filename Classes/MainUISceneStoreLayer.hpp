@@ -148,7 +148,7 @@ void MainUISceneStoreLayer::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 		chooseLayer->addChild(blackboard,1);
 
 		char itemSelect[80];
-		sprintf(itemSelect, "image/store/item_%d.png", n);
+		sprintf(itemSelect, "image/store/face%d.png", n+1);
 		CCSprite* selectedItem = CCSprite::create(itemSelect);
 		selectedItem->setScale(blackboard->boundingBox().size.height/3/selectedItem->getContentSize().height);
 		selectedItem->setPosition(ccp(size.width/2,size.height/2+blackboard->boundingBox().size.height/5));

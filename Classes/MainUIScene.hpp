@@ -149,7 +149,7 @@ bool MainUIScene::init()
 	showAvatar (UserData::current->face);
 	face->setScale (size.height / ui_right->getContentSize().height * 1.12);
 	face->setPosition (ccp (ui_right->boundingBox().size.width / 128 * 67, size.height / 64 * 39) );
-	this->addChild (face, 2);
+	this->addChild (face, 2, 999);
 	CCLabelTTF *usernameLabel = CCLabelTTF::create (UserData::current->username, "fonts/FZKaTong-M19T.ttf", 30);
 	usernameLabel->setPosition (ccp (ui_right->boundingBox().size.width / 128 * 67, size.height / 64 * 49) );
 	usernameLabel->setColor (ccMAGENTA);
