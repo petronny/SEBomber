@@ -321,12 +321,22 @@ void GameScene::herodie(int heroid)
 	hero[heroid]->die();
 	if (heroid == myheroid)
 	{
-		gameover(0);
+		bool t = true;
+		for (int i = 0; i < heronum; i++)
+		if (hero[i]->teamid == hero[myheroid]->teamid && hero[i]->islive)
+		{
+			t = false;
+			break;
+		}
+		if  (t)
+		{
+			gameover(0);
+		}
 	} else
 	{
 		bool t = true;
 		for (int i = 0; i < heronum; i++)
-		if (i != myheroid && hero[i]->islive)
+		if (hero[i]->teamid != hero[myheroid]->teamid && hero[i]->islive)
 		{
 			t = false;
 			break;
@@ -536,7 +546,7 @@ void  GameScene::BubbleBomb(int idx)
 		//char st[80];
 		//sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
 		//message->setString(st);
-		for (int i = 0; i < heronum; i++)
+		for (int i = myheroid; i <= myheroid; i++)
 		if (hero[i]->isfree && hero[i]->islive)
 		{
 			int x1 = PositionToTileCoord(hero[i]->sprite->getPosition()).x;
