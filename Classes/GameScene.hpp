@@ -59,6 +59,7 @@ public:
     void BombCallback(CCNode* obj,void* id);
     void DieCallback(CCNode* obj,void* id);
     void BubbleBomb(int idx);
+    void gameover(int type);
     void test();
 	CCPoint PositionToTileCoord(CCPoint cocosCoord);
 	CCPoint TileCoordToPosition(CCPoint tileCoord);
@@ -69,7 +70,7 @@ public:
     CCLayer *statusLayer,*chatLayer;
     int doubleTouchCount,tripleTouchCount;
     CCPoint firstTripleTouchPoint;
-    CCLabelTTF * message;
+    //CCLabelTTF * message;
     bool *fbomb;
 };
 #include "UserData.hpp"
@@ -115,9 +116,9 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
     size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-    message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
-    message->setPosition(ccp(size.width/2,size.height/2));
-    gameScene->addChild(message,20);
+    //message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
+   //message->setPosition(ccp(size.width/2,size.height/2));
+   // gameScene->addChild(message,20);
     statusLayer=GameSceneStatusLayer::create();
     statusLayer->setPosition(ccp(0,size.height));
     chatLayer=GameSceneChatLayer::create();
@@ -156,7 +157,8 @@ bool GameScene::init()
     /*Props* pp = new PropsSpeed();
     pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     this->addChild(pp->sprite,3);*/
-    createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    createhero(8,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/4,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //hero = new HeroBazzi();
     //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //this->addChild(hero[myheroid]->sprite,11);
@@ -169,23 +171,26 @@ bool GameScene::init()
 
 void GameScene::createhero(int type,CCPoint a,float s)
 {
-	if (type == 1)
+	if (type == 1 or type == 5)
 	{
 		hero[heronum] = new HeroBazzi();
 	}
-	else if (type == 2)
-	{
-		hero[heronum] = new HeroCappi();
-	}
-	else if (type == 3)
+	else if (type == 2 or type == 6)
 	{
 		hero[heronum] = new HeroDao();
 	}
-	else if (type == 4)
+	else if (type == 3 or type == 7)
+	{
+		hero[heronum] = new HeroCappi();
+	}
+	else if (type == 4 or type == 8)
 	{
 		hero[heronum] = new HeroMarid();
 	}
-	hero[heronum]->createhero(a,s,heronum);
+	if (type < 5)
+		hero[heronum]->createhero(a,s,heronum,0);
+	else
+		hero[heronum]->createhero(a,s,heronum,1);
 	this->addChild(hero[heronum]->sprite,11);
 	heronum++;
 }
@@ -262,12 +267,14 @@ void GameScene::heromove(CCPoint a,int heroid)
 		}
 		if (t)
 		{
+			int x2 = PositionToTileCoord(hero[heroid]->sprite->getPosition()).x;
+			int y2 = PositionToTileCoord(hero[heroid]->sprite->getPosition()).y;
 			for (int i = 0; i < propsnum; i++)
 			if (props[i]->isdelay)
 			{
 				int x1 = PositionToTileCoord(props[i]->sprite->getPosition()).x;
 				int y1 = PositionToTileCoord(props[i]->sprite->getPosition()).y;
-				if (x1 == x && y == y1)
+				if (x1 == x2 && y1 == y2)
 				{
 					herogetprops(heroid,props[i]->type);
 					props[i]->remove();
@@ -312,6 +319,39 @@ void GameScene::heroencase(int heroid)
 void GameScene::herodie(int heroid)
 {
 	hero[heroid]->die();
+	if (heroid == myheroid)
+	{
+		gameover(0);
+	} else
+	{
+		bool t = true;
+		for (int i = 0; i < heronum; i++)
+		if (i != myheroid && hero[i]->islive)
+		{
+			t = false;
+			break;
+		}
+		if  (t)
+		{
+			gameover(1);
+		}
+	}
+}
+
+void GameScene::gameover(int type)
+{
+	this->setTouchEnabled(false);
+	if(statusLayer->getPositionY()!=size.height){
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
+		statusLayer->runAction(move);
+	}
+	if(chatLayer->getPositionY()!=-size.height){
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
+		chatLayer->runAction(move);
+	}
+	GameSceneMessageLayer* messageLayer=GameSceneMessageLayer::create();
+	messageLayer->setmessage(type);
+	gameScene->addChild(messageLayer,2);
 }
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
@@ -493,9 +533,9 @@ void  GameScene::BubbleBomb(int idx)
 		if(x-range[2]>0 and mapItemLayer->tileGIDAt(ccp(x-range[2],y))==23 and mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible())fbomb[int(x-range[2]+(int)map->getMapSize().width*y)]=true;
 		if(x+range[3]<map->getMapSize().width and mapItemLayer->tileGIDAt(ccp(x+range[3],y))==23 and mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible())fbomb[int(x+range[3]+(int)map->getMapSize().width*y)]=true;
 		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
-		char st[80];
-		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
-		message->setString(st);
+		//char st[80];
+		//sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
+		//message->setString(st);
 		for (int i = 0; i < heronum; i++)
 		if (hero[i]->isfree && hero[i]->islive)
 		{
@@ -508,14 +548,14 @@ void  GameScene::BubbleBomb(int idx)
 			}
 			if (!t)
 			for (int j = 1; j <= range[0]; j++)
-				if (x1 == x && (y+j) == y1)
+				if (x1 == x && (y-j) == y1)
 				{
 					t = true;
 					break;
 				}
 			if (!t)
 			for (int j = 1; j <= range[1]; j++)
-				if (x1 == x && (y-j) == y1)
+				if (x1 == x && (y+j) == y1)
 				{
 					t = true;
 					break;
@@ -552,14 +592,14 @@ void  GameScene::BubbleBomb(int idx)
 			}
 			if (!t)
 			for (int j = 1; j <= range[0]; j++)
-				if (x1 == x && (y+j) == y1)
+				if (x1 == x && (y-j) == y1)
 				{
 					t = true;
 					break;
 				}
 			if (!t)
 			for (int j = 1; j <= range[1]; j++)
-				if (x1 == x && (y-j) == y1)
+				if (x1 == x && (y+j) == y1)
 				{
 					t = true;
 					break;
@@ -603,14 +643,14 @@ void  GameScene::BubbleBomb(int idx)
 				}
 				if (!t)
 				for (int j = 1; j <= range[0]; j++)
-					if (x1 == x && (y+j) == y1)
+					if (x1 == x && (y-j) == y1)
 					{
 						t = true;
 						break;
 					}
 				if (!t)
 				for (int j = 1; j <= range[1]; j++)
-					if (x1 == x && (y-j) == y1)
+					if (x1 == x && (y+j) == y1)
 					{
 						t = true;
 						break;

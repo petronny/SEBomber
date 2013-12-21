@@ -21,7 +21,7 @@ public:
 	int direction;
 	int list[100][4];
 	virtual ~Hero() {}
-	virtual void createhero(CCPoint a,float scale,int id) {}
+	virtual void createhero(CCPoint a,float scale,int id,int type) {}
 	CCAnimation* moveanimation(int);
 	CCAnimation* liveanimation();
 	CCAnimation* dieanimation();

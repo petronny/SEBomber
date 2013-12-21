@@ -5,10 +5,10 @@
 USING_NS_CC;
 class HeroMarid: public Hero{
 public:
-	void createhero(CCPoint a,float scale,int id);
+	void createhero(CCPoint a,float scale,int id,int type);
 };
 
-void HeroMarid::createhero(CCPoint a,float scale,int id){
+void HeroMarid::createhero(CCPoint a,float scale,int id,int type){
 	speed = 5;
 	direction = 5;
 	bubble_range = 3;
@@ -20,14 +20,20 @@ void HeroMarid::createhero(CCPoint a,float scale,int id){
 	sprite = CCSprite::create();
 	sprite->setScale(scale);
 	sprite->setPosition(a);
-	AniReader::read("unit_marid.ani");
+	if (type == 0)
+		AniReader::read("unit_marid.ani");
+	else
+		AniReader::read("unit_luxmarid.ani");
 	num = AniReader::num;
 	for (int i = 0; i < 100; i++)
 		for(int j = 0; j < 4; j++)
 		{
 			list[i][j] = AniReader::list[i][j];
 		}
-	texture = CCTextureCache::sharedTextureCache()->addImage("image/unit/unit_marid.png");
+	if (type == 0)
+		texture = CCTextureCache::sharedTextureCache()->addImage("image/unit/unit_marid.png");
+	else
+		texture = CCTextureCache::sharedTextureCache()->addImage("image/unit/unit_luxmarid.png");
 	animate = CCRepeatForever::create(CCAnimate::create(moveanimation(4)));
 	sprite->runAction(animate);
 	action=NULL;
