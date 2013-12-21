@@ -20,7 +20,7 @@ String url="jdbc:mysql://localhost/"+dbName+"?user="+userName+"&password="+userP
 Class.forName("com.mysql.jdbc.Driver").newInstance(); 
 Connection connection=DriverManager.getConnection(url); 
 Statement statement = connection.createStatement(); 
-String sql = "insert into "+tableName+"(username,password) values('"+input+"','"+input2+"')";
+String sql = "insert into "+tableName+"(username,password,emotion,money,exp,item,avatar) values('"+input+"','"+input2+"',1,100,1,aaaaaaaaaa,1)";
 System.out.println(sql);
 PreparedStatement ps = null;
 	Statement stmt = connection.createStatement();  
