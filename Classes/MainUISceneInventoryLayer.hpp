@@ -5,6 +5,7 @@
 #include "MainUISceneStoreLayer.hpp"
 #include "ItemData.h"
 #include "MainUISceneChooseLayer.hpp"
+#include "UserData.hpp"
 USING_NS_CC;
 using namespace CocosDenshion;
 /**
@@ -129,7 +130,7 @@ bool MainUISceneInventoryLayer::init()
 					itemBackground->setPosition (ccp (ui_right->boundingBox().size.width + (myNum % 3) *w + w / 2, size.height - menuItem->boundingBox().size.height - (myNum / 3) *h - h / 2) );
 					this->addChild (itemBackground, 0, 1000 + myNum);
 					char itemPath[80];
-					sprintf (itemPath, "image/store/item_%d.png", i);
+					sprintf (itemPath, "image/store/face%d.png", i+1);
 					CCSprite *item = CCSprite::create (itemPath);
 					item->setScaleX (h / item->getContentSize().width * 1 / 2);
 					item->setScaleY (h / item->getContentSize().height * 1 / 2);
@@ -370,6 +371,7 @@ void MainUISceneInventoryLayer::isSelect()
 			ok->setPositionX (this->getChildByTag (1000 + n)->getPositionX() - w / 3);
 			ok->setPositionY (this->getChildByTag (1000 + n)->getPositionY() - h / 3);
 			this->addChild (ok, 2, 100000 + n);
+			UserData::current->updateAvatar(selectItemNumber[n]+1);
 		}
 
 	else
@@ -436,7 +438,7 @@ void MainUISceneInventoryLayer::select()
 	blackboard2->setPosition (ccp (size.width / 2, size.height * 3 / 4) );
 	selectLayer->addChild (blackboard, 1, 2);
 	char itemSelect[80];
-	sprintf (itemSelect, "image/store/item_%d.png", selectItemNumber[n]);
+	sprintf (itemSelect, "image/store/face%d.png", selectItemNumber[n]+1);
 	CCSprite* selectedItem = CCSprite::create (itemSelect);
 	selectedItem->setScale (blackboard->boundingBox().size.height / 3 / selectedItem->getContentSize().height);
 	selectedItem->setPosition (ccp (size.width / 2, size.height / 2 + blackboard->boundingBox().size.height / 5) );

@@ -36,12 +36,6 @@ bool MainUISceneStoreLayer::init()
 	if (!CCLayer::init()){
 		return false;
 	}
-	//目标：双指上下滑动可以翻滚
-	//对每个物品显示一个背景格子，样子和价格
-	//对可以重复购买的物品提供批量购买
-	//单次购买的物品如果已购买显示禁用样式
-	//如果出现无法支付显示对应信息
-	//购买时提供确认购买的信息，可以使用一个新的层来完成提示信息
 	this->setTouchEnabled(true);
 	size = CCDirector::sharedDirector()->getWinSize();
 	ui_right =(CCSprite*) MainUIScene::mainUIScene->getChildByTag(10)->getChildByTag(10);
@@ -60,7 +54,7 @@ bool MainUISceneStoreLayer::init()
 		this->addChild(itemBackground);
 
 		char itemPath[80];
-		sprintf(itemPath, "image/store/item_%d.png", i);
+		sprintf(itemPath, "image/store/face%d.png", i+1);
 		CCSprite *item=CCSprite::create(itemPath);
 		item->setScaleX(h/item->getContentSize().width*1/2);
 		item->setScaleY(h/item->getContentSize().height*1/2);

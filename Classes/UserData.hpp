@@ -21,9 +21,9 @@ public :
 	int emotion;
 	static int http_emotion;
 	static int httpAns;
-	int item[30];
+	int item[40];
 	static char http_item[80];
-	bool itemSelect[30];
+	bool itemSelect[40];
 	int buddylist[40];
 	int roomlist[8];
 	int character[8];
@@ -42,7 +42,7 @@ public :
 	//~UserData();
 	void updateMoney();
 	void updateEmotion();
-	void updateAvatar();
+	void updateAvatar(int);
 	void fetchRoomData();
 	void updateHero(int , int);
 	void updateTeam(int ,int);
@@ -267,7 +267,7 @@ void UserData::updateEmotion(){
 	}
 	curl_easy_cleanup(curl);
 }
-void UserData::updateAvatar(){
+void UserData::updateAvatar(int t_face){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
@@ -277,7 +277,7 @@ void UserData::updateAvatar(){
 		sprintf(url,"http://%s:8080/Server/updateAvatar.jsp",server);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"userid=%d&avatar=%d",userid,face);
+		sprintf(postField,"userid=%d&avatar=%d",this->userid,t_face);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
 	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数

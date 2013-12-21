@@ -195,8 +195,9 @@ void MainUISceneMultiplayerLayer::Show ()
 					this->removeChildByTag(100+i);
 					this->removeChildByTag(1000+i);
 				}
-				face->setPositionX(pMenu->getChildByTag(i)->getPosition().x);
-				face->setPositionY(pMenu->getChildByTag(i)->getPosition().y-pMenu->getChildByTag(i)->boundingBox().size.height/5);
+				face->setScale(w/4/face->getContentSize().width);
+				face->setPositionX(pMenu->getChildByTag(i)->getPosition().x-pMenu->getChildByTag(i)->boundingBox().size.width/4);
+				face->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/4);
 				this->addChild(face, 2, i);
 
 				CCLabelTTF *nameLabel = CCLabelTTF::create (user->username, "fonts/FZKaTong-M19T.ttf", 25);
@@ -219,9 +220,9 @@ void MainUISceneMultiplayerLayer::Show ()
 			char temp[80];
 			sprintf(temp, "image/friend/friend_%d.png", UserData::current->character[i]);
 			CCSprite* character=CCSprite::create(temp);
-			character->setScale(w/4/character->getContentSize().width);
-			character->setPositionX(pMenu->getChildByTag(i)->getPosition().x-pMenu->getChildByTag(i)->boundingBox().size.width/4);
-			character->setPositionY(pMenu->getChildByTag(i)->getPosition().y+pMenu->getChildByTag(i)->boundingBox().size.height/5);
+			character->setScale(w/2/character->getContentSize().width);
+			character->setPositionX(pMenu->getChildByTag(i)->getPosition().x);
+			character->setPositionY(pMenu->getChildByTag(i)->getPosition().y-pMenu->getChildByTag(i)->boundingBox().size.height/5);
 			this->addChild(character, 2, 10000+i);
 
 		}

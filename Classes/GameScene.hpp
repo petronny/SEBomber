@@ -373,11 +373,11 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
 			sprintf(sMsg, "%d %d %f %f %f %f",0, myheroid, origin.x, origin.y+(aim.y-origin.y)/abs(aim.y-origin.y), origin.x, origin.y);
-			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.2f);
+			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.35f);
 		}
 		else{
 			sprintf(sMsg,"%d %d %f %f %f %f",0, myheroid, origin.x+(aim.x-origin.x)/abs(aim.x-origin.x), origin.y, origin.x, origin.y );
-			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.2f);
+			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.35f);
 		}
 	}
 	}
