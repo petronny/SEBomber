@@ -27,10 +27,11 @@ public :
 	int buddylist[40];
 	int roomlist[8];
 	int character[8];
+	int group[8];
 	int myPosition;
-	static int http_myPosition;
-	static int http_character[8];
-	static int http_roomlist[8];
+	static char http_character[8];
+	static char http_roomlist[8];
+	static char http_group[8];
 	void fetchBasicData();
 	void fetchExtraData();
 	void regist();
@@ -43,8 +44,9 @@ public :
 	void updateEmotion();
 	void updateAvatar();
 	void fetchRoomData();
-	void sendCharacterData();
-	void sendRoomData(int prePosition, int desPosition);
+	void updateHero(int , int);
+	void updateTeam(int ,int);
+	void updatePos(int , int);
 	static size_t getUserID(uint8_t* ptr,size_t size,size_t number,void *stream);
 	static size_t getBasicData(uint8_t* ptr,size_t size,size_t number,void *stream);
 	static size_t getExtraData(uint8_t* ptr,size_t size,size_t number,void *stream);
@@ -58,11 +60,11 @@ int UserData::http_rank;
 int UserData::http_emotion;
 int UserData::http_coinNum;
 char UserData::http_item[80];
-int UserData::http_roomlist[8];
+char UserData::http_roomlist[8];
 UserData *UserData::user[8];
 char UserData::http_username[20];
-int UserData::http_character[8];
-int UserData::http_myPosition;
+char UserData::http_character[8];
+char UserData::http_group[8];
 UserData::UserData(){
 	coinNum=100;
 	roomid=1;
@@ -303,34 +305,46 @@ void UserData::fetchRoomData(){
 	}
 	curl_easy_cleanup(curl);
 	for(int i=0; i<8; i++){
-		this->roomlist[i]=UserData::http_roomlist[i];
-		this->character[i]= UserData::http_character[i];
+		this->roomlist[i]=UserData::http_roomlist[i]-'a';
+		this->character[i]= UserData::http_character[i]-'a';
+		this->group[i]=UserData::http_group[i]-'a';
 	}
 }
 size_t UserData::getRoomData(uint8_t* ptr,size_t size,size_t number,void *stream){
-	char ans[80];
+	//char ans[80];
 	int i=12;
 	while(*(ptr+i)){
-		ans[i-12]=*(ptr+i);
+		//ans[i-12]=*(ptr+i);
+		if(i-12<8){
+			UserData::http_roomlist[i-12]=(*(ptr+i));
+		}
+		else if(i-12<16){
+			UserData::http_character[i-20]=(*(ptr+i));
+		}
+		else if(i-12<24){
+			UserData::http_group[i-28]=(*(ptr+i));
+		}
+		else{}
 		i++;
 	}
-	ans[i-12]=*(ptr+i);
+	/*ans[i-12]=*(ptr+i);
 	sscanf(ans,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d", &UserData::http_roomlist[0], &UserData::http_roomlist[1], &UserData::http_roomlist[2], &UserData::http_roomlist[3], &UserData::http_roomlist[4],
 			&UserData::http_roomlist[5], &UserData::http_roomlist[6], &UserData::http_roomlist[7], &UserData::http_character[0], &UserData::http_character[1], &UserData::http_character[2],
 			&UserData::http_character[3], &UserData::http_character[4], &UserData::http_character[5], &UserData::http_character[6], &UserData::http_character[7]);
+	*/
 	return size*number;
 }
-void UserData::sendRoomData(int prePosition, int desPosition){
+void UserData::updateHero(int pos, int hero){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
 	curl = curl_easy_init();
 	char postField[80],writeData[80],url[80];
 	if (curl){
-		sprintf(url,"http://%s:8080/Server/updateAvatar.jsp",server);
+		sprintf(url,"http://%s:8080/Server/updateHero.jsp",server);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"userid=%d&avatar=%d",userid,face);
+		sprintf(postField,"roomid=%d&pos=%d&hero=%d",this->roomid,pos, hero);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
 	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数
@@ -339,17 +353,36 @@ void UserData::sendRoomData(int prePosition, int desPosition){
 	}
 	curl_easy_cleanup(curl);
 }
-void UserData::sendCharacterData(){
+void UserData::updateTeam(int pos, int team){
 	CURL *curl;
 	CURLcode res;
 	char buffer[10];
 	curl = curl_easy_init();
 	char postField[80],writeData[80],url[80];
 	if (curl){
-		sprintf(url,"http://%s:8080/Server/updateAvatar.jsp",server);
+		sprintf(url,"http://%s:8080/Server/updateTeam.jsp",server);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
-		sprintf(postField,"userid=%d&avatar=%d",userid,face);
+		sprintf(postField,"roomid=%d&pos=%d&team=%d",this->roomid,pos, team);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
+	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
+		res = curl_easy_perform(curl);
+	}
+	curl_easy_cleanup(curl);
+}
+void UserData::updatePos(int prePos, int desPos){
+	CURL *curl;
+	CURLcode res;
+	char buffer[10];
+	curl = curl_easy_init();
+	char postField[80],writeData[80],url[80];
+	if (curl){
+		sprintf(url,"http://%s:8080/Server/updatePos.jsp",server);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		sprintf(postField,"roomid=%d&userid=%d&opos=%d&pos=%d",this->roomid,this->userid,prePos, desPos);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
 	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数

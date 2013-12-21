@@ -3,6 +3,8 @@
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "UserData.hpp"
+#include "MainUIScene.hpp"
+#include "Client.hpp"
 USING_NS_CC;
 using namespace CocosDenshion;
 /**
@@ -58,7 +60,7 @@ class MainUISceneMultiplayerLayer : public CCLayer
 		@brief 对话框确定选项
 		*/
 		void characterSelect(CCObject*);//
-		void groupSelect();
+		void groupSelect(CCObject*);
 		/**
 		@brief implement the "static node()" method manually
 		*/
@@ -85,7 +87,7 @@ class MainUISceneMultiplayerLayer : public CCLayer
 		CCMenuItemImage *characterItem;
 		int beforePosition;
 		int userid[8];
-		int position;
+		bool isIn, opeEnable, needOpe;
 };
 // onserverField "init" you need to initialize your instance
 bool MainUISceneMultiplayerLayer::init()
@@ -96,7 +98,10 @@ bool MainUISceneMultiplayerLayer::init()
 			return false;
 		}
 	//this->setTouchEnabled (true);
-	position=-1;
+	isIn=false;
+	opeEnable=false;
+	needOpe=true;
+
 	size = CCDirector::sharedDirector()->getWinSize();
 	memset(userid, 0, sizeof(userid));
 	ui_right = CCSprite::create ("image/ui/ui_right.png");
@@ -133,10 +138,11 @@ bool MainUISceneMultiplayerLayer::init()
 		groupColor->setScaleX(w/groupColor->getContentSize().width);
 		groupColor->setScaleY(h/characterItem->getContentSize().height/5);
 		groupColor->setPositionX(ui_right->boundingBox().size.width+(5+w)*(i%4)+w/2);
-		groupColor->setPositionY(groupItem->getPositionY());
+		groupColor->setPositionY(pMenu2->getChildByTag(i)->getPositionY());
 		this->addChild(groupColor, 0, 5000+i);
 	}
-	beforePosition=-1;
+	pMenu->setEnabled(false);
+	pMenu2->setEnabled(false);
 	schedule(schedule_selector(MainUISceneMultiplayerLayer::Show),2.0f);
 	return true;
 }
@@ -172,10 +178,11 @@ void MainUISceneMultiplayerLayer::Show ()
 	UserData::current->fetchRoomData();
 	for(int i=0; i<8; i++){
 		if(UserData::current->roomlist[i]>0){
-			if(userid[i]!=UserData::current->roomlist[i]){
+			if(userid[i]!=UserData::current->roomlist[i]&&needOpe){
 				userid[i]=UserData::current->roomlist[i];
 				if(userid[i]==UserData::current->userid){
-					position=i;
+					UserData::current->myPosition=i;
+					isIn=true;
 				}
 				UserData* user = new UserData(UserData::current->roomlist[i]);
 				sprintf(user->server, "%s", UserData::current->server);
@@ -219,6 +226,7 @@ void MainUISceneMultiplayerLayer::Show ()
 
 		}
 		else{
+			userid[i]=0;
 			if(this->getChildByTag(i)!=NULL){
 				this->removeChildByTag(i);
 				this->removeChildByTag(100+i);
@@ -226,20 +234,53 @@ void MainUISceneMultiplayerLayer::Show ()
 				this->removeChildByTag(10000+i);
 			}
 		}
+		char temp[80];
+		sprintf(temp, "image/ui/teamBackground_%d.png", UserData::current->group[i]);
+		CCSprite* groupColor=CCSprite::create(temp);
+		groupColor->setScale(this->getChildByTag(5000+i)->getScale());
+		groupColor->setPosition(this->getChildByTag(5000+i)->getPosition());
+		if(this->getChildByTag(5000+i)!=NULL){
+			this->removeChildByTag(5000+i);
+		}
+		this->addChild(groupColor, 0, 5000+i);
+	}
+	if(!opeEnable){
+		opeEnable=true;
+		pMenu->setEnabled(true);
+		pMenu2->setEnabled(true);
 	}
 }
 void MainUISceneMultiplayerLayer::characterSelect(CCObject* pSender){
 	CCMenuItem *m = (CCMenuItem*)(pSender);
 	if(this->getChildByTag(m->getTag())== NULL){
-		UserData::current->sendRoomData(position,m->getTag());
+		if(isIn){
+			UserData::current->updatePos(UserData::current->myPosition+1, m->getTag()+1);
+		}
+		else{
+			UserData::current->updatePos(m->getTag()+1, m->getTag()+1);
+			needOpe=false;
+		}
+		if(!MainUIScene::ready){
+			Client::client->connectRemote();
+			MainUIScene::ready=true;
+		}
+		Show();
+		needOpe=true;
 	}
 	else{
 		 if(UserData::current->myPosition==m->getTag()){
-			 UserData::current->sendCharacterData();
+			 UserData::current->updateHero(m->getTag()+1,UserData::current->character[m->getTag()]%8+1);
+			 needOpe=false;
+			 Show();
+			 needOpe=true;
 		 }
 	}
 }
-void MainUISceneMultiplayerLayer::groupSelect(){
-
+void MainUISceneMultiplayerLayer::groupSelect(CCObject* pSender){
+	CCMenuItem *m = (CCMenuItem*)(pSender);
+	if(UserData::current->myPosition==m->getTag()){
+		UserData::current->updateTeam(m->getTag()+1, (UserData::current->group[m->getTag()]+1)%8);
+		Show();
+	}
 }
 #endif

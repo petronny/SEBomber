@@ -102,7 +102,6 @@ bool GameScene::init()
 	bhead = 0;
 	btail = 0;
 	heronum = 0;
-	myheroid = 0;
 	propsnum = 0;
     if ( !CCLayer::init() )
     {
@@ -161,17 +160,19 @@ bool GameScene::init()
     /*Props* pp = new PropsSpeed();
     pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     this->addChild(pp->sprite,3);*/
-    createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    createhero(2,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    createhero(3,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    createhero(4,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-   // createhero(3,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    //hero = new HeroBazzi();
-    //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    //this->addChild(hero[myheroid]->sprite,11);
-    //this->addChild(bubble->layer,10);
-    //this->addChild(bubble->ups[1],1);
-    //bubble->bomb(3,3,3,3);
+    for(int i=0; i<8;i++){
+    	if(UserData::current->roomlist[i]>0){
+    		if(UserData::current->roomlist[i]==UserData::current->userid){
+    		    			myheroid=heronum;
+    		}
+    		createhero(UserData::current->character[i],TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    	}
+    }
+  //  createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+   // createhero(2,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    //createhero(3,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    //createhero(4,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+
     doubleTouchCount=0;tripleTouchCount=0;
     schedule(schedule_selector(GameScene::getMsg));
      return true;
@@ -373,17 +374,12 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
 			sprintf(sMsg, "%d %d %f %f %f %f",0, myheroid, origin.x, origin.y+(aim.y-origin.y)/abs(aim.y-origin.y), origin.x, origin.y);
 			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.2f);
-			//hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))));
 		}
 		else{
 			sprintf(sMsg,"%d %d %f %f %f %f",0, myheroid, origin.x+(aim.x-origin.x)/abs(aim.x-origin.x), origin.y, origin.x, origin.y );
 			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.2f);
-			//hero[myheroid]->moveto(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)));
 		}
 	}
-
-			//heromove(TileCoordToPosition(ccp(origin.x,origin.y+(aim.y-origin.y)/abs(aim.y-origin.y))),myheroid,origin);
-			//heromove(TileCoordToPosition(ccp(origin.x+(aim.x-origin.x)/abs(aim.x-origin.x),origin.y)),myheroid,origin);
 	}
 }
 void GameScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
@@ -683,21 +679,25 @@ void GameScene::getMsg(){
 				if(r>=0){
 					sscanf(rMsg, "%d",&type);
 					if(type==0){
-						sscanf(rMsg, "%d %d %f %f %f %f",&type, &id, &x, &y, &ox, &oy);
-						heromove(TileCoordToPosition(ccp(x, y)),id,ccp(ox, oy));
+						int n=sscanf(rMsg, "%d %d %f %f %f %f",&type, &id, &x, &y, &ox, &oy);
+						if(n==6)
+							heromove(TileCoordToPosition(ccp(x, y)),id,ccp(ox, oy));
 					}
 					else if(type==1){
-						sscanf(rMsg, "%d %f %f %d %d",&type, &x, &y, &oy, &id);
-						createbubble(TileCoordToPosition(ccp(x, y)),mapBackgroundLayer->getScale(),oy,id);
+						int n=sscanf(rMsg, "%d %f %f %d %d",&type, &x, &y, &oy, &id);
+						if(n==5)
+							createbubble(TileCoordToPosition(ccp(x, y)),mapBackgroundLayer->getScale(),oy,id);
 					}
 					else if(type==2){
 						int randp;
-						sscanf(rMsg,  "%d, %d, %f, %f", &type, &randp, &x, &y);
-						createprops(randp,TileCoordToPosition(ccp(x,y)),mapBackgroundLayer->getScale());
+						int n=sscanf(rMsg,  "%d, %d, %f, %f", &type, &randp, &x, &y);
+						if(n==4)
+							createprops(randp,TileCoordToPosition(ccp(x,y)),mapBackgroundLayer->getScale());
 					}
 					else if(type==3){
-						sscanf(rMsg, "%d %d", &type, &id);
-						heroencase(id);
+						int n=sscanf(rMsg, "%d %d", &type, &id);
+						if(n==2)
+							heroencase(id);
 					}
 				}
 

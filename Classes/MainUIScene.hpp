@@ -84,6 +84,7 @@ class MainUIScene : public CCLayer
 		@brief
 		*/
 		static CCScene *mainUIScene;
+		static bool ready;
 };
 #include "TitleScene.hpp"
 #include "UserData.hpp"
@@ -94,6 +95,7 @@ class MainUIScene : public CCLayer
 #include "GameScene.hpp"
 #include "Client.hpp"
 CCScene *MainUIScene::mainUIScene;
+bool MainUIScene::ready;
 CCScene* MainUIScene::scene()
 {
 	// 'scene' is an autorelease object
@@ -119,8 +121,8 @@ bool MainUIScene::init()
 	CCMenu* pMenu = CCMenu::create();
 	pMenu->setPosition ( CCPointZero );
 	this->addChild (pMenu, 2);
-	UserData::current->fetchBasicData();
-	UserData::current->fetchExtraData();
+	//UserData::current->fetchBasicData();
+	//UserData::current->fetchExtraData();
 	//Client::client->connectRemote();
 	CCLayer *backgroundLayer = CCLayer::create();
 	mainUIScene->addChild (backgroundLayer, 0);
@@ -233,7 +235,7 @@ bool MainUIScene::init()
 	emotion->setPosition (ccp (face->getPositionX() - face->boundingBox().size.width / 4, face->getPositionY() + face->boundingBox().size.height / 4) );
 	this->addChild (emotion, 3);
 	multiplayerSelected();
-	//this->schedule(schedule_selector(MainUIScene::okButton));
+	this->schedule(schedule_selector(MainUIScene::okButton));
 	return true;
 }
 void MainUIScene::showAvatar (int num)
@@ -320,13 +322,16 @@ void MainUIScene::storeSelected()
 }
 void MainUIScene::okButtonClicked()
 {
-	char msg[255];
-	memset(msg,0,sizeof(msg));
-	sprintf(msg, "%s","ok");
-	send(Client::client->sockfd,msg, sizeof(msg),0);
+	if(MainUIScene::ready){
+		char msg[255];
+		memset(msg,0,sizeof(msg));
+		sprintf(msg, "%s","ok");
+		send(Client::client->sockfd,msg, sizeof(msg),0);
+	}
 }
 void MainUIScene::okButton(){
-	/*char rMsg[255];
+	if(MainUIScene::ready){
+	char rMsg[255];
 	fd_set fdr;
 	struct timeval timeout={0,0};
 	FD_ZERO(&fdr);
@@ -342,12 +347,13 @@ void MainUIScene::okButton(){
 				int r= recv(Client::client->sockfd, rMsg, sizeof(rMsg), 0);
 				if(r>=0)
 					if(strcmp(rMsg,"ok")==0){
-						this->unschedule(schedule_selector(MainUIScene::okButton));*/
+						this->unschedule(schedule_selector(MainUIScene::okButton));
 						CCScene *pScene = GameScene::scene();
 						CCDirector::sharedDirector()->replaceScene (CCTransitionFlipY::create (0.5f, pScene));
-					/*	break;
+						break;
 					}
 			}
-	}*/
+	}
+	}
 }
 #endif
