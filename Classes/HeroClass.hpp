@@ -15,6 +15,7 @@ public:
 	float speed;
 	int bubble_num;
 	int bubble_range;
+	int teamid;
 	int num;
 	float sca;
 	int idx;
