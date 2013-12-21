@@ -158,7 +158,9 @@ bool GameScene::init()
     pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
     this->addChild(pp->sprite,3);*/
     createhero(8,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    hero[0]->teamid = 1;
     createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/4,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    hero[1]->teamid = 1;
     //hero = new HeroBazzi();
     //hero->createhero(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
     //this->addChild(hero[myheroid]->sprite,11);
@@ -319,7 +321,7 @@ void GameScene::heroencase(int heroid)
 void GameScene::herodie(int heroid)
 {
 	hero[heroid]->die();
-	if (heroid == myheroid)
+	if (hero[heroid]->teamid == hero[myheroid]->teamid)
 	{
 		bool t = true;
 		for (int i = 0; i < heronum; i++)
@@ -546,7 +548,7 @@ void  GameScene::BubbleBomb(int idx)
 		//char st[80];
 		//sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
 		//message->setString(st);
-		for (int i = myheroid; i <= myheroid; i++)
+		for (int i = 0; i < heronum; i++)
 		if (hero[i]->isfree && hero[i]->islive)
 		{
 			int x1 = PositionToTileCoord(hero[i]->sprite->getPosition()).x;
