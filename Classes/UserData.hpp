@@ -47,6 +47,7 @@ public :
 	void updateHero(int , int);
 	void updateTeam(int ,int);
 	void updatePos(int , int);
+	void clearRoom();
 	static size_t getUserID(uint8_t* ptr,size_t size,size_t number,void *stream);
 	static size_t getBasicData(uint8_t* ptr,size_t size,size_t number,void *stream);
 	static size_t getExtraData(uint8_t* ptr,size_t size,size_t number,void *stream);
@@ -383,6 +384,25 @@ void UserData::updatePos(int prePos, int desPos){
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
 		sprintf(postField,"roomid=%d&userid=%d&opos=%d&pos=%d",this->roomid,this->userid,prePos, desPos);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
+	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数
+		curl_easy_setopt(curl,CURLOPT_WRITEDATA,writeData); //处理的函数
+		res = curl_easy_perform(curl);
+	}
+	curl_easy_cleanup(curl);
+}
+void UserData::clearRoom(){
+	CURL *curl;
+	CURLcode res;
+	char buffer[10];
+	curl = curl_easy_init();
+	char postField[80],writeData[80],url[80];
+	if (curl){
+		sprintf(url,"http://%s:8080/Server/clearRoom.jsp",server);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		sprintf(postField,"roomid=%d&pos=%d",this->roomid,this->myPosition+1);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postField);
 	   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	   curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,getEmpty); //处理的函数

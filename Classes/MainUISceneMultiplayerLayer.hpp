@@ -262,7 +262,10 @@ void MainUISceneMultiplayerLayer::characterSelect(CCObject* pSender){
 			needOpe=false;
 		}
 		if(!MainUIScene::ready){
-			Client::client->connectRemote();
+			if(!MainUIScene::In){
+				Client::client->connectRemote();
+				MainUIScene::In=true;
+			}
 			MainUIScene::ready=true;
 		}
 		Show();

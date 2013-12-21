@@ -61,6 +61,8 @@ void GameSceneMessageLayer::enableTouch(){
 	this->setTouchEnabled(true);
 }
 bool GameSceneMessageLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
+	UserData::current->clearRoom();
+	MainUIScene::ready=false;
 	this->setTouchEnabled(false);
 	CCScene *pScene = MainUIScene::scene();
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFlipY::create(0.5f, pScene));

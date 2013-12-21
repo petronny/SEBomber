@@ -84,7 +84,7 @@ class MainUIScene : public CCLayer
 		@brief
 		*/
 		static CCScene *mainUIScene;
-		static bool ready;
+		static bool ready, In;
 };
 #include "TitleScene.hpp"
 #include "UserData.hpp"
@@ -96,6 +96,7 @@ class MainUIScene : public CCLayer
 #include "Client.hpp"
 CCScene *MainUIScene::mainUIScene;
 bool MainUIScene::ready;
+bool MainUIScene::In;
 CCScene* MainUIScene::scene()
 {
 	// 'scene' is an autorelease object

@@ -120,9 +120,6 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
     size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-    //message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
-   //message->setPosition(ccp(size.width/2,size.height/2));
-   // gameScene->addChild(message,20);
     statusLayer=GameSceneStatusLayer::create();
     statusLayer->setPosition(ccp(0,size.height));
     chatLayer=GameSceneChatLayer::create();
@@ -156,22 +153,18 @@ bool GameScene::init()
     this->addChild(mapBackgroundLayer,0);
     AniReader::mapw = mapBackgroundLayer->getMapTileSize().width*mapBackgroundLayer->getScale();
     AniReader::maph = mapBackgroundLayer->getMapTileSize().height*mapBackgroundLayer->getScale();
-    //Bubble* bubble;
-    //bubble = new Bubble(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale(),1,1);
-    /*Props* pp = new PropsSpeed();
-    pp->create(TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),mapBackgroundLayer->getScale());
-    this->addChild(pp->sprite,3);*/
+
     for(int i=0; i<8;i++){
     	if(UserData::current->roomlist[i]>0){
     		if(UserData::current->roomlist[i]==UserData::current->userid){
     		    			myheroid=heronum;
     		}
     		createhero(UserData::current->character[i],TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    		hero[heronum]->teamid=UserData::current->group[i];
+    		hero[heronum-1]->teamid=UserData::current->group[i];
     	}
     }
     doubleTouchCount=0;tripleTouchCount=0;
-    schedule(schedule_selector(GameScene::getMsg));
+   schedule(schedule_selector(GameScene::getMsg));
      return true;
 }
 
@@ -418,11 +411,11 @@ void GameScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 		if(aim.x==origin.x and aim.y==origin.y)return;
 		if(abs(aim.x-origin.x)<abs(aim.y-origin.y)){
 			sprintf(sMsg, "%d %d %f %f %f %f",0, myheroid, origin.x, origin.y+(aim.y-origin.y)/abs(aim.y-origin.y), origin.x, origin.y);
-			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.35f);
+			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.03f);
 		}
 		else{
 			sprintf(sMsg,"%d %d %f %f %f %f",0, myheroid, origin.x+(aim.x-origin.x)/abs(aim.x-origin.x), origin.y, origin.x, origin.y );
-			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.35f);
+			scheduleOnce(schedule_selector(GameScene::sendMoveMsg), 0.03f);
 		}
 	}
 	}

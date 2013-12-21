@@ -10,7 +10,7 @@
 #include <sys/select.h>
 #include <unistd.h>
 
-#define PORT 8080 
+#define PORT 8079 
 #define INADDR "192.168.0.102"
 int main(int argc, char**argv){
 	struct sockaddr_in serv_addr, clnt_addr[8];
@@ -98,7 +98,6 @@ int main(int argc, char**argv){
 	}
 	int max=-1;
 	for(int i=0; i<count; i++){
-		printf("%d\n", peer[i]);
 		if(peer[i]>max)
 			max=peer[i];
 	}
