@@ -59,6 +59,7 @@ public:
     void BombCallback(CCNode* obj,void* id);
     void DieCallback(CCNode* obj,void* id);
     void BubbleBomb(int idx);
+    void gameover(int type);
     void test();
 	CCPoint PositionToTileCoord(CCPoint cocosCoord);
 	CCPoint TileCoordToPosition(CCPoint tileCoord);
@@ -119,9 +120,9 @@ bool GameScene::init()
 	SimpleAudioEngine::sharedEngine()->playEffect("audio/ef_7.ogg");
     size = CCDirector::sharedDirector()->getWinSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-    message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
-    message->setPosition(ccp(size.width/2,size.height/2));
-    gameScene->addChild(message,20);
+    //message=CCLabelTTF::create("****","fonts/FZKaTong-M19T.ttf",25);
+   //message->setPosition(ccp(size.width/2,size.height/2));
+   // gameScene->addChild(message,20);
     statusLayer=GameSceneStatusLayer::create();
     statusLayer->setPosition(ccp(0,size.height));
     chatLayer=GameSceneChatLayer::create();
@@ -166,13 +167,9 @@ bool GameScene::init()
     		    			myheroid=heronum;
     		}
     		createhero(UserData::current->character[i],TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
+    		hero[heronum]->teamid=UserData::current->group[i];
     	}
     }
-  //  createhero(1,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-   // createhero(2,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    //createhero(3,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-    //createhero(4,TileCoordToPosition(PositionToTileCoord(ccp(size.width/2,size.height/2))),0.8*mapBackgroundLayer->getScale());
-
     doubleTouchCount=0;tripleTouchCount=0;
     schedule(schedule_selector(GameScene::getMsg));
      return true;
@@ -180,23 +177,26 @@ bool GameScene::init()
 
 void GameScene::createhero(int type,CCPoint a,float s)
 {
-	if (type == 1)
+	if (type == 1 or type == 5)
 	{
 		hero[heronum] = new HeroBazzi();
 	}
-	else if (type == 2)
-	{
-		hero[heronum] = new HeroCappi();
-	}
-	else if (type == 3)
+	else if (type == 2 or type == 6)
 	{
 		hero[heronum] = new HeroDao();
 	}
-	else if (type == 4)
+	else if (type == 3 or type == 7)
+	{
+		hero[heronum] = new HeroCappi();
+	}
+	else if (type == 4 or type == 8)
 	{
 		hero[heronum] = new HeroMarid();
 	}
-	hero[heronum]->createhero(a,s,heronum);
+	if (type < 5)
+		hero[heronum]->createhero(a,s,heronum,0);
+	else
+		hero[heronum]->createhero(a,s,heronum,1);
 	this->addChild(hero[heronum]->sprite,11);
 	heronum++;
 }
@@ -273,12 +273,14 @@ void GameScene::heromove(CCPoint a,int heroid,CCPoint orig)
 		}
 		if (t)
 		{
+			int x2 = PositionToTileCoord(hero[heroid]->sprite->getPosition()).x;
+			int y2 = PositionToTileCoord(hero[heroid]->sprite->getPosition()).y;
 			for (int i = 0; i < propsnum; i++)
 			if (props[i]->isdelay)
 			{
 				int x1 = PositionToTileCoord(props[i]->sprite->getPosition()).x;
 				int y1 = PositionToTileCoord(props[i]->sprite->getPosition()).y;
-				if (x1 == x && y == y1)
+				if (x1 == x2 && y1 == y2)
 				{
 					herogetprops(heroid,props[i]->type);
 					props[i]->remove();
@@ -326,6 +328,49 @@ void GameScene::heroencase(int heroid)
 void GameScene::herodie(int heroid)
 {
 	hero[heroid]->die();
+	if (hero[heroid]->teamid == hero[myheroid]->teamid)
+	{
+		bool t = true;
+		for (int i = 0; i < heronum; i++)
+		if (hero[i]->teamid == hero[myheroid]->teamid && hero[i]->islive)
+		{
+			t = false;
+			break;
+		}
+		if  (t)
+		{
+			gameover(0);
+		}
+	} else
+	{
+		bool t = true;
+		for (int i = 0; i < heronum; i++)
+		if (hero[i]->teamid != hero[myheroid]->teamid && hero[i]->islive)
+		{
+			t = false;
+			break;
+		}
+		if  (t)
+		{
+			gameover(1);
+		}
+	}
+}
+
+void GameScene::gameover(int type)
+{
+	this->setTouchEnabled(false);
+	if(statusLayer->getPositionY()!=size.height){
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,size.height)));
+		statusLayer->runAction(move);
+	}
+	if(chatLayer->getPositionY()!=-size.height){
+		CCAction *move=CCEaseExponentialOut::create(CCMoveTo::create(0.5,ccp(0,-size.height)));
+		chatLayer->runAction(move);
+	}
+	GameSceneMessageLayer* messageLayer=GameSceneMessageLayer::create();
+	messageLayer->setmessage(type);
+	gameScene->addChild(messageLayer,2);
 }
 void GameScene::menuCloseCallback(CCObject* pSender)
 {
@@ -498,9 +543,6 @@ void  GameScene::BubbleBomb(int idx)
 		if(x-range[2]>0 and mapItemLayer->tileGIDAt(ccp(x-range[2],y))==23 and mapItemLayer->tileAt(ccp(x-range[2],y))->isVisible())fbomb[int(x-range[2]+(int)map->getMapSize().width*y)]=true;
 		if(x+range[3]<map->getMapSize().width and mapItemLayer->tileGIDAt(ccp(x+range[3],y))==23 and mapItemLayer->tileAt(ccp(x+range[3],y))->isVisible())fbomb[int(x+range[3]+(int)map->getMapSize().width*y)]=true;
 		bubble[idx]->bomb(range[0],range[1],range[2],range[3]);
-		char st[80];
-		sprintf(st,"%d %d %d %d",range[0],range[1],range[2],range[3]);
-		message->setString(st);
 		for (int i = myheroid; i <= myheroid; i++)
 		if (hero[i]->isfree && hero[i]->islive)
 		{

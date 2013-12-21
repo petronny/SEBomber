@@ -14,6 +14,7 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(GameSceneMessageLayer);
 	CCSize size;
+	void setmessage(int type);
     bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
     void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
     void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
@@ -29,9 +30,7 @@ bool GameSceneMessageLayer::init()
 		return false;
 	}
 	size = CCDirector::sharedDirector()->getWinSize();
-	CCLabelTTF *implentmenting=CCLabelTTF::create("Message施工中","fonts/FZKaTong-M19T.ttf",25);
-	implentmenting->setPosition(ccp(size.width/2,size.height/2));
-	this->addChild(implentmenting);
+
 	CCSprite *background=CCSprite::create("image/ui/black_blank.png");
 	background->setScaleX(size.width/background->getContentSize().width);
 	background->setScaleY(size.height/background->getContentSize().height);
@@ -42,6 +41,21 @@ bool GameSceneMessageLayer::init()
 	CCAction *action=CCSequence::create(delay,enableTouch,NULL);
 	this->runAction(action);
 	return true;
+}
+
+void GameSceneMessageLayer::setmessage(int type)
+{
+	if (type == 0)
+	{
+		CCLabelTTF *implentmenting=CCLabelTTF::create("You Lose!","fonts/FZKaTong-M19T.ttf",25);
+		implentmenting->setPosition(ccp(size.width/2,size.height/2));
+		this->addChild(implentmenting);
+	} else
+	{
+		CCLabelTTF *implentmenting=CCLabelTTF::create("You Win!","fonts/FZKaTong-M19T.ttf",25);
+		implentmenting->setPosition(ccp(size.width/2,size.height/2));
+		this->addChild(implentmenting);
+	}
 }
 void GameSceneMessageLayer::enableTouch(){
 	this->setTouchEnabled(true);
