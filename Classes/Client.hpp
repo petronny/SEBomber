@@ -8,6 +8,7 @@
 #include "UserData.hpp"
 #include <sys/select.h>
 #include <unistd.h>
+
 /**
 @brief
 */
@@ -34,8 +35,8 @@ void Client::connectRemote(){
 	}
 
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(8080);
-	server_addr.sin_addr.s_addr = inet_addr("192.168.0.102");
+	server_addr.sin_port = htons(8079);
+	server_addr.sin_addr.s_addr = inet_addr(UserData::current->server);
 	bzero(&(server_addr.sin_zero), 8);
 
 	server_addr_length =sizeof(server_addr);

@@ -11,12 +11,12 @@
 #include <unistd.h>
 
 #define PORT 8080 
-#define INADDR "192.168.1.134"
-int main(){
+#define INADDR "192.168.0.102"
+int main(int argc, char**argv){
 	struct sockaddr_in serv_addr, clnt_addr[8];
 	struct timeval timeout={0,0};
 	char rmsg[8][255], smsg[255];
-	fd_set fda, fds;
+	fd_set fda, fds, fdm;
 	socklen_t len = sizeof(serv_addr);
 	
 	int socketfd = socket(AF_INET,SOCK_STREAM,0);
@@ -26,7 +26,7 @@ int main(){
 	
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(PORT);
-	serv_addr.sin_addr.s_addr = inet_addr(INADDR);
+	serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
 	bzero(&(serv_addr.sin_zero), 8);
 
 	int bl = bind(socketfd, (struct sockaddr *)&serv_addr,sizeof(struct sockaddr));
@@ -62,11 +62,43 @@ int main(){
 					break;
 				}
 		}
-		if(count==3)  break;
+		FD_ZERO(&fdm);
+		int max=-1;
+		bool flag=false;
+		for(int i=0; i<count; i++){
+			FD_SET(peer[i], &fdm);
+			if(peer[i]>max)
+				max=peer[i];
+		}
+		switch(select(max+1, &fdm, NULL, NULL, &timeout)){
+			case -1:
+				exit(-1);
+				break;
+			case 0:
+				break;
+			default:
+				for(int i=0; i<count; i++){
+					if(FD_ISSET(peer[i], &fdm)){
+						recv(peer[i],rmsg[0],sizeof(rmsg[0]), 0);
+						if(strcmp(rmsg[0], "ok")==0){
+							flag=true;
+							break;
+						}
+					}
+				}
+				break;
+		}
+		if(flag){
+			for(int i=0; i<count; i++){
+				send(peer[i], rmsg[0],sizeof(rmsg[0]),0);
+			}
+			break;
+		}
+		
 	}
-	
 	int max=-1;
 	for(int i=0; i<count; i++){
+		printf("%d\n", peer[i]);
 		if(peer[i]>max)
 			max=peer[i];
 	}
@@ -77,27 +109,22 @@ int main(){
 		
 		FD_ZERO(&fds);
 		for(int i=0; i<count; i++)
-			FD_SET(peer[i],&fds);
-		//FD_SET(peer[1],&fds);
+				FD_SET(peer[i],&fds);
 			
 		switch(select(max+1, &fds, NULL, NULL, &timeout)){
 			case -1:
 				printf("-1\n");
-				//close(peer[i]);
 				break;
 			case 0:
-				//printf("0\n");
 				break;
 			default:
 				for(int i=0; i<count; i++){
 					if(FD_ISSET(peer[i], &fds)){
 						int r=recv(peer[i],rmsg[i],sizeof(rmsg[i]), 0);
 						if(r<0){
-							//printf("recv error\n");
 							break;
 						}
 						else{
-							printf("recv data:%s\n", rmsg[i]);
 							for(int j=0; j<count; j++){
 								send(peer[j], rmsg[i],sizeof(rmsg[i]),0);
 							}
